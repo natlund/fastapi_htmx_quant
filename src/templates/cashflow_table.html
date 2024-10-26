@@ -1,0 +1,37 @@
+<div class="loan-spec">
+    <p>
+        Amount Borrowed:&nbsp;<b>{{ principal }}</b>&emsp;&emsp;
+        APR:&nbsp;<b>{{ APR }}%</b>&emsp;&emsp;
+        Term:&nbsp;<b>{{ term }}</b>
+    </p>
+    <p>
+        Monthly Payment:&nbsp;<b>{{ annuity }}</b>&emsp;&emsp;
+        Total Interest Paid:&nbsp;<b>{{ total_interest }}</b>
+    </p>
+</div>
+<table class="cashflow-table">
+    <caption>Schedule of monthly payments</caption>
+    <thead>
+        <tr>
+            <th>Period</th>
+            <th>Cashflow Amount</th>
+            <th>Capital Portion</th>
+            <th>Interest Portion</th>
+            <th>Precashflow Price</th>
+            <th>Postcashflow Price</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for cf in cashflows %}
+        <tr>
+            <td>{{ cf.period }}</td>
+            <td>{{ cf.amount }}</td>
+            <td>{{ cf.capital_portion }}</td>
+            <td>{{ cf.interest_portion }}</td>
+            <td>{{ cf.precashflow_price }}</td>
+            <td>{{ cf.postcashflow_price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

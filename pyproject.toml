@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "fastapi-htmx-quant"
+version = "0.1.0"
+description = "Website demonstrating FastAPI and HTMX for Quant applications."
+authors = ["Nat Lund <natjlund@gmail.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["standard"], version = "^0.115.3"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

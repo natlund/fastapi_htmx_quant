@@ -1,0 +1,133 @@
+.title {
+    color: navy;
+    font-size: 32pt;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    text-align: center;
+}
+
+.subtitle {
+    text-align: center;
+}
+
+.datestamp {
+    text-align: center;
+}
+
+h1, h2, h3, h4 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+h1 { font-size: 24pt; }
+h2 { font-size: 20pt; }
+h3 { font-size: 18pt; }
+h4 { font-size: 16pt; }
+
+
+body {
+    display: grid;
+    grid-template-columns: 8em 50em 1fr;
+    grid-template-rows: auto auto auto;
+
+/*    background: Ivory;  */
+
+    font-size: 14pt;
+    font-family: "Source Serif 4", serif;
+    line-height: 1.4;
+}
+
+header {
+    grid-row: 1;
+    grid-column-start: 1;
+    grid-column-end: 4;
+
+    background: SkyBlue;
+}
+
+footer {
+    grid-row: 3;
+    grid-column-start: 1;
+    grid-column-end: 4;
+
+    background: Gainsboro;
+
+    font-size: 8pt;
+    text-align: center;
+    padding-block-start: 1em;
+    padding-block-end: 1em;
+}
+
+nav {
+    grid-row: 2;
+    grid-column: 1;
+
+    background: Ivory;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.content {
+    grid-row: 2;
+    grid-column: 2;
+
+    padding-block-start: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-block-end: 1em;
+}
+
+.deadspace {
+    grid-row: 2;
+    grid-column: 3;
+    background: green;
+}
+
+.loan-spec {
+    background: Gainsboro;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+
+    padding-block-start: 0.1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-block-end: 0.1em;
+    margin-block-end: 1em;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+.cashflow-table {
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    border-collapse: collapse;
+/*     border: 3px solid black; */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.cashflow-table caption {
+/*    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; */
+    font-weight: bold;
+    font-size: 15pt;
+    margin-bottom: 0em;
+}
+
+.cashflow-table thead {
+    background-color: gold;
+}
+
+.cashflow-table tbody tr:nth-of-type(odd) {
+    background-color: ivory;
+}
+
+.cashflow-table tbody tr:nth-of-type(even) {
+    background-color: lemonchiffon;
+}
+
+.cashflow-table th {
+/*    border: 1px solid black;  */
+    text-align: center;
+}
+
+.cashflow-table td {
+/*    border: 1px solid black; */
+    text-align: center;
+}

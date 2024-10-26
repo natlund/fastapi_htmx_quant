@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loan Payment Calculator</title>
+    <script src="https://unpkg.com/htmx.org@2.0.2"
+            integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
+            crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="/static/loan_payment_calculator.css">
+</head>
+<body>
+    <header>
+        <h1 class="title">Loan Payment Calculator</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+        <p>Calculate the schedule of payments to amortise (pay back) a loan with interest.</p>
+        <p>Enter details of loan:</p>
+        <form hx-post="/amortise" hx-target="#priced_loan">
+            <p><label>Amount Borrowed: <input type="text" name="principal"></label></p>
+            <p><label>Interest Rate (APR): <input type="text" name="APR"></label></p>
+            <p><label>Term (in months): <input type="number" name="term"></label></p>
+            <button>Calculate</button>
+        </form>
+        <h3>Priced Loan</h3>
+        <div id="priced_loan">Click 'Calculate' to get payment schedule of loan.</div>
+    </div>
+    <div class="deadspace"></div>
+    <footer>Written with HTMX served by FastAPI.</footer>
+</body>
+</html>
