@@ -2,8 +2,9 @@ from decimal import Decimal
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from pydantic import BaseModel
 
 from src.processing.loan_payment_calculator import create_priced_loan
@@ -17,22 +18,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
-async def root():
-    html_content = """
-    <html>
-        <head>
-            <title>Some HTML using HTMX</title>
-            <script src="https://unpkg.com/htmx.org@2.0.2"
-             integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
-             crossorigin="anonymous"></script>
-        </head>
-        <body>
-            <h1>Look ma! HTML!</h1>
-            <a href="/loan-payment-calculator">Loan Payment Calculator</>
-        </body>
-    </html>
-    """
-    return HTMLResponse(content=html_content, status_code=200)
+async def root(request: Request):
+    return templates.TemplateResponse(request=request, name="index.html")
 
 
 @app.get("/loan-payment-calculator", response_class=HTMLResponse)
