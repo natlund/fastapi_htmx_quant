@@ -22,9 +22,9 @@
         <p>Calculate the schedule of payments to amortise (pay back) a loan with interest.</p>
         <p>Enter details of loan:</p>
         <form hx-post="/amortise" hx-target="#priced_loan">
-            <p><label>Amount Borrowed: <input type="text" name="principal"></label></p>
-            <p><label>Interest Rate (APR): <input type="text" name="APR"></label></p>
-            <p><label>Term (in months): <input type="number" name="term"></label></p>
+            <p><label>Amount Borrowed: <input type="text" name="principal" value="1000"></label></p>
+            <p><label>Interest Rate (APR): <input type="text" name="APR" value="18"></label></p>
+            <p><label>Term (in months): <input type="number" name="term" value="12"></label></p>
             <button>Calculate</button>
         </form>
         <h3>Priced Loan</h3>
