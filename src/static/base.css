@@ -79,7 +79,7 @@ nav a {
     padding-bottom: 0.5em;
     text-decoration: none;
     font-weight: bold;
-    color: gray;
+    color: slategray;
 }
 
 nav a:hover {
@@ -104,5 +104,4 @@ nav a:hover {
 .deadspace {
     grid-row: 2;
     grid-column: 3;
-    background: green;
 }
