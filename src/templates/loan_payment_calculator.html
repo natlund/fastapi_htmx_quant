@@ -13,6 +13,23 @@
           rel="stylesheet">
     <link rel="stylesheet" href="/static/base.css">
     <link rel="stylesheet" href="/static/loan_payment_calculator.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+          integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
+          crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+            integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg"
+            crossorigin="anonymous">
+    </script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+            integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk"
+            crossorigin="anonymous"
+            onload="renderMathInElement(document.body);">
+    </script>
 </head>
 <body>
     <header>
@@ -30,7 +47,36 @@
     </nav>
     <div class="content">
         <p>Calculate the schedule of payments to amortise (pay back) a loan with interest.</p>
-        <p>Enter details of loan:</p>
+        <p>The calculation uses monthly compounding interest.  That is, if we define:</p>
+        <dl>
+            <dd>\( R : \) The Annual Percentage Rate (APR) expressed as a fraction (not percentage)</dd>
+            <dd>\( r : \) The monthly interest rate (as a fraction, not percentage)</dd>
+        </dl>
+        <p>Then \(R\) and \(r\) are related by:
+           $$(1 + R) = (1 + r)^{12}$$</p>
+        <p>Therefore, \( r = (1 + R)^{\frac{1}{12}} -1 \)</p>
+
+        <p>Further define:</p>
+        <dl>
+            <dd>\(P:\) Principal (amount borrowed)</dd>
+            <dd>\(n:\) Loan term in months</dd>
+        </dl>
+        <p>Then the size of each monthly payment, \(A\), is given by the Annuity Formula
+            $$ A = P \frac{r (1 + r)^n}{(1 + r)^n - 1} $$
+        </p>
+        <p>Immediately after each monthly payment, the balance remaining on the loan is known as the
+            Current Capital Balance.</p>
+        <p>The interest accrued each month is calculated by: \( \mathrm{Current\;Capital\; Balance} \times r \)</p>
+
+        <div style="background: lightskyblue; padding: 0.5em; padding-left: 1em; padding-right: 1em;">
+            <strong>ROUNDING:</strong> All rounding is done for the borrower's benefit:  The monthly payment (annuity)
+            is rounded <strong>up</strong>, so the loan is paid back quicker.  (Consequently, the final payment may
+            be smaller than the regular payments.)  And the interest accrued each month is rounded
+            <strong>down</strong>, so the borrower pays less interest.  These simple rounding rules easily allow exact
+            replication in eg. spreadsheets.
+        </div>
+
+        <h3>Enter details of loan:</h3>
         <form hx-post="/amortise" hx-target="#priced_loan">
             <p><label>Amount Borrowed: <input type="text" name="principal" value="1000"></label></p>
             <p><label>Interest Rate (APR): <input type="text" name="APR" value="18"></label></p>
@@ -38,7 +84,7 @@
             <button>Calculate</button>
         </form>
         <h3>Priced Loan</h3>
-        <div id="priced_loan">Click 'Calculate' to get payment schedule of loan.</div>
+        <div id="priced_loan">Click the 'Calculate' button to get payment schedule of loan.</div>
     </div>
     <div class="deadspace"></div>
     <footer>Written with HTMX served by FastAPI.</footer>
