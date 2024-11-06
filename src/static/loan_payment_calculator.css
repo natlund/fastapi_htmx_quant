@@ -24,7 +24,7 @@
 /*    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; */
     font-weight: bold;
     font-size: 15pt;
-    margin-bottom: 0em;
+    margin: 0.5em;
 }
 
 .cashflow-table thead {
@@ -42,6 +42,10 @@
 .cashflow-table th {
 /*    border: 1px solid black;  */
     text-align: center;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
 }
 
 .cashflow-table td {
