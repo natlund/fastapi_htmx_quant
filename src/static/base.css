@@ -217,3 +217,60 @@ nav a:hover {
   box-shadow: #D6D6E7 0 3px 7px inset;
   transform: translateY(2px);
 }
+
+.house-icon {
+  background: slategray;
+  display: inline-block;
+  height: 1em;  /*  27.5px;  */
+  position: relative;
+  width: 2em;  /* 50px; */
+}
+.house-icon:before {
+  border-bottom: 0.75em solid slategray;  /* 17.5px solid #333; */
+  border-left: 1em;  /* 25px solid transparent; */
+  border-right: 1em;  /* 25px solid transparent; */
+  content: "";
+  height: 0;
+  left: 0;
+  position: absolute;
+  top: -0.75em;  /* -17.5px; */
+  width: 0;
+}
+
+.heart {
+  /* Modify size here: */
+  --size: 1em; /* 50px; */
+
+  position: relative;
+  width: var(--size);
+  height: calc(var(--size) * 0.3);
+}
+
+.heart:before,
+.heart:after {
+  position: absolute;
+  content: "";
+  left: calc(var(--size) * 0.55);
+  top: 0;
+  width: calc(var(--size) * 0.55);
+  height: calc(var(--size) * 0.85);
+  background: #333;
+  border-radius: calc(var(--size) * 0.55) calc(var(--size) * 0.55) 0 0;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+}
+
+.heart:after {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: 100% 100%;
+}
+
+
+.my-house {
+    background: slategray;
+    height: 1em;
+    width: 1.5em;
+    clip-path: polygon(50% 0%, 100% 50%, 90% 50%, 90% 100%, 60% 100%, 60% 60%,
+                       40% 60%, 40% 100%, 10% 100%, 10% 50%, 0% 50%);
+}
