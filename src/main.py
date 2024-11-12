@@ -54,3 +54,37 @@ async def amortise(request: Request):
     print("Created cashflow HTML.")
 
     return cashflow_html
+
+
+@app.get("/body-fat", response_class=HTMLResponse)
+async def body_fat(request: Request):
+    return templates.TemplateResponse(request=request, name="body_fat.html")
+
+
+class WeightLossData(BaseModel):
+    m: Decimal  # Pydantic (correctly) converts to string first, then to Decimal.
+    a_pct: Decimal
+    b_pct: Decimal
+
+
+@app.post("/body-fat-loss", response_class=HTMLResponse)
+async def body_fat(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        weight_loss_data = WeightLossData(**form)
+
+    a = weight_loss_data.a_pct/100
+    b = weight_loss_data.b_pct/100
+
+    x = weight_loss_data.m * ((a - b) / (1 - b))
+
+    print("Weight loss required = ", x)
+
+    html = f"""
+    <div>
+      <p style="font-size: 20pt;
+                font-family: -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;">
+          Weight loss required: <strong>{x:.2f}</strong>
+      </p>
+    </div>
+"""
+    return HTMLResponse(content=html)
