@@ -1,0 +1,15 @@
+{% if result == "Success" %}
+<div>
+    <p>APR: {{ APR }}%
+        <span style="font-size: 12pt; float: right;">Solver converged in {{ num_iterations }} iterations</span>
+    </p>
+    <p>CDMC Rate: {{ cdmc_rate }} &nbsp;&nbsp;&nbsp;&nbsp; CDMC Percentage Rate: {{ cdmc_pct }}%</p>
+</div>
+{% else %}
+<div>
+    <p>APR: {{ APR }} &nbsp;&nbsp;&nbsp;&nbsp;
+        <span style="color: Red;">WARNING!</span>
+    </p>
+    <p>{{ result }}</p>
+</div>
+{% endif %}

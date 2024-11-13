@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CDMC Interest Rate</title>
+    <script src="https://unpkg.com/htmx.org@2.0.2"
+            integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
+            crossorigin="anonymous">
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/loan_payment_calculator.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+          integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
+          crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+            integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg"
+            crossorigin="anonymous">
+    </script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+            integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk"
+            crossorigin="anonymous"
+            onload="renderMathInElement(document.body);">
+    </script>
+</head>
+<body>
+    <header>
+        <h1 class="title">Constant Daily Monthly Compounding Interest</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/"><span class="my-house">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Home</a></li>
+            <li>
+                <a href="https://natlund.github.io/software_engineering/principles_of_code_structure/">
+                Principles Of Code Structure
+                </a>
+            </li>
+            <li><a href="/loan-payment-calculator">Loan Payment Calculator</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+        <p>Suppose we invest £1000 at an Annual Percentage Rate of 12% (this is unrealistically high,
+            for purposes of clarity). If we withdraw the money after exactly one year, we have earned £120 of
+        interest on top of our capital investment of £1000.   (Since £120 is 12% of £1000.)</p>
+
+        <p>If we withdraw our money after only six months, (assuming we are allowed to), how much interest
+        have we earned?</p>
+        <p>If the interest accrues <strong>linearly</strong> over the year, then we earn £60, since that is
+            \( \frac{6}{12} = \frac{1}{2} \) of the annual interest.</p>
+
+        <p>However, a much more common form of interest accrual is <strong>monthly compounding</strong>.
+        This means the following: If \(R\) is the APR expressed as a fraction (not a percentage), then there is a
+        monthly rate \( r \), and the two interest rates relate by:
+        $$ (1 + R) = (1 + r)^{12} $$</p>
+        <p>For monthly compounding interest on capital \( P \), the interest accrued after exactly six months is:
+        \( P (1 + r)^{6} - P \) </p>
+
+        <p>Now, what if we withdraw our money <em>part way</em> through a month?  Does interest still accrue
+        in a compounding fashion <em>within</em> the month?  Typically, the answer is no.  In order to keep
+        the financial calculations simple, most financial institutions accrue interest <strong>linearly</strong>
+        within the month.</p>
+
+        <p>So if we need to calculate interest accrued within a month, then we simply multiply current balance
+        by the number of days and the daily rate \(x\):
+        $$ \mathrm{interest\; accrued} = \mathrm{number\; of\; days} \times x $$</p>
+        where the daily rate is defined by:
+        $$ x = \frac{(1 + r)}{(\mathrm{number\; of\; days\; in\; month})} $$
+
+        Note that the daily rate \( x \) <em>varies</em> according to the length of the month.  What if we wanted
+        monthly compounding with linear accrual within each month, but we wanted the daily rate \( x\) to be
+        <em>constant</em> i.e. the same for all months?  This is non-trivial...
+
+        <h3>Constant Daily Monthly Compounding Interest Rate</h3>
+
+        <p>
+        If we want the linear monthly rate \( x \) to be <strong>constant</strong>, but still want monthly compounding,
+        then the <em>monthly</em> rate must vary.  The monthly rate is:
+        $$ r = ( \mathrm{number\; of\; days\; in\; month} ) \times x $$
+        Therefore, the annual rate \(R\) and constant daily rate \( x \) relate by:
+        $$ \begin{split}
+            (1 + R) = &(1 + 31x)(1 + 28x)(1 + 31x)(1 + 30x)(1 + 31x)(1 + 30x) \\
+                      &(1 + 31x)(1 + 31x)(1 + 30x)(1 + 31x)(1 + 30x)(1 + 31x)
+            \end{split}
+            $$
+            Or
+            $$ \begin{equation} (1 + R) = (1 + 31x)^{7}(1 + 30x)^{4}(1 + 28x) \end{equation} $$
+        </p>
+        To find the constant daily rate \( x \) given the target annual rate \( R \), we must solve this formula
+        for \(x\).  This formula is a seventh-order polynomial in \( x \).  Before he died at the age of 20 fighting
+        a duel, Galois proved that almost all polynomials with an order of five or greater have no algebraic solution.
+        In other words, there is no way to rearrange this formula to give an expression for \( x \).
+        Thus, we must solve in numerically.
+
+        <p>To solve this formula numerically, we can use the Newton-Raphson method.</p>
+        <p>First, we rewrite the expression in the form \( f(x) = 0 \).  Then, finding values of \( x \) that
+        satisfy the formula is known as "finding the zeros" or "finding the roots" of the polynomial.
+        $$ (1 + 31x)^{7}(1 + 30x)^{4}(1 + 28x) - (1 + R) = 0 $$</p>
+        <p>The Newton-Raphson method employs \( f'(x) \), the slope (derivative) of \(f(x)\), which is derived in
+            the appendix below.  Then we start with an initial guess, and use \(f(x)\) and \(f'(x)\) to
+            iterate towards the solution.
+        </p>
+        <p>We provide here a Newton-Raphson numerical solver for the constant daily monthly compounding interest
+            rate \( x \).</p>
+
+        <h3>Enter Target APR for CDMC Rate</h3>
+        <form hx-post="/cdmc-calculate" hx-target="#cdmc_interest_rate_result">
+            <p><label>Target APR: <input type="text" name="apr" value="5">%</label></p>
+            <button class="button-19" role="button">Calculate</button>
+        </form>
+        <div id="cdmc_interest_rate_result" class="result-box" style="margin-top: 1em;">
+            <p><span style="color: #1899D6;">Click 'Calculate'</span></p>
+            <p>for CMDC Rate</p>
+        </div>
+
+        <h3>Appendix: Derivative of function</h3>
+        <p>We have the polynomial function
+            $$ f(x) = (1 + 31x)^{7}(1 + 30x)^{4}(1 + 28x) - (1 + R) $$
+        </p>
+        <p>
+            The derivative of the polynomial may be calculated:
+
+            $$ f'(x) = \frac{d}{dx} \left[ (1 + 31x)^{7}(1 + 30x)^{4}(1 + 28x) - (1 + R) \right] $$
+            $$ = \frac{d}{dx} \left[ (1 + 31x)^{7}(1 + 30x)^{4}(1 + 28x) \right] - \frac{d}{dx}(1 + R) $$
+            $$ \begin{split}
+            = &(1 + 30x)^{4}(1 + 28x) \frac{d}{dx} (1 + 31x)^{7} \\
+              &+ (1 + 31x)^{7} \frac{d}{dx} \left[ (1 + 30x)^{4}(1 + 28x) \right] - 0
+            \end{split} $$
+            $$ \begin{split}
+            = &(1 + 30x)^{4}(1 + 28x) \left[ 7 \times 31 \right](1 + 31x)^{6} \\
+              &+ (1 + 31x)^{7} \left[ (1 + 28x)\frac{d}{dx}(1 + 30x)^{4} + (1 + 30x)^{4}\frac{d}{dx}(1 + 28x) \right]
+            \end{split} $$
+            $$ \begin{split}
+            = & 217 (1 + 31x)^{6} (1 + 30x)^{4}(1 + 28x) \\
+              &+ (1 + 31x)^{7} \left[ (1 + 28x)\left[ 4 \times 30 \right](1 + 30x)^{3} + (1 + 30x)^{4} \left[ 28 \right] \right]
+            \end{split} $$
+            $$ \begin{split}
+            = & 217 (1 + 31x)^{6} (1 + 30x)^{4}(1 + 28x) \\
+              &+ (1 + 31x)^{7} \left[ 120 (1 + 30x)^{3}(1 + 28x)  + 28 (1 + 30x)^{4} \right]
+            \end{split} $$
+            Finally
+            $$ \begin{split}
+            f'(x) = & (1 + 31x)^{7} (1 + 30x)^{3} \left[ 28 (1 + 30x) + 120 (1 + 28x) \right] \\
+                    &+ 217 (1 + 31x)^{6} (1 + 30x)^{4}(1 + 28x)
+            \end{split} $$
+        </p>
+    </div>
+    <div class="deadspace"></div>
+    <footer>Written with HTMX served by FastAPI.</footer>
+</body>
+</html>

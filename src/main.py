@@ -8,6 +8,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 from src.processing.loan_payment_calculator import create_priced_loan
+from src.processing.cmdc_interest_rate import calculate_cdmc_interest_rate
 
 
 app = FastAPI()  # Needs to be called 'app', it seems.
@@ -88,3 +89,25 @@ async def body_fat(request: Request):
     </div>
 """
     return HTMLResponse(content=html)
+
+
+@app.get("/cdmc-interest-rate", response_class=HTMLResponse)
+async def cdmc_interest_rate(request: Request):
+    return templates.TemplateResponse(request=request, name="cdmc_interest_rate.html")
+
+
+class APR(BaseModel):
+    apr: Decimal
+
+
+@app.post("/cdmc-calculate", response_class=HTMLResponse)
+async def cdmc_calculate(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        apr = APR(**form)
+
+    cdmc_calculation_result = calculate_cdmc_interest_rate(apr=apr)
+
+    cdmc_result_html = templates.TemplateResponse(
+        request=request, name="cdmc_calculation_result.html", context=cdmc_calculation_result
+    )
+    return cdmc_result_html
