@@ -24,14 +24,18 @@
 
     <tbody>
         {% for cf in cashflows %}
-        <tr>
-            <td>{{ cf.period }}</td>
-            <td>{{ cf.amount }}</td>
-            <td>{{ cf.capital_portion }}</td>
-            <td>{{ cf.interest_portion }}</td>
-            <td>{{ cf.precashflow_price }}</td>
-            <td>{{ cf.postcashflow_price }}</td>
-        </tr>
+            {% if cf.period % 12 == 0 %}
+            <tr style="border-bottom: 2px solid black;">
+            {% else %}
+            <tr>
+            {% endif %}
+                <td>{{ cf.period }}</td>
+                <td>{{ cf.amount }}</td>
+                <td>{{ cf.capital_portion }}</td>
+                <td>{{ cf.interest_portion }}</td>
+                <td>{{ cf.precashflow_price }}</td>
+                <td>{{ cf.postcashflow_price }}</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>
