@@ -40,10 +40,12 @@
             <li><a href="/"><span class="my-house">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Home</a></li>
             <li>
                 <a href="https://natlund.github.io/software_engineering/principles_of_code_structure/">
-                Principles Of Code Structure
+                Principles Of Code Structure (external)
                 </a>
             </li>
             <li><a href="/loan-payment-calculator">Loan Payment Calculator</a></li>
+            <li><a href="/cdmc-interest-rate">Constant Daily Monthly Compounding Interest</a></li>
+            <li><a href="/body-fat">Body Fat Calculations</a></li>
         </ul>
     </nav>
     <div class="content">
@@ -81,7 +83,7 @@
         <h3>Constant Daily Monthly Compounding Interest Rate</h3>
 
         <p>
-        If we want the linear monthly rate \( x \) to be <strong>constant</strong>, but still want monthly compounding,
+        If we want the linear daily rate \( x \) to be <strong>constant</strong>, but still want monthly compounding,
         then the <em>monthly</em> rate must vary.  The monthly rate is:
         $$ r = ( \mathrm{number\; of\; days\; in\; month} ) \times x $$
         Therefore, the annual rate \(R\) and constant daily rate \( x \) relate by:
@@ -105,7 +107,8 @@
         $$ (1 + 31x)^{7}(1 + 30x)^{4}(1 + 28x) - (1 + R) = 0 $$</p>
         <p>The Newton-Raphson method employs \( f'(x) \), the slope (derivative) of \(f(x)\), which is derived in
             the appendix below.  Then we start with an initial guess, and use \(f(x)\) and \(f'(x)\) to
-            iterate towards the solution.
+            iterate towards the solution.  Wikipedia provides a good explanation of the
+            <a href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton-Raphson method.</a>
         </p>
         <p>We provide here a Newton-Raphson numerical solver for the constant daily monthly compounding interest
             rate \( x \).</p>
