@@ -23,7 +23,7 @@ h4 { font-size: 16pt; }
 
 body {
     display: grid;
-    grid-template-columns: 12em 50em 1fr;
+    grid-template-columns: 15em 50em 1fr;
     grid-template-rows: auto auto auto;
 
 /*    background: Ivory;  */
