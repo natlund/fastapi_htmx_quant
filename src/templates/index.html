@@ -3,32 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>FastAPI HTMX Quant</title>
-    <script src="https://unpkg.com/htmx.org@2.0.2"
-            integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
-            crossorigin="anonymous">
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet" href="/static/base.css">
+    {% include "styles_and_scripts.html" %}
 </head>
 <body>
     <header>
         <h1 class="title">FastAPI HTMX Quant</h1>
     </header>
     <nav>
-        <ul>
-            <li><a href="/"><span class="my-house">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Home</a></li>
-            <li>
-                <a href="https://natlund.github.io/software_engineering/principles_of_code_structure/">
-                Principles Of Code Structure (external)
-                </a>
-            </li>
-            <li><a href="/loan-payment-calculator">Loan Payment Calculator</a></li>
-            <li><a href="/cdmc-interest-rate">Constant Daily Monthly Compounding Interest</a></li>
-            <li><a href="/body-fat">Body Fat Calculations</a></li>
-        </ul>
+        {% include "navigation_bar.html" %}
     </nav>
     <div class="content">
         <p>Greetings.  I am Nat Lund, a senior software engineer with Python experience in fintech.
