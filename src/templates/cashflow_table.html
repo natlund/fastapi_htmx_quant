@@ -24,8 +24,8 @@
 
     <tbody>
         {% for cf in cashflows %}
-            {% if cf.period % 12 == 0 %}
-            <tr style="border-bottom: 2px solid black;">
+            {% if (cf.period - 1) % 12 == 0 and (cf.period > 1) %}
+            <tr style="border-top: 2px solid black;">
             {% else %}
             <tr>
             {% endif %}
