@@ -24,29 +24,29 @@
 
         <p>Define:</p>
         <dl>
-            <dd>\( m : \) current body mass</dd>
+            <dd>\( w : \) current body weight</dd>
             <dd>\( f : \) current mass of body fat</dd>
             <dd>\( b : \) the desired body fat fraction eg. 0.15 for 15% body fat percentage</dd>
             <dd>\( x :\) the amount of body fat mass to lose in order to reach desired body fat percentage</dd>
         </dl>
         <p>Then:
-            $$ \frac{f - x}{m - x} = b $$
+            $$ \frac{f - x}{w - x} = b $$
         </p>
         <p>Solve for \( x \):
-        $$ f - x = b \left( m - x \right) $$
-            $$ f - x = b m - b x $$
-            $$ f - b m = x - b x $$
-            $$ \left( 1 - b \right) x = f - b m $$
-            $$ x = \frac{f - b m}{\left(1 - b \right)} $$
+        $$ f - x = b \left( w - x \right) $$
+            $$ f - x = b w - b x $$
+            $$ f - b w = x - b x $$
+            $$ \left( 1 - b \right) x = f - b w $$
+            $$ x = \frac{f - b w}{\left(1 - b \right)} $$
         </p>
-        <p>Define your <em>current</em> body fat fraction as \(a\).  Then \( f = a m \).  Thus:
-        $$ x = \frac{a m - b m}{\left(1 - b \right)} $$
-        $$ x = m \left( \frac{ a - b }{1 - b } \right) $$</p>
+        <p>Define your <em>current</em> body fat fraction as \(a\).  Then \( f = a w \).  Thus:
+        $$ x = \frac{a w - b w}{\left(1 - b \right)} $$
+        $$ x = w \left( \frac{ a - b }{1 - b } \right) $$</p>
 
         <h3>Calculate weight loss required</h3>
 
         <form hx-post="/body-fat-loss" hx-target="#weight_loss_result">
-            <p><label>Current Body Mass: <input type="text" name="m" style="font-size: 15pt;" value="81"></label></p>
+            <p><label>Current Body Weight: <input type="text" name="w" style="font-size: 15pt;" value="81"></label></p>
             <p><label>Current Body Fat Percentage: <input type="number" name="a_pct" style="font-size: 15pt;" value="20">%</label></p>
             <p><label>Desired Body Fat Percentage: <input type="number" name="b_pct" style="font-size: 15pt;" value="15">%</label></p>
             <button class="button-19" role="button">Calculate</button>

@@ -85,7 +85,7 @@ async def body_fat(request: Request):
 
 
 class WeightLossData(BaseModel):
-    m: Decimal  # Pydantic (correctly) converts to string first, then to Decimal.
+    w: Decimal  # Pydantic (correctly) converts to string first, then to Decimal.
     a_pct: Decimal
     b_pct: Decimal
 
@@ -98,7 +98,7 @@ async def body_fat(request: Request):
     a = weight_loss_data.a_pct/100
     b = weight_loss_data.b_pct/100
 
-    x = weight_loss_data.m * ((a - b) / (1 - b))
+    x = weight_loss_data.w * ((a - b) / (1 - b))
 
     print("Weight loss required = ", x)
 
