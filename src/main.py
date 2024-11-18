@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field, field_validator, model_validator, ValidationError
 
 from src.processing.loan_payment_calculator import create_priced_loan
 from src.processing.cmdc_interest_rate import calculate_cdmc_interest_rate
@@ -31,7 +31,26 @@ async def loan_payment_calculator(request: Request):
 class LoanSpec(BaseModel):
     principal: Decimal  # Pydantic (correctly) converts to string first, then to Decimal.
     APR: Decimal
-    term: int
+    term_years: int
+    term_months: int
+
+    @computed_field
+    @property
+    def term(self) -> int:
+        return (self.term_years * 12) + self.term_months
+
+    @field_validator("term_years", "term_months", mode="before")
+    @classmethod
+    def empty_string_to_zero_integer(cls, v):
+        if v == "":
+            return 0
+        return v
+
+    @model_validator(mode="after")
+    def term_greater_than_zero(self):
+        if self.term < 1:
+            raise ValueError("Loan term must be greater than zero")
+        return self
 
 
 # This doesn't work.  We get a 422 Unprocessable Entity error.
@@ -44,7 +63,10 @@ class LoanSpec(BaseModel):
 @app.post(path="/amortise", response_class=HTMLResponse)
 async def amortise(request: Request):
     async with request.form() as form:  # form is a FormData object.
-        loan_spec = LoanSpec(**form)
+        try:
+            loan_spec = LoanSpec(**form)
+        except ValidationError as exc:
+            return HTMLResponse(f"<div style='color: red;'>{exc.errors()[0]['msg']}</div>")
 
     priced_loan = create_priced_loan(loan_spec=loan_spec)
     print("Created cashflow schedule.")

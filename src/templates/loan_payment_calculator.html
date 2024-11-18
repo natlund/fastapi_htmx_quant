@@ -83,7 +83,10 @@
         <form hx-post="/amortise" hx-target="#priced_loan">
             <p><label>Amount Borrowed: <input type="text" name="principal" style="font-size: 15pt;" value="1000" ></label></p>
             <p><label>Interest Rate (APR): <input type="text" name="APR" style="font-size: 15pt;" value="18"></label></p>
-            <p><label>Term (in months): <input type="number" name="term" style="font-size: 15pt;" value="12"></label></p>
+            <p>
+                <label>Term: Years: <input type="number" name="term_years" style="font-size: 15pt;" value="0"></label>
+                <label> + Months: <input type="number" name="term_months" style="font-size: 15pt;" value="12"></label>
+            </p>
             <button class="button-19" role="button">Calculate</button>
         </form>
         <h3>Priced Loan</h3>
