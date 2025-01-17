@@ -60,10 +60,12 @@
             $$ \begin{equation} (1 + R) = (1 + 31x)^{7}(1 + 30x)^{4}(1 + 28x) \end{equation} $$
         </p>
         To find the constant daily rate \( x \) given the target annual rate \( R \), we must solve this formula
-        for \(x\).  This formula is a seventh-order polynomial in \( x \).  Before he died at the age of 20 fighting
-        a duel, Galois proved that almost all polynomials with an order of five or greater have no algebraic solution.
-        In other words, there is no way to rearrange this formula to give an expression for \( x \).
-        Thus, we must solve in numerically.
+        for \(x\).  The highest power appearing in the formula is seven, but if we multiplied the formula out into the
+        standard polynomial form, it would be a twelfth-order polynomial in \( x \).  Before he died at the age of 20
+        fighting a duel, Galois proved that there is no general closed-form solution for polynomials of order five or
+        greater.  (Contrast this with the well-known Quadratic Equation for polynomials of order two.)
+        Furthermore, there is no obvious way to rearrange this specific formula to give an expression for \( x \).
+        (It is probably impossible.)  Thus, we must solve it numerically.
 
         <p>To solve this formula numerically, we can use the Newton-Raphson method.</p>
         <p>First, we rewrite the expression in the form \( f(x) = 0 \).  Then, finding values of \( x \) that
