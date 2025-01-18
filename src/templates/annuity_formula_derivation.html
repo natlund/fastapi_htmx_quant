@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Annuity Formula Derivation</title>
+    {% include "styles_and_scripts.html" %}
+</head>
+<body>
+    <header>
+        <h1 class="title">Annuity Formula Derivation</h1>
+    </header>
+    <nav>
+        {% include "navigation_bar.html" %}
+    </nav>
+    <div class="content">
+        <h2>Preamble: Geometric Series Formula</h2>
+        <p>
+            Recall the finite geometric series:
+            $$ S_n = a + ar + ar^2 + ar^3 + ... + ar^{n-1} + ar^n $$
+            Multiplying the series by \( r \) gives:
+            $$ rS_n = ar + ar^2 + ar^3 + ... + ar^{n} + ar^{n+1} $$
+            Thus
+            $$
+            \begin{align*}
+            S_n - rS_n = & \left( a + ar + ar^2 + ar^3 + ... + ar^{n-1} + ar^n \right) \\
+                         & - \left( ar + ar^2 + ar^3 + ... + ar^{n} + ar^{n+1} \right)
+            \end{align*}
+            $$
+            Keeping all RHS terms in the same order but moving a couple of brackets:
+            $$
+            \begin{align*}
+            (1 - r)S_n = a & + \left( ar + ar^2 + ar^3 + ... + ar^n \right) \\
+                         & - \left( ar + ar^2 + ar^3 + ... + ar^{n} \right) - ar^{n+1}
+            \end{align*}
+            $$
+            The terms in brackets cancel, giving
+            $$
+                \begin{align*}
+                    (1 - r) S_n & = a - ar^{n+1} \\
+                    (1 - r) S_n & = a(1 - r^{n+1})
+                \end{align*}
+            $$
+            Finally
+            $$ S_n = a \left( \frac{ 1 - r^{n+1} }{ 1 - r } \right) $$
+        </p>
+
+        <h2>Annuity Formula</h2>
+        <p>Define:</p>
+        <dl>
+            <dd>\(P:\) Principal (amount borrowed)</dd>
+            <dd>\(n:\) Loan term in months</dd>
+            <dd>\(r:\) The monthly interest rate (as a fraction, not percentage)</dd>
+            <dd>\(A:\) Annuity (constant amount paid back each month)</dd>
+        </dl>
+        <p>
+            Consider the trivial case, a loan with a term of just one month.  Then the amount owed after one month
+            will be \( P(1 + r) \), which will be fully paid off by the single annuity:
+            $$ \mathrm{Term} \; n = 1: \;\;\;\; P(1 + r) - A = 0 $$
+
+            For a loan term of two months we have:
+            $$ \begin{align*}
+                \mathrm{Term} \; n = 2: \;\;\;\; \left[ P(1 + r) - A \right](1 + r) - A & = 0 \\
+            P(1 + r)^2 - A(1 + r) - A & = 0
+               \end{align*}
+            $$
+
+            And for a loan term of three months:
+            $$ \begin{align*}
+                \mathrm{Term} \; n = 3: \;\;\;\; \left[ P(1 + r)^2 - A(1 + r) - A \right](1 + r) - A & = 0 \\
+                                                 P(1 + r)^3 - A(1 + r)^2 - A(1 + r) - A & = 0
+               \end{align*}
+            $$
+
+            We can now see a general pattern:
+            $$
+            \mathrm{Term} \; n: \;\;\;\; P(1 + r)^{n} - A(1 + r)^{n-1} ... - A(1 + r)^2 - A(1 + r) - A = 0
+            $$
+            Or
+            $$
+            \mathrm{Term} \; n: \;\;\;\; P(1 + r)^{n} - A \left[ (1 + r)^{n-1} + ... + (1 + r)^2 + (1 + r) + 1 \right] = 0
+            $$
+
+            The term in the square brackets is a finite geometric series.  Recall the formula for the sum of a finite
+            geometric series:
+            $$ S_t = a \left( \frac{ 1 - x^{t+1} }{ 1 - x } \right) = ax^t + ax^{t-1} + ... + ax^2 + ax + a $$
+
+            Now, an equivalent formula may be more convenient for some purposes (including this one):
+            $$ S_t = a \left( \frac{ (-1)(1 - x^{t+1}) }{ (-1)( 1 - x )} \right)
+                   = a \left( \frac{ x^{t+1} - 1 }{ x - 1 } \right) $$
+
+            Let \( a = A \), and define \( x = (1 + r) \). Further define \( t = n - 1 \) so that \( t + 1 = n \),
+            and the term in the square brackets becomes:
+            $$ A \left( \frac{ (1 + r)^{n} - 1}{ (1 + r) - 1 } \right) $$
+            Or
+            $$ A \left( \frac{ (1 + r)^{n} - 1 }{ r } \right) $$
+            So for a loan of term \( n \):
+            $$
+            \mathrm{Term} \; n: \;\;\;\; P(1 + r)^{n} - A \left( \frac{ (1 + r)^{n} - 1 }{ r } \right) = 0
+            $$
+            Rearranging:
+            $$
+            P(1 + r)^{n} = A \left( \frac{ (1 + r)^{n} - 1 }{ r } \right)
+            $$
+            $$
+            P(1 + r)^{n} \left( \frac{r}{ (1 + r)^{n} - 1 } \right) = A
+            $$
+            Finally, the Annuity Formula:
+            $$
+            A = P \frac{r (1 + r)^{n}}{ (1 + r)^{n} - 1 }
+            $$
+        </p>
+    </div>
+    <div class="deadspace"></div>
+    <footer>Written with HTMX served by FastAPI.</footer>
+</body>
+</html>

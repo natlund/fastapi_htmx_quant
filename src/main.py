@@ -79,6 +79,11 @@ async def amortise(request: Request):
     return cashflow_html
 
 
+@app.get("/annuity-formula-derivation", response_class=HTMLResponse)
+async def loan_payment_calculator(request: Request):
+    return templates.TemplateResponse(request=request, name="annuity_formula_derivation.html")
+
+
 @app.get("/body-fat", response_class=HTMLResponse)
 async def body_fat(request: Request):
     return templates.TemplateResponse(request=request, name="body_fat.html")
