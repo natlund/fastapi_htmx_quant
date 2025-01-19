@@ -16,32 +16,43 @@
         <h2>Preamble: Geometric Series Formula</h2>
         <p>
             Recall the finite geometric series:
-            $$ S_n = a + ar + ar^2 + ar^3 + ... + ar^{n-1} + ar^n $$
-            Multiplying the series by \( r \) gives:
-            $$ rS_n = ar + ar^2 + ar^3 + ... + ar^{n} + ar^{n+1} $$
+            $$ S_k = a + ax + ax^2 + ax^3 + ... + ax^{k-1} + ax^k $$
+
+            Multiplying the series by \( x \) gives:
+            $$ xS_k = ax + ax^2 + ax^3 + ... + ax^{k} + ax^{k+1} $$
+
             Thus
             $$
             \begin{align*}
-            S_n - rS_n = & \left( a + ar + ar^2 + ar^3 + ... + ar^{n-1} + ar^n \right) \\
-                         & - \left( ar + ar^2 + ar^3 + ... + ar^{n} + ar^{n+1} \right)
+            xS_k - S_k = & \left( ax + ax^2 + ax^3 + ... + ax^{k} + ax^{k+1} \right) \\
+                         & - \left( a + ax + ax^2 + ax^3 + ... + ax^{k-1} + ax^k \right)
             \end{align*}
             $$
+
             Keeping all RHS terms in the same order but moving a couple of brackets:
             $$
             \begin{align*}
-            (1 - r)S_n = a & + \left( ar + ar^2 + ar^3 + ... + ar^n \right) \\
-                         & - \left( ar + ar^2 + ar^3 + ... + ar^{n} \right) - ar^{n+1}
+            (x - 1)S_k = & \left( ax + ax^2 + ax^3 + ... + ax^{k} \right) + ax^{k+1} - a \\
+                       - & \left( ax + ax^2 + ax^3 + ... + ax^k \right)
             \end{align*}
             $$
+
             The terms in brackets cancel, giving
             $$
                 \begin{align*}
-                    (1 - r) S_n & = a - ar^{n+1} \\
-                    (1 - r) S_n & = a(1 - r^{n+1})
+                    (x - 1)S_k & = ax^{k+1} - a \\
+                    (x - 1)S_k & = a(x^{k+1} - 1)
                 \end{align*}
             $$
+
             Finally
-            $$ S_n = a \left( \frac{ 1 - r^{n+1} }{ 1 - r } \right) $$
+            $$ S_k = a \left( \frac{x^{k+1} - 1}{x - 1} \right) $$
+
+            (Note that there is another equivalent formulation, which is more convenient in some situations.
+            But not here; using it leads to an annuity amount with the wrong sign.)
+            $$ S_k = a \left( \frac{x^{k+1} - 1}{x - 1} \right)
+                   = a \left( \frac{(x^{k+1} - 1)(-1)}{(x - 1)(-1)} \right)
+                   = a \left( \frac{1 - x^{k+1}}{1 - x} \right) $$
         </p>
 
         <h2>Annuity Formula</h2>
@@ -57,14 +68,16 @@
             will be \( P(1 + r) \), which will be fully paid off by the single annuity:
             $$ \mathrm{Term} \; n = 1: \;\;\;\; P(1 + r) - A = 0 $$
 
-            For a loan term of two months we have:
+            For a loan term of two months, the amount owing after two months will be the LHS of the equation above
+            multiplied by \( (1 + r) \), which will be fully paid off by the second annuity payment:
             $$ \begin{align*}
                 \mathrm{Term} \; n = 2: \;\;\;\; \left[ P(1 + r) - A \right](1 + r) - A & = 0 \\
             P(1 + r)^2 - A(1 + r) - A & = 0
                \end{align*}
             $$
 
-            And for a loan term of three months:
+            Similarly, for a loan term of three months, the amount owing after three months will be the LHS of the
+            equation above multiplied by \( (1 + r) \), which will be fully paid off by the third annuity payment:
             $$ \begin{align*}
                 \mathrm{Term} \; n = 3: \;\;\;\; \left[ P(1 + r)^2 - A(1 + r) - A \right](1 + r) - A & = 0 \\
                                                  P(1 + r)^3 - A(1 + r)^2 - A(1 + r) - A & = 0
@@ -82,22 +95,18 @@
 
             The term in the square brackets is a finite geometric series.  Recall the formula for the sum of a finite
             geometric series:
-            $$ S_t = a \left( \frac{ 1 - x^{t+1} }{ 1 - x } \right) = ax^t + ax^{t-1} + ... + ax^2 + ax + a $$
+            $$ S_k = a \left( \frac{ x^{k+1} - 1 }{ x - 1 } \right) = ax^k + ax^{k-1} + ... + ax^2 + ax + a $$
 
-            Now, an equivalent formula may be more convenient for some purposes (including this one):
-            $$ S_t = a \left( \frac{ (-1)(1 - x^{t+1}) }{ (-1)( 1 - x )} \right)
-                   = a \left( \frac{ x^{t+1} - 1 }{ x - 1 } \right) $$
-
-            Let \( a = A \), and define \( x = (1 + r) \). Further define \( t = n - 1 \) so that \( t + 1 = n \),
+            Substitute \( a = A \) and \( x = (1 + r) \). Further substitute \( k = n - 1 \) so that \( k + 1 = n \),
             and the term in the square brackets becomes:
             $$ A \left( \frac{ (1 + r)^{n} - 1}{ (1 + r) - 1 } \right) $$
-            Or
+            Which simplifies to:
             $$ A \left( \frac{ (1 + r)^{n} - 1 }{ r } \right) $$
             So for a loan of term \( n \):
             $$
             \mathrm{Term} \; n: \;\;\;\; P(1 + r)^{n} - A \left( \frac{ (1 + r)^{n} - 1 }{ r } \right) = 0
             $$
-            Rearranging:
+            Rearranging to solve for \( A \):
             $$
             P(1 + r)^{n} = A \left( \frac{ (1 + r)^{n} - 1 }{ r } \right)
             $$
@@ -108,6 +117,7 @@
             $$
             A = P \frac{r (1 + r)^{n}}{ (1 + r)^{n} - 1 }
             $$
+            QED.
         </p>
     </div>
     <div class="deadspace"></div>
