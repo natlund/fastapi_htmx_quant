@@ -5,83 +5,23 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from pydantic import BaseModel, computed_field, field_validator, model_validator, ValidationError
+from pydantic import BaseModel
 
-from src.processing.loan_payment_calculator import create_priced_loan
+import src.loan_payment_calculator.routes as loan_payment_calculator_routes
 from src.processing.cmdc_interest_rate import calculate_cdmc_interest_rate
 
 
-app = FastAPI()  # Needs to be called 'app', it seems.
-
 templates = Jinja2Templates(directory="templates")
 
+app = FastAPI()  # Needs to be called 'app', it seems.
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.include_router(router=loan_payment_calculator_routes.router)
 
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
-
-
-@app.get("/loan-payment-calculator", response_class=HTMLResponse)
-async def loan_payment_calculator(request: Request):
-    return templates.TemplateResponse(request=request, name="loan_payment_calculator.html")
-
-
-class LoanSpec(BaseModel):
-    principal: Decimal  # Pydantic (correctly) converts to string first, then to Decimal.
-    APR: Decimal
-    term_years: int
-    term_months: int
-
-    @computed_field
-    @property
-    def term(self) -> int:
-        return (self.term_years * 12) + self.term_months
-
-    @field_validator("term_years", "term_months", mode="before")
-    @classmethod
-    def empty_string_to_zero_integer(cls, v):
-        if v == "":
-            return 0
-        return v
-
-    @model_validator(mode="after")
-    def term_greater_than_zero(self):
-        if self.term < 1:
-            raise ValueError("Loan term must be greater than zero")
-        return self
-
-
-# This doesn't work.  We get a 422 Unprocessable Entity error.
-# @app.post(path="/amortise", response_class=HTMLResponse)
-# async def amortise(loan_spec: LoanSpec):
-#     print(loan_spec)
-#     return "Thinking!"
-
-
-@app.post(path="/amortise", response_class=HTMLResponse)
-async def amortise(request: Request):
-    async with request.form() as form:  # form is a FormData object.
-        try:
-            loan_spec = LoanSpec(**form)
-        except ValidationError as exc:
-            return HTMLResponse(f"<div style='color: red;'>{exc.errors()[0]['msg']}</div>")
-
-    priced_loan = create_priced_loan(loan_spec=loan_spec)
-    print("Created cashflow schedule.")
-    print("Total interest:", priced_loan["total_interest"])
-
-    cashflow_html = templates.TemplateResponse(request=request, name="cashflow_table.html", context=priced_loan)
-
-    print("Created cashflow HTML.")
-
-    return cashflow_html
-
-
-@app.get("/annuity-formula-derivation", response_class=HTMLResponse)
-async def loan_payment_calculator(request: Request):
-    return templates.TemplateResponse(request=request, name="annuity_formula_derivation.html")
 
 
 @app.get("/body-fat", response_class=HTMLResponse)
