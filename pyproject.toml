@@ -9,6 +9,7 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = {extras = ["standard"], version = "^0.115.6"}
+sqlmodel = "*"
 
 [build-system]
 requires = ["poetry-core"]
