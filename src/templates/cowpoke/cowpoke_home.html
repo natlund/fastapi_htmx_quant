@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cowpoke</title>
+    {% include "styles_and_scripts.html" %}
+</head>
+<body>
+    <header>
+        <h1 class="title">Cowpoke</h1>
+    </header>
+    <nav>
+        {% include "navigation_bar.html" %}
+    </nav>
+    <div class="content">
+        An App to help manage the work of Artificial Insemination (AI).
+
+        <div style="margin-top: 1em;">
+        <button class="button-30" role="button" hx-get="cowpoke/technicians" hx-target="#data_content">Technicians</button>
+        <button class="button-30" role="button">Farms</button>
+        </div>
+
+        <div id="data_content">Chosen data will display here.</div>
+
+    </div>
+    <div class="deadspace"></div>
+    <footer>Written with HTMX served by FastAPI.</footer>
+</body>
+</html>

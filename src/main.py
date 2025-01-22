@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from pydantic import BaseModel
 
+import src.cowpoke.routes as cowpoke_routes
 import src.loan_payment_calculator.routes as loan_payment_calculator_routes
 from src.processing.cmdc_interest_rate import calculate_cdmc_interest_rate
 
@@ -17,6 +18,7 @@ app = FastAPI()  # Needs to be called 'app', it seems.
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(router=loan_payment_calculator_routes.router)
+app.include_router(router=cowpoke_routes.router)
 
 
 @app.get("/", response_class=HTMLResponse)

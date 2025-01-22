@@ -1,0 +1,7 @@
+<h2>Technicians</h2>
+<form hx-post="/cowpoke/add-technician" hx-target="#technician_table">
+    <p><label>Technician name: <input type="text" name="name" style="font-size: 15pt;" value="Hemi"></label></p>
+    <button class="button-19" role="button">Add Technician</button>
+</form>
+<div id="technician_table" style="margin-top: 1em;" hx-get="/cowpoke/all-technicians" hx-trigger="load">
+</div>
