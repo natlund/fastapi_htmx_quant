@@ -3,5 +3,17 @@
     <p><label>Technician name: <input type="text" name="name" style="font-size: 15pt;" value="Hemi"></label></p>
     <button class="button-19" role="button">Add Technician</button>
 </form>
+<form hx-post="/cowpoke/search-technicians" hx-target="#technician_table">
+    <p><label>Technician name to search: <input type="text" name="name" style="font-size: 15pt;" value="Hemi"></label>
+    <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+        Search Technicians
+    </button></p>
+</form>
+<div style="margin-top: 1em;">
+    <button class="button-19" role="button" hx-get="/cowpoke/all-technicians" hx-target="#technician_table">
+        See All Technicians
+    </button>
+</div>
+<div id="technician_box"></div>
 <div id="technician_table" style="margin-top: 1em;" hx-get="/cowpoke/all-technicians" hx-trigger="load">
 </div>

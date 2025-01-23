@@ -77,3 +77,33 @@ async def add_technician(request: Request):
     }
     template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request=request, name=template_path, context=context)
+
+
+@router.post("/cowpoke/search-technicians", response_class=HTMLResponse)
+async def search_technicians(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        technician_name = form["name"]
+
+    with Session(engine) as session:
+        statement = select(Technician).where(Technician.name == technician_name)
+        records = session.exec(statement).all()
+
+    context = {
+        "table_caption": "AI Technicians",
+        "column_names": ["id", "name"],  # Sets order explicitly.  Can also use dict(records[0]).keys()
+        "table_data": [dict(record) for record in records],
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request=request, name=template_path, context=context)
+
+
+@router.post("/cowpoke/technician/{technician_id}", response_class=HTMLResponse)
+async def technician(technician_id):
+
+    with Session(engine) as session:
+        statement = select(Technician).where(Technician.id == technician_id)
+        records = session.exec(statement).all()
+
+    context = {"record": records[0]}
+    template_path = os.path.join(template_dir, "technician_box.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
