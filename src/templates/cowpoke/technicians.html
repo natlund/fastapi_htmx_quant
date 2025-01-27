@@ -4,12 +4,14 @@
         Add Technician
     </button>
 </div>
+<div style="margin-top: 1em;">
 <form hx-post="/cowpoke/search-technicians" hx-target="#technician_table">
     <p><label>Technician name to search: <input type="text" name="name" style="font-size: 15pt;" value="Hemi"></label>
     <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
         Search Technicians
     </button></p>
 </form>
+</div>
 <div style="margin-top: 1em;">
     <button class="button-19" role="button" hx-get="/cowpoke/all-technicians" hx-target="#technician_table">
         See All Technicians
