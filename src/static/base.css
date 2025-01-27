@@ -114,6 +114,14 @@ nav a:hover {
     grid-column: 3;
 }
 
+form {
+    background: lemonchiffon;
+    padding: 1em;
+    padding-block-start: 0.1em;
+
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 .result-box {
     background: Gainsboro;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
