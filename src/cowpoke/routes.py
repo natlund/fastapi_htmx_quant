@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, Session, SQLModel, col, create_engine, select
 
 
 class Technician(SQLModel, table=True):
@@ -48,18 +48,22 @@ async def all_technicians(request: Request):
         statement = select(Technician)
         records = session.exec(statement).all()
 
-    context = {
-        "table_caption": "AI Technicians",
-        "column_names": ["id", "name"],  # Sets order explicitly.  Can also use dict(records[0]).keys()
-        "table_data": [dict(record) for record in records],
-    }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request=request, name=template_path, context=context)
+    return generate_technician_table(records=records)
 
 
-
-@router.post("/cowpoke/add-technician", response_class=HTMLResponse)
+@router.get("/cowpoke/add-technician", response_class=HTMLResponse)
 async def add_technician(request: Request):
+    template_path = os.path.join(template_dir, "technician_add.html")
+    return templates.TemplateResponse(request={}, name=template_path)
+
+
+@router.get("/cowpoke/add-technician-cancel", response_class=HTMLResponse)
+async def add_technician_cancel(request: Request):
+    return generate_add_technician_html()
+
+
+@router.post("/cowpoke/add-technician-insert", response_class=HTMLResponse)
+async def add_technician_insert(request: Request):
     async with request.form() as form:  # form is a FormData object.
         techie = Technician(**form)
 
@@ -70,13 +74,18 @@ async def add_technician(request: Request):
         statement = select(Technician)
         records = session.exec(statement).all()
 
-    context = {
-        "table_caption": "AI Technicians",
-        "column_names": ["id", "name"],  # Sets order explicitly.  Can also use dict(records[0]).keys()
-        "table_data": [dict(record) for record in records],
-    }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request=request, name=template_path, context=context)
+    return generate_add_technician_html()
+
+
+def generate_add_technician_html() -> HTMLResponse:
+    html = f"""
+        <div id="add_technician" hx-get="/cowpoke/all-technicians" hx-target="#technician_table" hx-trigger="load">
+            <button class="button-19" role="button" hx-get="/cowpoke/add-technician" hx-target="#add_technician">
+                Add Technician
+            </button>
+        </div>
+    """
+    return HTMLResponse(html)
 
 
 @router.post("/cowpoke/search-technicians", response_class=HTMLResponse)
@@ -85,25 +94,45 @@ async def search_technicians(request: Request):
         technician_name = form["name"]
 
     with Session(engine) as session:
-        statement = select(Technician).where(Technician.name == technician_name)
+        statement = select(Technician).where(col(Technician.name).istartswith(technician_name))
         records = session.exec(statement).all()
 
-    context = {
-        "table_caption": "AI Technicians",
-        "column_names": ["id", "name"],  # Sets order explicitly.  Can also use dict(records[0]).keys()
-        "table_data": [dict(record) for record in records],
-    }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request=request, name=template_path, context=context)
+    return generate_technician_table(records=records)
 
 
-@router.post("/cowpoke/technician/{technician_id}", response_class=HTMLResponse)
+@router.get("/cowpoke/technician/{technician_id}", response_class=HTMLResponse)
 async def technician(technician_id):
-
     with Session(engine) as session:
         statement = select(Technician).where(Technician.id == technician_id)
         records = session.exec(statement).all()
 
     context = {"record": records[0]}
     template_path = os.path.join(template_dir, "technician_box.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.delete("/cowpoke/technician/{technician_id}", response_class=HTMLResponse)
+async def technician_delete(technician_id):
+    with Session(engine) as session:
+        statement = select(Technician).where(Technician.id == technician_id)
+        result = session.exec(statement)
+        technician_to_delete = result.one()
+        session.delete(technician_to_delete)
+        session.commit()
+
+    html = """
+    <div id="technician_box" hx-get="/cowpoke/all-technicians" hx-target="#technician_table" hx-trigger="load"></div>
+    """
+    return HTMLResponse(html)
+
+
+def generate_technician_table(records: list) -> templates.TemplateResponse:
+    context = {
+        "table_caption": "AI Technicians",
+        "column_names": ["id", "name"],  # Sets order explicitly.  Can also use dict(records[0]).keys()
+        "table_data": [dict(record) for record in records],
+        "hxpost": "/cowpoke/technician/",
+        "hxtarget": "#technician_box",
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)

@@ -12,8 +12,8 @@
     <tbody>
         {% for record in table_data %}
             <tr>
-                <td><button hx-post={{ ["/cowpoke/technician/", record.id]|join }} hx-target="#technician_box">
-                    {{ record.id }}</button></td>
+                <td><button hx-get={{ [hxpost, record.id]|join }} hx-target={{ hxtarget }}>
+                    Select ID {{ record.id }}</button></td>
                 {% for col in column_names %}
                 <td>{{ record[col] }}</td>
                 {% endfor %}
