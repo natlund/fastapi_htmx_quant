@@ -1,22 +1,37 @@
 <h2>Technicians</h2>
-<div id="add_technician">
-    <button class="button-19" role="button" hx-get="/cowpoke/add-technician" hx-target="#add_technician">
-        Add Technician
-    </button>
-</div>
-<div style="margin-top: 1em;">
-<form hx-post="/cowpoke/search-technicians" hx-target="#technician_table">
-    <p><label>Technician name to search: <input type="text" name="name" style="font-size: 15pt;" value="Hemi"></label>
-    <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
-        Search Technicians
-    </button></p>
-</form>
-</div>
+<section>
+    <input type="radio" id="tab1" name="tabs" checked>
+    <label for="tab1" class="tab-label">Search Technicians</label>
+    <input type="radio" id="tab2" name="tabs">
+    <label for="tab2" class="tab-label">Add Technician</label>
+
+    <div class="tab-content" id="content1">
+        <form hx-post="/cowpoke/search-technicians" hx-target="#technician_table">
+        <p>
+            <label>Technician name to search: <input type="text" name="name" style="font-size: 15pt;" value="Hemi"></label>
+            <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+                Search Technicians
+            </button>
+        </p>
+        </form>
+    </div>
+    <div class="tab-content" id="content2">
+        <form hx-put="/cowpoke/add-technician" hx-target="#technician_table">
+        <p>
+            <label>Technician name: <input type="text" name="name" style="font-size: 15pt;" value="Hemi"></label>
+            <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+                Insert Technician
+            </button>
+        </p>
+        </form>
+    </div>
+</section>
+
 <div style="margin-top: 1em;">
     <button class="button-19" role="button" hx-get="/cowpoke/all-technicians" hx-target="#technician_table">
         See All Technicians
     </button>
 </div>
+
 <div id="technician_box"></div>
-<div id="technician_table" style="margin-top: 1em;" hx-get="/cowpoke/all-technicians" hx-trigger="load">
-</div>
+<div id="technician_table" style="margin-top: 1em;" hx-get="/cowpoke/all-technicians" hx-trigger="load"></div>

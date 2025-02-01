@@ -42,28 +42,20 @@ async def technicians(request: Request):
     return templates.TemplateResponse(request=request, name=template_path)
 
 
-@router.get("/cowpoke/all-technicians", response_class=HTMLResponse)
-async def all_technicians(request: Request):
+@router.post("/cowpoke/search-technicians", response_class=HTMLResponse)
+async def search_technicians(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        technician_name = form["name"]
+
     with Session(engine) as session:
-        statement = select(Technician)
+        statement = select(Technician).where(col(Technician.name).istartswith(technician_name))
         records = session.exec(statement).all()
 
     return generate_technician_table(records=records)
 
 
-@router.get("/cowpoke/add-technician", response_class=HTMLResponse)
+@router.put("/cowpoke/add-technician", response_class=HTMLResponse)
 async def add_technician(request: Request):
-    template_path = os.path.join(template_dir, "technician_add.html")
-    return templates.TemplateResponse(request={}, name=template_path)
-
-
-@router.get("/cowpoke/add-technician-cancel", response_class=HTMLResponse)
-async def add_technician_cancel(request: Request):
-    return generate_add_technician_html()
-
-
-@router.post("/cowpoke/add-technician-insert", response_class=HTMLResponse)
-async def add_technician_insert(request: Request):
     async with request.form() as form:  # form is a FormData object.
         techie = Technician(**form)
 
@@ -74,27 +66,13 @@ async def add_technician_insert(request: Request):
         statement = select(Technician)
         records = session.exec(statement).all()
 
-    return generate_add_technician_html()
+    return generate_technician_table(records=records)
 
 
-def generate_add_technician_html() -> HTMLResponse:
-    html = f"""
-        <div id="add_technician" hx-get="/cowpoke/all-technicians" hx-target="#technician_table" hx-trigger="load">
-            <button class="button-19" role="button" hx-get="/cowpoke/add-technician" hx-target="#add_technician">
-                Add Technician
-            </button>
-        </div>
-    """
-    return HTMLResponse(html)
-
-
-@router.post("/cowpoke/search-technicians", response_class=HTMLResponse)
-async def search_technicians(request: Request):
-    async with request.form() as form:  # form is a FormData object.
-        technician_name = form["name"]
-
+@router.get("/cowpoke/all-technicians", response_class=HTMLResponse)
+async def all_technicians(request: Request):
     with Session(engine) as session:
-        statement = select(Technician).where(col(Technician.name).istartswith(technician_name))
+        statement = select(Technician)
         records = session.exec(statement).all()
 
     return generate_technician_table(records=records)
