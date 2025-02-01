@@ -109,7 +109,7 @@ def generate_technician_table(records: list) -> templates.TemplateResponse:
         "table_caption": "AI Technicians",
         "column_names": ["id", "name"],  # Sets order explicitly.  Can also use dict(records[0]).keys()
         "table_data": [dict(record) for record in records],
-        "hxpost": "/cowpoke/technician/",
+        "hxget_stub": "/cowpoke/technician/",
         "hxtarget": "#technician_box",
     }
     template_path = os.path.join(template_dir, "db_table.html")
