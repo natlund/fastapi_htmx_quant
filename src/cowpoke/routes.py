@@ -82,9 +82,9 @@ async def all_technicians(request: Request):
 async def technician(technician_id):
     with Session(engine) as session:
         statement = select(Technician).where(Technician.id == technician_id)
-        records = session.exec(statement).all()
+        record = session.exec(statement).one()
 
-    context = {"record": records[0]}
+    context = {"record": record}
     template_path = os.path.join(template_dir, "technician_box.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
 
