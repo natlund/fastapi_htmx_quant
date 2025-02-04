@@ -126,10 +126,10 @@ form {
     background: Gainsboro;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 
-    padding-block-start: 0.1em;
+    padding-block-start: 1em;
     padding-left: 2em;
     padding-right: 2em;
-    padding-block-end: 0.1em;
+    padding-block-end: 1em;
     margin-block-end: 1em;
 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -180,6 +180,23 @@ input[type="radio"]:checked + .tab-label {
 #tab1:checked ~ #content1,
 #tab2:checked ~ #content2 {
     display: block;
+}
+
+.summary-button {
+  background-color: #1CB0F6;
+  border: solid transparent;
+  border-radius: 16px;
+  border-width: 0 0 4px;
+  padding: 13px 16px;
+
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: din-round,sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .8px;
+  line-height: 20px;
+  text-transform: uppercase;
 }
 
 .button-19 {

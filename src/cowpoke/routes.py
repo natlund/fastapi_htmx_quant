@@ -89,6 +89,25 @@ async def technician(technician_id):
     return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
+@router.post("/cowpoke/edit-technician", response_class=HTMLResponse)
+async def technician_edit(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        edited_techie = Technician(**form)
+
+    with Session(engine) as session:
+        statement = select(Technician).where(Technician.id == edited_techie.id)
+        techie = session.exec(statement).one()
+
+        techie.name = edited_techie.name
+        session.add(techie)
+        session.commit()
+        session.refresh(techie)
+
+    context = {"record": techie}
+    template_path = os.path.join(template_dir, "technician_box.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
 @router.delete("/cowpoke/technician/{technician_id}", response_class=HTMLResponse)
 async def technician_delete(technician_id):
     with Session(engine) as session:
