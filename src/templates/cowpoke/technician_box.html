@@ -3,18 +3,39 @@
     <p>
         ID:&nbsp;<b>{{ record.id }}</b>&emsp;&emsp;
         Name:&nbsp;<b>{{ record.name }}</b>&emsp;&emsp;
+        Full Name:&nbsp;<b>{{ record.full_name }}</b>&emsp;&emsp;
+    </p>
+    <p>
+        Phone:&nbsp;<b>{{ record.phone }}</b>&emsp;&emsp;
+        Email:&nbsp;<b>{{ record.email }}</b>&emsp;&emsp;
+    </p>
+    <p>
+        Post Code:&nbsp;<b>{{ record.postcode }}</b>&emsp;&emsp;
+    </p>
+    <p>
+        Address:&nbsp;<b>{{ record.address }}</b>&emsp;&emsp;
     </p>
     <details>
         <summary class="summary-button">Edit Technician</summary>
         <form hx-post="/cowpoke/edit-technician" hx-target="#technician_box" hx-swap="outerHTML">
             <input type="hidden" name="id" value={{ record.id }}>
-        <p>
-            <label>Technician name: <input type="text" name="name" style="font-size: 15pt;" value={{ record.name }}>
-            </label>
+            <p>
+                <label>Name: <input type="text" name="name" style="font-size: 15pt;" value="{{ record.name}}"></label>
+                <label>Full Name: <input type="text" name="full_name" style="font-size: 15pt;" value="{{ record.full_name }}"></label>
+            </p>
+            <p>
+                <label>Phone: <input type="tel" name="phone" style="font-size: 15pt;" value="{{ record.phone }}"></label>
+                <label>Email: <input type="email" name="email" style="font-size: 15pt;" value="{{ record.email }}"></label>
+            </p>
+            <p>
+                <label>Postcode: <input type="text" name="postcode" style="font-size: 15pt;" value="{{ record.postcode }}"></label>
+            </p>
+            <p>
+                <label>Address: <input type="text" name="address" style="font-size: 15pt;" size="60" value="{{ record.address }}"></label>
+            </p>
             <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
                 Save
             </button>
-        </p>
         </form>
     </details>
     <div style="display: flex; justify-content: flex-end;  margin-top: 1em; margin-bottom: 1em;">

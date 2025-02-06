@@ -4,12 +4,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from sqlmodel import Field, Session, SQLModel, col, create_engine, select
+from sqlmodel import Session, SQLModel, col, create_engine, select
 
-
-class Technician(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
+from src.cowpoke.models import Technician
 
 
 sqlite_filename = "cowpoke.db"
@@ -99,6 +96,12 @@ async def technician_edit(request: Request):
         techie = session.exec(statement).one()
 
         techie.name = edited_techie.name
+        techie.full_name = edited_techie.full_name
+        techie.phone = edited_techie.phone
+        techie.email = edited_techie.email
+        techie.postcode = edited_techie.postcode
+        techie.address = edited_techie.address
+
         session.add(techie)
         session.commit()
         session.refresh(techie)
@@ -126,7 +129,7 @@ async def technician_delete(technician_id):
 def generate_technician_table(records: list) -> templates.TemplateResponse:
     context = {
         "table_caption": "AI Technicians",
-        "column_names": ["id", "name"],  # Sets order explicitly.  Can also use dict(records[0]).keys()
+        "column_names": ["id", "name", "phone", "email", "postcode"],  # Can also use dict(records[0]).keys()
         "table_data": [dict(record) for record in records],
         "hxget_stub": "/cowpoke/technician/",
         "hxtarget": "#technician_box",
