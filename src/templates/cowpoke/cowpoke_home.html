@@ -15,12 +15,20 @@
     <div class="content">
         An App to help manage the work of Artificial Insemination (AI).
 
-        <div style="margin-top: 1em;">
-        <button class="button-30" role="button" hx-get="cowpoke/technicians" hx-target="#data_content">Technicians</button>
-        <button class="button-30" role="button">Farms</button>
-        </div>
+        <section style="margin-top: 1em;">
+            <input type="radio" id="tab-techs" name="tabs-main" hx-get="cowpoke/technicians" hx-target="#data_content">
+            <label for="tab-techs" class="tab-label-main">Technicians</label>
+            <input type="radio" id="tab-farms" name="tabs-main" hx-get="cowpoke/farms" hx-target="#data_content">
+            <label for="tab-farms" class="tab-label-main">Farms</label>
+        </section>
+        <div id="data_content"><p>Chosen data will display here.</p></div>
 
-        <div id="data_content">Chosen data will display here.</div>
+<!--        <div style="margin-top: 1em;">-->
+<!--        <button class="button-30" role="button" hx-get="cowpoke/technicians" hx-target="#data_content">Technicians</button>-->
+<!--        <button class="button-30" role="button" hx-get="cowpoke/farms" hx-target="#data_content">Farms</button>-->
+<!--        </div>-->
+
+<!--        <div id="data_content">Chosen data will display here.</div>-->
 
     </div>
     <div class="deadspace"></div>

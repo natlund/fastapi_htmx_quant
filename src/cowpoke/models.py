@@ -10,3 +10,12 @@ class Technician(SQLModel, table=True):
     postcode: str
     address: str
 
+
+class Farm(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(index=True)
+    business_name: str
+    postcode: str
+    coordinates: str
+    address: str
+    contact_person: str

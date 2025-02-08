@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 from sqlmodel import Session, SQLModel, col, create_engine, select
 
-from src.cowpoke.models import Technician
+from src.cowpoke.models import Farm, Technician
 
 
 sqlite_filename = "cowpoke.db"
@@ -31,6 +31,9 @@ def on_startup():
 async def cowpoke(request: Request):
     template_path = os.path.join(template_dir, "cowpoke_home.html")
     return templates.TemplateResponse(request=request, name=template_path)
+
+
+########################################################################################################################
 
 
 @router.get("/cowpoke/technicians", response_class=HTMLResponse)
@@ -133,6 +136,114 @@ def generate_technician_table(records: list) -> templates.TemplateResponse:
         "table_data": [dict(record) for record in records],
         "hxget_stub": "/cowpoke/technician/",
         "hxtarget": "#technician_box",
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+########################################################################################################################
+
+
+@router.get("/cowpoke/farms", response_class=HTMLResponse)
+async def farms(request: Request):
+    template_path = os.path.join(template_dir, "farms.html")
+    return templates.TemplateResponse(request=request, name=template_path)
+
+
+@router.post("/cowpoke/search-farms", response_class=HTMLResponse)
+async def search_farms(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        farm_name = form["name"]
+
+    with Session(engine) as session:
+        statement = select(Farm).where(col(Farm.name).istartswith(farm_name))
+        records = session.exec(statement).all()
+
+    return generate_farm_table(records=records)
+
+
+@router.put("/cowpoke/add-farm", response_class=HTMLResponse)
+async def add_farm(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        farm = Farm(**form)
+
+    with Session(engine) as session:
+        session.add(farm)
+        session.commit()
+
+        statement = select(Farm)
+        records = session.exec(statement).all()
+
+    return generate_farm_table(records=records)
+
+
+@router.get("/cowpoke/all-farms", response_class=HTMLResponse)
+async def all_farms(request: Request):
+    with Session(engine) as session:
+        statement = select(Farm)
+        records = session.exec(statement).all()
+
+    return generate_farm_table(records=records)
+
+
+@router.get("/cowpoke/farm/{farm_id}", response_class=HTMLResponse)
+async def farm(farm_id):
+    with Session(engine) as session:
+        statement = select(Farm).where(Farm.id == farm_id)
+        record = session.exec(statement).one()
+
+    context = {"record": record}
+    template_path = os.path.join(template_dir, "farm_box.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.post("/cowpoke/edit-farm", response_class=HTMLResponse)
+async def farm_edit(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        edited_farm = Farm(**form)
+
+    with Session(engine) as session:
+        statement = select(Farm).where(Farm.id == edited_farm.id)
+        farm = session.exec(statement).one()
+
+        farm.name = edited_farm.name
+        farm.business_name = edited_farm.business_name
+        farm.postcode = edited_farm.postcode
+        farm.coordinates = edited_farm.coordinates
+        farm.address = edited_farm.address
+        farm.contact_person = edited_farm.contact_person
+
+        session.add(farm)
+        session.commit()
+        session.refresh(farm)
+
+    context = {"record": edited_farm}
+    template_path = os.path.join(template_dir, "farm_box.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.delete("/cowpoke/farm/{farm_id}", response_class=HTMLResponse)
+async def farm_delete(farm_id):
+    with Session(engine) as session:
+        statement = select(Farm).where(Farm.id == farm_id)
+        result = session.exec(statement)
+        farm_to_delete = result.one()
+        session.delete(farm_to_delete)
+        session.commit()
+
+    html = """
+    <div id="farm_box" hx-get="/cowpoke/all-farms" hx-target="#farm_table" hx-trigger="load"></div>
+    """
+    return HTMLResponse(html)
+
+
+def generate_farm_table(records: list) -> templates.TemplateResponse:
+    context = {
+        "table_caption": "Farms",
+        "column_names": ["id", "name", "business_name", "contact_person", "postcode"],  # Can also use dict(records[0]).keys()
+        "table_data": [dict(record) for record in records],
+        "hxget_stub": "/cowpoke/farm/",
+        "hxtarget": "#farm_box",
     }
     template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
