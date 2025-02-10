@@ -19,3 +19,10 @@ class Farm(SQLModel, table=True):
     coordinates: str
     address: str
     contact_person: str
+
+
+class Bull(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    bull_code: str = Field(index=True)
+    bull_name: str
+    notes: str

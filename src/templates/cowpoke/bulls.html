@@ -1,0 +1,46 @@
+<h2>Bulls</h2>
+<section>
+    <input type="radio" id="tab1" name="tabs" checked>
+    <label for="tab1" class="tab-label">Search Bulls</label>
+    <input type="radio" id="tab2" name="tabs">
+    <label for="tab2" class="tab-label">Add Bull</label>
+    <input type="radio" id="tab3" name="tabs">
+    <label for="tab3" class="tab-label">View Bull</label>
+
+    <div class="tab-content" id="content1">
+        <div style="background-color: lemonchiffon; padding: 15pt;">
+        <input class="form-control" type="search"
+               name="search_string" placeholder="Begin typing to search Bulls..."
+               size="30" style="font-size: 15pt;"
+               hx-post="/cowpoke/search-bulls"
+               hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
+               hx-target="#bull_table">
+        <span style="padding-left: 2em;">
+        <button class="button-19" role="button" style="width: auto; padding-left: 15pt;"
+                hx-get="/cowpoke/all-bulls" hx-target="#bull_table">
+        See All Bulls
+        </button>
+        </span>
+        </div>
+        <div id="bull_table" style="margin-top: 1em;" hx-get="/cowpoke/all-bulls" hx-trigger="load"></div>
+    </div>
+
+    <div class="tab-content" id="content2">
+        <form hx-put="/cowpoke/add-bull" hx-target="#bull_table">
+            <p>
+                <label>Bull Code: <input type="text" name="bull_code" style="font-size: 15pt;" size="10" value="BMF123"></label>
+                <label style="margin-left: 2em;">Bull Name: <input type="text" name="bull_name" style="font-size: 15pt;" size="20" value="Breaker 1-9"></label>
+            </p>
+            <p>
+                <label>Notes: <input type="text" name="notes" style="font-size: 15pt;" size="60"value="Ornery Friesian bastard"></label>
+            </p>
+            <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+                <label for="tab1">Insert Bull</label>
+            </button>
+        </form>
+    </div>
+
+    <div class="tab-content" id="content3">
+        <div id="bull_view"></div>
+    </div>
+</section>

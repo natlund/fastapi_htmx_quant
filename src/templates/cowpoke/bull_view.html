@@ -1,0 +1,53 @@
+<div id="bull_view">
+    <h2>Bull {{ record.bull_code }}</h2>
+
+    <div id="bull_box" class="result-box" style="margin-top: 1em;"
+     hx-get="/cowpoke/all-bulls" hx-target="#bull_table" hx-trigger="load">
+        <p>
+            ID:&nbsp;<b>{{ record.id }}</b>&emsp;&emsp;
+            Bull Code:&nbsp;<b>{{ record.bull_code }}</b>&emsp;&emsp;
+            Bull Name:&nbsp;<b>{{ record.bull_name }}</b>&emsp;&emsp;
+        </p>
+        <p>
+            Notes:&nbsp;<b>{{ record.notes }}</b>&emsp;&emsp;
+        </p>
+        <details>
+            <summary class="summary-button">Edit Bull</summary>
+            <form hx-post="/cowpoke/edit-bull" hx-target="#bull_box" hx-swap="outerHTML">
+                <input type="hidden" name="id" value={{ record.id }}>
+                <p>
+                    <label>Bull Code: <input type="text" name="bull_code" style="font-size: 15pt;" value="{{ record.bull_code}}"></label>
+                    <label>Bull Name: <input type="text" name="bull_name" style="font-size: 15pt;" size="40" value="{{ record.bull_name }}"></label>
+                </p>
+                <p>
+                    <label>Notes: <input type="text" name="notes" style="font-size: 15pt;" value="{{ record.notes }}"></label>
+                </p>
+                <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+                    Save
+                </button>
+            </form>
+        </details>
+        <div style="display: flex; justify-content: flex-end;  margin-top: 1em; margin-bottom: 1em;">
+            <button class="button-19" role="button" style="width: auto; background-color: red;"
+                    hx-delete={{ ["/cowpoke/bull/", record.id]|join }} hx-target="#bull_box"
+                    hx-confirm="Are you sure you want to delete Bull Code {{ record.bull_code}} with ID {{ record.id }}?">
+                Delete ID {{ record.id }}
+            </button>
+        </div>
+    </div>
+
+    <section>
+        <input type="radio" id="tab11" name="tabs-farm" checked>
+        <label for="tab11" class="tab-label">Farms</label>
+        <input type="radio" id="tab12" name="tabs-farm">
+        <label for="tab12" class="tab-label">Technicians</label>
+
+        <div class="tab-content" id="content11">
+            All Farms that have used this Bull.
+        </div>
+        <div class="tab-content" id="content12">
+            All Technicians that have inseminated with this Bull
+        </div>
+    </section>
+
+</div>
