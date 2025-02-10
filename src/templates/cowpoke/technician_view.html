@@ -1,4 +1,6 @@
-<div id="technician_box" class="result-box" style="margin-top: 1em;"
+<div id="technician_view">
+    <h2>Technician {{ record.name }}</h2>
+    <div id="technician_box" class="result-box" style="margin-top: 1em;"
      hx-get="/cowpoke/all-technicians" hx-target="#technician_table" hx-trigger="load">
     <p>
         ID:&nbsp;<b>{{ record.id }}</b>&emsp;&emsp;
@@ -45,4 +47,5 @@
         Delete ID {{ record.id }}
     </button>
     </div>
+</div>
 </div>

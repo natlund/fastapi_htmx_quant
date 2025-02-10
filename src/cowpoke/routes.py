@@ -45,10 +45,10 @@ async def technicians(request: Request):
 @router.post("/cowpoke/search-technicians", response_class=HTMLResponse)
 async def search_technicians(request: Request):
     async with request.form() as form:  # form is a FormData object.
-        technician_name = form["name"]
+        search_string = form["search_string"]
 
     with Session(engine) as session:
-        statement = select(Technician).where(col(Technician.name).istartswith(technician_name))
+        statement = select(Technician).where(col(Technician.name).istartswith(search_string))
         records = session.exec(statement).all()
 
     return generate_technician_table(records=records)
@@ -85,7 +85,7 @@ async def technician(technician_id):
         record = session.exec(statement).one()
 
     context = {"record": record}
-    template_path = os.path.join(template_dir, "technician_box.html")
+    template_path = os.path.join(template_dir, "technician_view.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
@@ -124,7 +124,11 @@ async def technician_delete(technician_id):
         session.commit()
 
     html = """
-    <div id="technician_box" hx-get="/cowpoke/all-technicians" hx-target="#technician_table" hx-trigger="load"></div>
+    <div id="technician_box" hx-get="/cowpoke/all-technicians" hx-target="#technician_table" hx-trigger="load">
+        <div style="color: red; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+        DELETED
+        </div>
+    </div>
     """
     return HTMLResponse(html)
 
@@ -135,7 +139,8 @@ def generate_technician_table(records: list) -> templates.TemplateResponse:
         "column_names": ["id", "name", "phone", "email", "postcode"],  # Can also use dict(records[0]).keys()
         "table_data": [dict(record) for record in records],
         "hxget_stub": "/cowpoke/technician/",
-        "hxtarget": "#technician_box",
+        "hxtarget": "#technician_view",
+        "tabIDtoselect": "tab3"
     }
     template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
