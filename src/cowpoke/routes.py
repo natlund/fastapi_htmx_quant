@@ -158,10 +158,10 @@ async def farms(request: Request):
 @router.post("/cowpoke/search-farms", response_class=HTMLResponse)
 async def search_farms(request: Request):
     async with request.form() as form:  # form is a FormData object.
-        farm_name = form["name"]
+        search_string = form["search_string"]
 
     with Session(engine) as session:
-        statement = select(Farm).where(col(Farm.name).istartswith(farm_name))
+        statement = select(Farm).where(col(Farm.name).istartswith(search_string))
         records = session.exec(statement).all()
 
     return generate_farm_table(records=records)
@@ -198,7 +198,7 @@ async def farm(farm_id):
         record = session.exec(statement).one()
 
     context = {"record": record}
-    template_path = os.path.join(template_dir, "farm_box.html")
+    template_path = os.path.join(template_dir, "farm_view.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
@@ -223,7 +223,7 @@ async def farm_edit(request: Request):
         session.refresh(farm)
 
     context = {"record": edited_farm}
-    template_path = os.path.join(template_dir, "farm_box.html")
+    template_path = os.path.join(template_dir, "farm_view.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
@@ -237,7 +237,11 @@ async def farm_delete(farm_id):
         session.commit()
 
     html = """
-    <div id="farm_box" hx-get="/cowpoke/all-farms" hx-target="#farm_table" hx-trigger="load"></div>
+    <div id="farm_box" hx-get="/cowpoke/all-farms" hx-target="#farm_table" hx-trigger="load">
+        <div style="color: red; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+        DELETED
+        </div>
+    </div>
     """
     return HTMLResponse(html)
 
@@ -248,7 +252,8 @@ def generate_farm_table(records: list) -> templates.TemplateResponse:
         "column_names": ["id", "name", "business_name", "contact_person", "postcode"],  # Can also use dict(records[0]).keys()
         "table_data": [dict(record) for record in records],
         "hxget_stub": "/cowpoke/farm/",
-        "hxtarget": "#farm_box",
+        "hxtarget": "#farm_view",
+        "tabIDtoselect": "tab3",
     }
     template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)

@@ -1,20 +1,30 @@
 <h2>Farms</h2>
 <section>
-    <input type="radio" id="tab1" name="tabs-search-add" checked>
+    <input type="radio" id="tab1" name="tabs" checked>
     <label for="tab1" class="tab-label">Search Farms</label>
-    <input type="radio" id="tab2" name="tabs-search-add">
+    <input type="radio" id="tab2" name="tabs">
     <label for="tab2" class="tab-label">Add Farm</label>
+    <input type="radio" id="tab3" name="tabs">
+    <label for="tab3" class="tab-label">View Farm</label>
 
     <div class="tab-content" id="content1">
-        <form hx-post="/cowpoke/search-farms" hx-target="#farm_table">
-        <p>
-            <label>Farm name to search: <input type="text" name="name" style="font-size: 15pt;" size="40" value="Old McDonald's"></label>
-        </p>
-            <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
-                Search Farms
-            </button>
-        </form>
+        <div style="background-color: lemonchiffon; padding: 15pt;">
+        <input class="form-control" type="search"
+               name="search_string" placeholder="Begin typing to search Farms..."
+               size="30" style="font-size: 15pt;"
+               hx-post="/cowpoke/search-farms"
+               hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
+               hx-target="#farm_table">
+        <span style="padding-left: 2em;">
+        <button class="button-19" role="button" style="width: auto; padding-left: 15pt;"
+                hx-get="/cowpoke/all-farms" hx-target="#farm_table">
+        See All Farms
+        </button>
+        </span>
+        </div>
+        <div id="farm_table" style="margin-top: 1em;" hx-get="/cowpoke/all-farms" hx-trigger="load"></div>
     </div>
+
     <div class="tab-content" id="content2">
         <form hx-put="/cowpoke/add-farm" hx-target="#farm_table">
             <p>
@@ -38,13 +48,8 @@
             </button>
         </form>
     </div>
+
+    <div class="tab-content" id="content3">
+        <div id="farm_view"></div>
+    </div>
 </section>
-
-<div style="margin-top: 1em;">
-    <button class="button-19" role="button" hx-get="/cowpoke/all-farms" hx-target="#farm_table">
-        See All Farms
-    </button>
-</div>
-
-<div id="farm_box"></div>
-<div id="farm_table" style="margin-top: 1em;" hx-get="/cowpoke/all-farms" hx-trigger="load"></div>
