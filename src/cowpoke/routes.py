@@ -4,9 +4,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from sqlmodel import Session, SQLModel, col, create_engine, select
+from sqlmodel import Session, SQLModel, col, create_engine, or_, select
 
-from src.cowpoke.models import Bull, Farm, Technician
+from src.cowpoke.models import Cow, Bull, Farm, Technician
 
 
 sqlite_filename = "cowpoke.db"
@@ -364,6 +364,119 @@ def generate_bull_table(records: list) -> templates.TemplateResponse:
         "hxget_stub": "/cowpoke/bull/",
         "hxtarget": "#bull_view",
         "tabIDtoselect": "tab3",
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+########################################################################################################################
+
+
+@router.post("/cowpoke/search-cows", response_class=HTMLResponse)
+async def search_cows(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        search_string = form.get("search_string", "")
+        farm_id = form.get("farm_id")
+
+    with Session(engine) as session:
+        statement = (select(Cow).where(Cow.farm_id == farm_id)
+                                .where(or_(col(Cow.tag_id).istartswith(search_string),
+                                           col(Cow.description).istartswith(search_string)
+                                           )
+                                       )
+                     )
+        records = session.exec(statement).all()
+
+    return generate_cow_table(records=records)
+
+
+@router.get("/cowpoke/all-cows-for-farm/{farm_id}", response_class=HTMLResponse)
+async def all_cows_for_farm(farm_id: int):
+    with Session(engine) as session:
+        statement = select(Cow).where(Cow.farm_id == farm_id)
+        records = session.exec(statement).all()
+
+    return generate_cow_table(records=records)
+
+
+@router.put("/cowpoke/add-cow", response_class=HTMLResponse)
+async def add_cow(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        cow = Cow(**form)
+
+    with Session(engine) as session:
+        session.add(cow)
+        session.commit()
+
+        statement = select(Cow).where(col(Cow.farm_id) == cow.farm_id)
+        records = session.exec(statement).all()
+
+    return generate_cow_table(records=records)
+
+
+@router.get("/cowpoke/cow/{cow_id}", response_class=HTMLResponse)
+async def cow(cow_id):
+    with Session(engine) as session:
+        statement = select(Cow).where(Cow.id == cow_id)
+        record = session.exec(statement).one()
+
+    context = {"record": record}
+    template_path = os.path.join(template_dir, "cow_box.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.get("/cowpoke/close-cow", response_class=HTMLResponse)
+async def close_cow(request: Request):
+    html = """<div id="cow_box"></div>"""
+    return HTMLResponse(html)
+
+
+@router.post("/cowpoke/edit-cow", response_class=HTMLResponse)
+async def cow_edit(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        edited_cow = Cow(**form)
+
+    with Session(engine) as session:
+        statement = select(Cow).where(Cow.id == edited_cow.id)
+        cow = session.exec(statement).one()
+
+        cow.tag_id = edited_cow.tag_id
+        cow.description = edited_cow.description
+
+        session.add(cow)
+        session.commit()
+        session.refresh(cow)
+
+    context = {"record": edited_cow}
+    template_path = os.path.join(template_dir, "cow_box.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.delete("/cowpoke/cow/{cow_id}", response_class=HTMLResponse)
+async def cow_delete(cow_id):
+    with Session(engine) as session:
+        statement = select(Cow).where(Cow.id == cow_id)
+        result = session.exec(statement)
+        cow_to_delete = result.one()
+        farm_id = cow_to_delete.farm_id
+
+        session.delete(cow_to_delete)
+        session.commit()
+
+    html = f"""
+    <div id="cow_box" hx-get="/cowpoke/all-cows-for-farm/{farm_id}" hx-target="#cow_table" hx-trigger="load"></div>
+    """
+    return HTMLResponse(html)
+
+
+def generate_cow_table(records: list) -> templates.TemplateResponse:
+    context = {
+        "table_caption": "Cows",
+        "column_names": ["id", "tag_id", "description", "farm_id"],  # Can also use dict(records[0]).keys()
+        "table_data": [dict(record) for record in records],
+        "hxget_stub": "/cowpoke/cow/",
+        "hxtarget": "#cow_box",
+        "tabIDtoselect": "tab12",
     }
     template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)

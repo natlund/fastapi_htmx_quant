@@ -1,71 +1,105 @@
 <div id="farm_view">
-    <h2>Farm {{ record.name }}</h2>
+    <h2>{{ record.name }} Farm</h2>
 
-    <div id="farm_box" class="result-box" style="margin-top: 1em;"
-     hx-get="/cowpoke/all-farms" hx-target="#farm_table" hx-trigger="load">
-        <p>
-            ID:&nbsp;<b>{{ record.id }}</b>&emsp;&emsp;
-            Name:&nbsp;<b>{{ record.name }}</b>&emsp;&emsp;
-        </p>
-        <p>
-            Business Name:&nbsp;<b>{{ record.business_name }}</b>&emsp;&emsp;
-        </p>
-        <p>
-            Post Code:&nbsp;<b>{{ record.postcode }}</b>&emsp;&emsp;
-            Coordinates:&nbsp;<b>{{ record.coordinates }}</b>&emsp;&emsp;
-        </p>
-        <p>
-            Address:&nbsp;<b>{{ record.address }}</b>&emsp;&emsp;
-        </p>
-        <p>
-            Contact Person:&nbsp;<b>{{ record.contact_person }}</b>&emsp;&emsp;
-        </p>
-        <details>
-            <summary class="summary-button">Edit Farm</summary>
-            <form hx-post="/cowpoke/edit-farm" hx-target="#farm_box" hx-swap="outerHTML">
-                <input type="hidden" name="id" value={{ record.id }}>
-                <p>
-                    <label>Name: <input type="text" name="name" style="font-size: 15pt;" size="40" value="{{ record.name}}"></label>
-                </p>
-                <p>
-                    <label>Business Name: <input type="text" name="business_name" style="font-size: 15pt;" size="40" value="{{ record.business_name }}"></label>
-                </p>
-                <p>
-                    <label>Postcode: <input type="text" name="postcode" style="font-size: 15pt;" value="{{ record.postcode }}"></label>
-                    <label>Coordinates: <input type="text" name="coordinates" style="font-size: 15pt;" value="{{ record.coordinates }}"></label>
-                </p>
-                <p>
-                    <label>Address: <input type="text" name="address" style="font-size: 15pt;" size="60" value="{{ record.address }}"></label>
-                </p>
-                <p>
-                    <label>Contact Person: <input type="text" name="contact_person" style="font-size: 15pt;" value="{{ record.contact_person }}"></label>
-                </p>
-                <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
-                    Save
+    <input type="radio" id="tab11" name="tabs-farm" checked>
+    <label for="tab11" class="tab-label">Details</label>
+    <input type="radio" id="tab12" name="tabs-farm">
+    <label for="tab12" class="tab-label">Cows</label>
+    <input type="radio" id="tab13" name="tabs-farm">
+    <label for="tab13" class="tab-label">Technicians</label>
+    <input type="radio" id="tab14" name="tabs-farm">
+    <label for="tab14" class="tab-label">Bulls</label>
+
+    <div class="tab-content" id="content11">
+        <div id="farm_box" class="result-box" style="margin-top: 1em;"
+         hx-get="/cowpoke/all-farms" hx-target="#farm_table" hx-trigger="load">
+            <p>
+                ID:&nbsp;<b>{{ record.id }}</b>&emsp;&emsp;
+                Name:&nbsp;<b>{{ record.name }}</b>
+            </p>
+            <p>
+                Business Name:&nbsp;<b>{{ record.business_name }}</b>&emsp;&emsp;
+            </p>
+            <p>
+                Post Code:&nbsp;<b>{{ record.postcode }}</b>&emsp;&emsp;
+                Coordinates:&nbsp;<b>{{ record.coordinates }}</b>&emsp;&emsp;
+            </p>
+            <p>
+                Address:&nbsp;<b>{{ record.address }}</b>&emsp;&emsp;
+            </p>
+            <p>
+                Contact Person:&nbsp;<b>{{ record.contact_person }}</b>&emsp;&emsp;
+            </p>
+            <details>
+                <summary class="summary-button">Edit Farm</summary>
+                <form hx-post="/cowpoke/edit-farm" hx-target="#farm_box" hx-swap="outerHTML">
+                    <input type="hidden" name="id" value={{ record.id }}>
+                    <p>
+                        <label>Name: <input type="text" name="name" style="font-size: 15pt;" size="40" value="{{ record.name}}"></label>
+                    </p>
+                    <p>
+                        <label>Business Name: <input type="text" name="business_name" style="font-size: 15pt;" size="40" value="{{ record.business_name }}"></label>
+                    </p>
+                    <p>
+                        <label>Postcode: <input type="text" name="postcode" style="font-size: 15pt;" value="{{ record.postcode }}"></label>
+                        <label>Coordinates: <input type="text" name="coordinates" style="font-size: 15pt;" value="{{ record.coordinates }}"></label>
+                    </p>
+                    <p>
+                        <label>Address: <input type="text" name="address" style="font-size: 15pt;" size="60" value="{{ record.address }}"></label>
+                    </p>
+                    <p>
+                        <label>Contact Person: <input type="text" name="contact_person" style="font-size: 15pt;" value="{{ record.contact_person }}"></label>
+                    </p>
+                    <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+                        Save
+                    </button>
+                </form>
+            </details>
+            <div style="display: flex; justify-content: flex-end;  margin-top: 1em; margin-bottom: 1em;">
+                <button class="button-19" role="button" style="width: auto; background-color: red;"
+                        hx-delete={{ ["/cowpoke/farm/", record.id]|join }} hx-target="#farm_box"
+                        hx-confirm="Are you sure you want to delete Farm ID {{ record.id }}?">
+                    Delete ID {{ record.id }}
                 </button>
-            </form>
-        </details>
-        <div style="display: flex; justify-content: flex-end;  margin-top: 1em; margin-bottom: 1em;">
-            <button class="button-19" role="button" style="width: auto; background-color: red;"
-                    hx-delete={{ ["/cowpoke/farm/", record.id]|join }} hx-target="#farm_box"
-                    hx-confirm="Are you sure you want to delete Farm ID {{ record.id }}?">
-                Delete ID {{ record.id }}
-            </button>
+            </div>
         </div>
     </div>
 
-    <section>
-        <input type="radio" id="tab11" name="tabs-farm" checked>
-        <label for="tab11" class="tab-label">Technicians</label>
-        <input type="radio" id="tab12" name="tabs-farm">
-        <label for="tab12" class="tab-label">Bulls</label>
+    <div class="tab-content" id="content12">
+        <p>All Cows on farm {{ record.name }}.</p>
 
-        <div class="tab-content" id="content11">
-            All Technicians that have worked on this farm.
+        <details>
+            <summary class="summary-button">Add Cow</summary>
+            <form hx-put="cowpoke/add-cow" hx-target="#cow_table">
+                <input type="hidden" name="farm_id" value={{ record.id }}>
+                <p>
+                    <label>Tag ID: <input type="text" name="tag_id" style="font-size: 15pt;" value="78"></label>
+                </p>
+                <p>
+                    <label>Description: <input type="text" name="description" style="font-size: 15pt;" size="40" value="Ayatollah"></label>
+                </p>
+                <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+                Save
+                </button>
+            </form>
+        </details>
+        <div style="background-color: lemonchiffon; margin-top: 8pt;">
+            <form>
+                <input type="hidden" name="farm_id" value={{ record.id }}>
+                <input type="search" name="search_string" placeholder="Begin typing to search Cows"
+                       size="35" style="font-size: 15pt;"
+                       hx-post="/cowpoke/search-cows"
+                       hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
+                       hx-target="#cow_table">
+            </form>
         </div>
-        <div class="tab-content" id="content12">
-            All Bulls used by this farm.
-        </div>
-    </section>
-
+        <div id="cow_box"></div>
+        <div id="cow_table"></div>
+    </div>
+    <div class="tab-content" id="content13">
+        All Technicians that have worked on this farm.
+    </div>
+    <div class="tab-content" id="content14">
+        All Bulls used by this farm.
+    </div>
 </div>

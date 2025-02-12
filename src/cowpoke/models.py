@@ -1,6 +1,13 @@
 from sqlmodel import Field, SQLModel
 
 
+class Bull(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    bull_code: str = Field(index=True)
+    bull_name: str
+    notes: str
+
+
 class Technician(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(index=True)
@@ -21,8 +28,8 @@ class Farm(SQLModel, table=True):
     contact_person: str
 
 
-class Bull(SQLModel, table=True):
+class Cow(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    bull_code: str = Field(index=True)
-    bull_name: str
-    notes: str
+    farm_id: int = Field(foreign_key="farm.id")
+    tag_id: str = Field(index=True)
+    description: str
