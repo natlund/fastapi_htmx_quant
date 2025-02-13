@@ -1,3 +1,5 @@
+from datetime import date
+
 from sqlmodel import Field, SQLModel
 
 
@@ -33,3 +35,27 @@ class Cow(SQLModel, table=True):
     farm_id: int = Field(foreign_key="farm.id")
     tag_id: str = Field(index=True)
     description: str
+
+
+class Job(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    job_date: date
+    farm_id: int = Field(foreign_key="farm.id")
+    lead_technician_id: int = Field(foreign_key="technician.id")
+    notes: str
+
+
+class CandidateInsemination(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    job_id: int = Field(foreign_key="job.id")
+    technician_id: int = Field(foreign_key="technician.id")
+    bull_id: int = Field(foreign_key="bull.id")
+    cow_id: int = Field(foreign_key="cow.id")
+
+
+class Insemination(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    job_id: int = Field(foreign_key="job.id")
+    technician_id: int = Field(foreign_key="technician.id")
+    bull_id: int = Field(foreign_key="bull.id")
+    cow_id: int = Field(foreign_key="cow.id")

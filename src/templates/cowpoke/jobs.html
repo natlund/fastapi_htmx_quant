@@ -1,0 +1,100 @@
+<h2>AI Jobs</h2>
+<section>
+    <input type="radio" id="tab1" name="tabs-search-add-job" checked>
+    <label for="tab1" class="tab-label">Search Jobs</label>
+    <input type="radio" id="tab2" name="tabs-search-add-job">
+    <label for="tab2" class="tab-label">Add Job</label>
+    <input type="radio" id="tab3" name="tabs-search-add-job">
+    <label for="tab3" class="tab-label">Job</label>
+
+    <div class="tab-content" id="content1">
+        <div class="form-like">
+            <label for="search-jobs-by-date">Search Jobs by Job Date:</label>
+            <input id="search-jobs-by-date"
+                   type="date"
+                   name="job_date"
+                   hx-post="/cowpoke/search-jobs-by-date"
+                   hx-trigger="input changed"
+                   hx-target="#job_table"
+                   style="font-size: 16pt;">
+        </div>
+        <div class="form-like">
+            <label for="search-jobs-by-farm">Search Jobs by Farm:</label>
+            <select id="search-jobs-by-farm"
+                    name="farm_id"
+                    hx-post="/cowpoke/search-jobs-by-farm"
+                    hx-trigger="input changed"
+                    hx-target="#job_table"
+                    style="font-size: 16pt;">
+                {% for farm in farms %}
+                <option value="{{ farm.id }}">
+                    {{ farm.id }} {{ farm.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-like">
+            <label for="search-jobs-by-technician">Search Jobs by Lead Technician:</label>
+            <select id="search-jobs-by-technician"
+                    name="lead_technician_id"
+                    hx-post="/cowpoke/search-jobs-by-technician"
+                    hx-trigger="input changed"
+                    hx-target="#job_table"
+                    style="font-size: 16pt;">
+                {% for tech in technicians %}
+                    <option value="{{ tech.id }}">
+                        {{ tech.id }} {{ tech.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="tab-content" id="content2">
+        <form hx-put="/cowpoke/add-job" hx-target="#job_table">
+            <p>
+                <label>Job Date: <input type="date" name="job_date" style="font-size: 15pt;"></label>
+            </p>
+            <p>
+                <label for="farm-select" style="font-size: 15pt;">Farm:</label>
+                <select id="farm-select" name="farm_id" style="font-size: 15pt;">
+                    {% for farm in farms %}
+                    <option value="{{ farm.id }}">
+                        {{ farm.id }} {{ farm.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                <label for="lead-technician-select" style="font-size: 15pt;">Lead Technician:</label>
+                <select id="lead-technician-select" name="lead_technician_id" style="font-size: 15pt;">
+                    {% for tech in technicians %}
+                    <option value="{{ tech.id }}">
+                        {{ tech.id }} {{ tech.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                <label>Notes: <input type="text" name="notes" style="font-size: 15pt;" size="60" value="Final Jersey heifers"></label>
+            </p>
+            <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+                Insert Job
+            </button>
+        </form>
+    </div>
+
+    <div class="tab-content" id="content3">
+        <div id="job_view">
+            TO DO.
+        </div>
+    </div>
+</section>
+
+<div style="margin-top: 1em;">
+    <button class="button-19" role="button" hx-get="/cowpoke/all-jobs" hx-target="#job_table">
+        See All Jobs
+    </button>
+</div>
+
+<div id="job_table" style="margin-top: 1em;" hx-get="/cowpoke/all-jobs" hx-trigger="load"></div>

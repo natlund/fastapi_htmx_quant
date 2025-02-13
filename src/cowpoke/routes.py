@@ -1,12 +1,14 @@
+import datetime
 import os.path
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, col, create_engine, or_, select
 
-from src.cowpoke.models import Cow, Bull, Farm, Technician
+from src.cowpoke.models import Bull, CandidateInsemination, Cow, Farm, Insemination, Job, Technician
 
 
 sqlite_filename = "cowpoke.db"
@@ -477,6 +479,126 @@ def generate_cow_table(records: list) -> templates.TemplateResponse:
         "hxget_stub": "/cowpoke/cow/",
         "hxtarget": "#cow_box",
         "tabIDtoselect": "tab12",
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+########################################################################################################################
+
+
+@router.get("/cowpoke/jobs", response_class=HTMLResponse)
+async def jobs(request: Request):
+
+    with Session(engine) as session:
+        farms_stmt = select(Farm)
+        farm_records = session.exec(farms_stmt).all()
+
+        techs_stmt = select(Technician)
+        tech_records = session.exec(techs_stmt).all()
+
+    context = {
+        "farms": [{"id": record.id, "name": record.name} for record in farm_records],
+        "technicians": [{"id": record.id, "name": record.name} for record in tech_records],
+    }
+    template_path = os.path.join(template_dir, "jobs.html")
+    return templates.TemplateResponse(request=request, name=template_path, context=context)
+
+
+class JobPydantic(BaseModel):
+    job_date: datetime.date
+    farm_id: int
+    lead_technician_id: int
+    notes: str
+
+
+@router.put("/cowpoke/add-job", response_class=HTMLResponse)
+async def add_job(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        job_pydantic = JobPydantic(**form)  # Use pydantic to automatically convert string to datetime.date
+        job = Job(
+            job_date = job_pydantic.job_date,
+            farm_id = job_pydantic.farm_id,
+            lead_technician_id = job_pydantic.lead_technician_id,
+            notes = job_pydantic.notes,
+        )
+
+    with Session(engine) as session:
+        session.add(job)
+        session.commit()
+
+        statement = select(Job, Farm, Technician).join(Farm).join(Technician)
+        records = session.exec(statement).all()
+
+    return generate_job_table(records=records)
+
+
+@router.get("/cowpoke/all-jobs", response_class=HTMLResponse)
+async def all_jobs(request: Request):
+    with Session(engine) as session:
+        statement = select(Job, Farm, Technician).join(Farm).join(Technician)
+        records = session.exec(statement).all()
+
+    return generate_job_table(records=records)
+
+
+@router.post("/cowpoke/search-jobs-by-date", response_class=HTMLResponse)
+async def search_jobs_by_date(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        job_date = form.get("job_date")
+
+    with Session(engine) as session:
+        statement = select(Job, Farm, Technician).join(Farm).join(Technician).where(Job.job_date == job_date)
+        records = session.exec(statement).all()
+
+    return generate_job_table(records=records)
+
+
+@router.post("/cowpoke/search-jobs-by-farm", response_class=HTMLResponse)
+async def search_jobs_by_farm(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        farm_id = form.get("farm_id")
+
+    with Session(engine) as session:
+        statement = select(Job, Farm, Technician).join(Farm).join(Technician).where(Job.farm_id == farm_id)
+        records = session.exec(statement).all()
+
+    return generate_job_table(records=records)
+
+
+@router.post("/cowpoke/search-jobs-by-technician", response_class=HTMLResponse)
+async def search_jobs_by_technician(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        lead_tech_id = form.get("lead_technician_id")
+
+    with Session(engine) as session:
+        statement = (select(Job, Farm, Technician).join(Farm).join(Technician)
+                     .where(Job.lead_technician_id == lead_tech_id))
+        records = session.exec(statement).all()
+
+    return generate_job_table(records=records)
+
+
+def generate_job_table(records: list) -> templates.TemplateResponse:
+    rows = []
+    for job, farm, tech in records:
+        rows.append({
+            "id": job.id,
+            "job_date": job.job_date,
+            "farm": farm.name,
+            "lead_tech": tech.name,
+            "notes": job.notes,
+        })
+
+    rows.sort(key=lambda x: x["job_date"], reverse=True)
+
+    context = {
+        "table_caption": "AI Jobs",
+        "column_names": ["id", "job_date", "farm", "lead_tech", "notes"],
+        "table_data": rows,
+        "hxget_stub": "/cowpoke/job/",
+        "hxtarget": "#job_view",
+        "tabIDtoselect": "tab3",
     }
     template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
