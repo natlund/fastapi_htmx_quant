@@ -1,0 +1,59 @@
+<div id="inseminations">
+
+    <table class="cashflow-table">
+    <caption>Planned Inseminations</caption>
+    <thead>
+        <tr>
+            <th></th>
+            {% for col in column_names %}
+            <th>{{ col }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for planned_insem in planned_inseminations %}
+            <tr>
+                <td>
+                    <button hx-put={{ ["/cowpoke/complete-planned-insemination/", planned_insem.id]|join }}
+                            hx-target="#inseminations" hx-swap="outerHTML">
+                    <label><b>Done</b> Cow {{ planned_insem.cow_tag_id }}</label>
+                    </button>
+                </td>
+                {% for col in column_names %}
+                <td>{{ planned_insem[col] }}</td>
+                {% endfor %}
+                <td>
+                    <button hx-delete={{ ["/cowpoke/delete-planned-insemination/", planned_insem.id]|join }}
+                            hx-target="#inseminations" hx-swap="outerHTML">
+                    <label>Delete {{ planned_insem.cow_tag_id }}</label>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+    <div style="margin-top: 1em;"></div>
+
+    <table class="cashflow-table">
+    <caption>Inseminations</caption>
+    <thead>
+        <tr>
+            {% for col in column_names %}
+            <th>{{ col }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for insem in inseminations %}
+            <tr>
+                {% for col in column_names %}
+                <td>{{ insem[col] }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+</div>

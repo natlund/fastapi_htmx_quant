@@ -1,0 +1,48 @@
+<div id="job_view">
+    <h2>Job on {{ job_data.job_date }} at {{ job_data.farm }} Farm</h2>
+
+    <form hx-put="/cowpoke/add-planned-insemination" hx-target="#inseminations">
+        <input type="hidden" name="job_id" value={{ job_data.job_id }}>
+        <input type="hidden" name="farm_id" value={{ job_data.farm_id }}>
+        <p>
+            <label for="technician-select" style="font-size: 15pt;">Technician:</label>
+            <select id="technician-select" name="technician_id" style="font-size: 15pt;">
+                {% for tech in technicians %}
+                <option value="{{ tech.id }}">
+                    {{ tech.id }} {{ tech.name }}
+                </option>
+                {% endfor %}
+            </select>
+            <label for="bull-select" style="font-size: 15pt; margin-left: 2em;">Bull:</label>
+            <select id="bull-select" name="bull_id" style="font-size: 15pt;">
+                {% for bull in bulls %}
+                <option value="{{ bull.id }}">
+                    {{ bull.code }} {{ bull.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="cow-select" style="font-size: 15pt;">Cow:</label>
+            <select id="cow-select" name="cow_id" style="font-size: 15pt;">
+                {% for cow in cows %}
+                <option value="{{ cow.id }}">
+                    {{ cow.tag_id }} {{ cow.description }}
+                </option>
+                {% endfor %}
+            </select>
+            <label for="new-cow" style="font-size: 15pt;" value="">or New Cow Tag ID:</label>
+            <input id="new-cow" type="text" name="new_cow_tag_id">
+        </p>
+        <button class="button-19" role="button" style="display: inline; width: auto; margin-left: 1em;">
+            Add Planned Insemination
+        </button>
+    </form>
+
+    <div id="inseminations"
+         hx-get="/cowpoke/inseminations/{{ job_data.job_id }}"
+         hx-target="#inseminations"
+         hx-trigger="load" hx-swap="outerHTML">
+    </div>
+
+</div>

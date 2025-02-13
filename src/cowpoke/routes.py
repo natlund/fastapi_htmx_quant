@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from sqlmodel import Session, SQLModel, col, create_engine, or_, select
 
-from src.cowpoke.models import Bull, CandidateInsemination, Cow, Farm, Insemination, Job, Technician
+from src.cowpoke.models import Bull, PlannedInsemination, Cow, Farm, Insemination, Job, Technician
 
 
 sqlite_filename = "cowpoke.db"
@@ -577,6 +577,162 @@ async def search_jobs_by_technician(request: Request):
         records = session.exec(statement).all()
 
     return generate_job_table(records=records)
+
+
+@router.get("/cowpoke/job/{job_id}", response_class=HTMLResponse)
+async def job_view(job_id):
+    with Session(engine) as session:
+        techs_stmt = select(Technician)
+        tech_records = session.exec(techs_stmt).all()
+
+        bulls_stmt = select(Bull)
+        bull_records = session.exec(bulls_stmt).all()
+
+        statement = select(Job, Farm, Technician).join(Farm).join(Technician).where(Job.id == job_id)
+        job, farm, technician = session.exec(statement).one()
+
+        cows_stmt = select(Cow).where(Cow.farm_id == job.farm_id)
+        cow_records = session.exec(cows_stmt).all()
+
+    context = {
+        "technicians": [{"id": record.id, "name": record.name} for record in tech_records],
+        "bulls": [{"id": bull.id, "code": bull.bull_code} for bull in bull_records],
+        "cows": [{"id": cow.id, "tag_id": cow.tag_id, "description": cow.description} for cow in cow_records],
+        "job_data": {
+            "job_id": job.id,
+            "job_date": job.job_date,
+            "farm_id": job.farm_id,
+            "farm": farm.name,
+            "lead_technician_id": job.lead_technician_id,
+            "lead_technician": technician.name,
+        }
+    }
+    template_path = os.path.join(template_dir, "job_view.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+class PlannedInseminationForm(BaseModel):
+    job_id: int
+    farm_id: int
+    technician_id: int
+    bull_id: int
+    cow_id: int
+    new_cow_tag_id: str
+
+
+@router.put("/cowpoke/add-planned-insemination", response_class=HTMLResponse)
+async def add_planned_insemination(request: Request):
+    async with request.form() as form:  # form is a FormData object.
+        planned_insem = PlannedInseminationForm(**form)
+
+    print(planned_insem)
+    if planned_insem.new_cow_tag_id == "":
+        cow_id = planned_insem.cow_id
+
+    else:  # Insert new cow first.
+        new_cow = Cow(
+            farm_id = planned_insem.farm_id,
+            tag_id = planned_insem.new_cow_tag_id,
+            description = ""
+        )
+        with Session(engine) as session:
+            session.add(new_cow)
+            session.commit()
+            session.refresh(new_cow)
+            cow_id = new_cow.id
+
+    planned_insemination = PlannedInsemination(
+        job_id = planned_insem.job_id,
+        technician_id = planned_insem.technician_id,
+        bull_id = planned_insem.bull_id,
+        cow_id = cow_id,
+    )
+    with Session(engine) as session:
+        session.add(planned_insemination)
+        session.commit()
+
+    return generate_inseminations(job_id=planned_insem.job_id)
+
+
+@router.get("/cowpoke/inseminations/{job_id}", response_class=HTMLResponse)
+async def get_inseminations_for_job_id(job_id):
+    return generate_inseminations(job_id=job_id)
+
+
+@router.put("/cowpoke/complete-planned-insemination/{planned_insemination_id}", response_class=HTMLResponse)
+async def complete_planned_insemination(planned_insemination_id: int):
+    with Session(engine) as session:
+        statement = select(PlannedInsemination).where(PlannedInsemination.id == planned_insemination_id)
+        planned_insemination = session.exec(statement).one()
+
+        insemination = Insemination(
+            job_id = planned_insemination.job_id,
+            technician_id = planned_insemination.technician_id,
+            bull_id = planned_insemination.bull_id,
+            cow_id = planned_insemination.cow_id,
+        )
+        session.add(insemination)
+        session.delete(planned_insemination)
+        session.commit()
+        session.refresh(insemination)
+
+    return generate_inseminations(job_id=insemination.job_id)
+
+
+@router.delete("/cowpoke/delete-planned-insemination/{planned_insemination_id}", response_class=HTMLResponse)
+async def delete_planned_insemination(planned_insemination_id: int):
+    with Session(engine) as session:
+        statement = select(PlannedInsemination).where(PlannedInsemination.id == planned_insemination_id)
+        planned_insemination = session.exec(statement).one()
+        job_id = planned_insemination.job_id
+
+        session.delete(planned_insemination)
+        session.commit()
+
+    return generate_inseminations(job_id=job_id)
+
+
+def generate_inseminations(job_id: int):
+    with Session(engine) as session:
+        planned_insem_stmt = (select(PlannedInsemination, Cow, Bull, Technician).join(Cow).join(Bull).join(Technician)
+                              .where(PlannedInsemination.job_id == job_id))
+        planned_insem_records = session.exec(planned_insem_stmt).all()
+
+        insem_stmt = (select(Insemination, Cow, Bull, Technician).join(Cow).join(Bull).join(Technician)
+                      .where(Insemination.job_id == job_id))
+        insemination_records = session.exec(insem_stmt).all()
+
+    planned_inseminations = [
+        {
+            "cow_tag_id": cow.tag_id,
+            "status": "Normal",
+            "bull_code": bull.bull_code,
+            "technician": tech.name,
+            "tech_id": tech.id,
+            "id": pi.id,
+        }
+        for pi, cow, bull, tech in planned_insem_records
+    ]
+
+    inseminations = [
+        {
+            "cow_tag_id": cow.tag_id,
+            "status": "Normal",
+            "bull_code": bull.bull_code,
+            "technician": tech.name,
+            "tech_id": tech.id,
+            "id" : insem.id,
+        }
+        for insem, cow, bull, tech in insemination_records
+    ]
+
+    context = {
+        "column_names": ["cow_tag_id", "status", "bull_code", "technician", "tech_id"],
+        "planned_inseminations": planned_inseminations,
+        "inseminations": inseminations,
+    }
+    template_path = os.path.join(template_dir, "inseminations.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
 def generate_job_table(records: list) -> templates.TemplateResponse:

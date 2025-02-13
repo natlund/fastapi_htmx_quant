@@ -45,7 +45,7 @@ class Job(SQLModel, table=True):
     notes: str
 
 
-class CandidateInsemination(SQLModel, table=True):
+class PlannedInsemination(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     job_id: int = Field(foreign_key="job.id")
     technician_id: int = Field(foreign_key="technician.id")
