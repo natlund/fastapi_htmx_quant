@@ -13,7 +13,18 @@
         {% include "navigation_bar.html" %}
     </nav>
     <div class="content">
-        An App to help manage the work of Artificial Insemination (AI).
+        <p>
+            An App to help manage the Artificial Insemination (AI) of dairy cows.  (Apologies to anyone expecting
+            a dubious bovine application of so-called Artificial <em>Intelligence.</em>)
+        </p>
+        <p>
+            While this is a Demo website exploring the use of HTMX, this App solves a real-world business case.
+            It is developed in consultation with an AI business.
+        </p>
+        <p style="background-color: pink; padding-left: 1em;">
+            NOTE: Data entered will not persist.  After 15 minutes of inactivity, the web server will shut down,
+            deleting the database.
+        </p>
 
         <section style="margin-top: 1em;">
             <input type="radio" id="tab-bulls" name="tabs-main" hx-get="cowpoke/bulls" hx-target="#data_content">
