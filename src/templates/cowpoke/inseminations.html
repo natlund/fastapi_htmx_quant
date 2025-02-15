@@ -21,7 +21,17 @@
                     </button>
                 </td>
                 {% for col in column_names %}
-                <td>{{ planned_insem[col] }}</td>
+                    {% if col == "status" %}
+                        {% if planned_insem[col] == "Short Return" %}
+                            <td><span style="color: red; font-weight: bold;">{{ planned_insem[col] }}</span></td>
+                        {% elif planned_insem[col] == "Normal" %}
+                            <td><span style="color: green;">{{ planned_insem[col] }}</span></td>
+                        {% else %}
+                            <td>{{ planned_insem[col] }}</td>
+                        {% endif %}
+                    {% else %}
+                    <td>{{ planned_insem[col] }}</td>
+                    {% endif %}
                 {% endfor %}
                 <td>
                     <button hx-delete={{ ["/cowpoke/delete-planned-insemination/", planned_insem.id]|join }}
@@ -49,7 +59,17 @@
         {% for insem in inseminations %}
             <tr>
                 {% for col in column_names %}
-                <td>{{ insem[col] }}</td>
+                    {% if col == "status" %}
+                        {% if insem[col] == "Short Return" %}
+                            <td><span style="color: red; font-weight: bold;">{{ insem[col] }}</span></td>
+                        {% elif insem[col] == "Normal" %}
+                            <td><span style="color: green;">{{ insem[col] }}</span></td>
+                        {% else %}
+                            <td>{{ insem[col] }}</td>
+                        {% endif %}
+                    {% else %}
+                    <td>{{ insem[col] }}</td>
+                    {% endif %}
                 {% endfor %}
             </tr>
         {% endfor %}

@@ -51,6 +51,8 @@ class PlannedInsemination(SQLModel, table=True):
     technician_id: int = Field(foreign_key="technician.id")
     bull_id: int = Field(foreign_key="bull.id")
     cow_id: int = Field(foreign_key="cow.id")
+    days_since_last_insemination: int | None
+    status: str
 
 
 class Insemination(SQLModel, table=True):
@@ -59,3 +61,5 @@ class Insemination(SQLModel, table=True):
     technician_id: int = Field(foreign_key="technician.id")
     bull_id: int = Field(foreign_key="bull.id")
     cow_id: int = Field(foreign_key="cow.id")
+    days_since_last_insemination: int | None
+    status: str

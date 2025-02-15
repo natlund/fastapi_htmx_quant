@@ -3,6 +3,7 @@
 
     <form hx-put="/cowpoke/add-planned-insemination" hx-target="#inseminations">
         <input type="hidden" name="job_id" value={{ job_data.job_id }}>
+        <input type="hidden" name="job_date" value={{ job_data.job_date }}>
         <input type="hidden" name="farm_id" value={{ job_data.farm_id }}>
         <p>
             <label for="technician-select" style="font-size: 15pt;">Technician:</label>

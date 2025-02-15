@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 import os.path
 
 from fastapi import APIRouter, Request
@@ -613,6 +614,7 @@ async def job_view(job_id):
 
 class PlannedInseminationForm(BaseModel):
     job_id: int
+    job_date: datetime.date
     farm_id: int
     technician_id: int
     bull_id: int
@@ -620,14 +622,27 @@ class PlannedInseminationForm(BaseModel):
     new_cow_tag_id: str
 
 
+class ReturnStatus(Enum):
+    first_recorded = "First Recorded"
+    first_of_season = "First Of Season"
+    short_return = "Short Return"
+    normal = "Normal"
+    long_return = "Long Return"
+
+
 @router.put("/cowpoke/add-planned-insemination", response_class=HTMLResponse)
 async def add_planned_insemination(request: Request):
     async with request.form() as form:  # form is a FormData object.
         planned_insem = PlannedInseminationForm(**form)
 
-    print(planned_insem)
     if planned_insem.new_cow_tag_id == "":
         cow_id = planned_insem.cow_id
+
+        status, days_since_last_insemination = calculate_return_status(
+            job_date=planned_insem.job_date,
+            farm_id=planned_insem.farm_id,
+            cow_id=planned_insem.cow_id,
+        )
 
     else:  # Insert new cow first.
         new_cow = Cow(
@@ -641,17 +656,50 @@ async def add_planned_insemination(request: Request):
             session.refresh(new_cow)
             cow_id = new_cow.id
 
+        status = ReturnStatus.first_recorded.value
+        days_since_last_insemination = None
+
     planned_insemination = PlannedInsemination(
         job_id = planned_insem.job_id,
         technician_id = planned_insem.technician_id,
         bull_id = planned_insem.bull_id,
         cow_id = cow_id,
+        days_since_last_insemination = days_since_last_insemination,
+        status = status,
     )
     with Session(engine) as session:
         session.add(planned_insemination)
         session.commit()
 
     return generate_inseminations(job_id=planned_insem.job_id)
+
+
+def calculate_return_status(job_date: datetime.date, farm_id: int, cow_id: int) -> tuple:
+    with Session(engine) as session:
+        statement = (select(Job).join(Insemination)
+                     .where(Insemination.cow_id == cow_id)
+                     .where(Job.farm_id == farm_id))
+        records = session.exec(statement).all()
+
+    if not records:
+        return ReturnStatus.first_recorded.value, None
+
+    insemination_dates = [job.job_date for job in records]
+    insemination_dates.sort(reverse=True)
+    most_recent_insemination = insemination_dates[0]
+
+    days_since_last_insemination = (job_date - most_recent_insemination).days
+
+    if days_since_last_insemination < 24:
+        status = ReturnStatus.short_return.value
+    elif 24 <= days_since_last_insemination <= 28:
+        status = ReturnStatus.normal.value
+    elif 28 < days_since_last_insemination < 180:
+        status = ReturnStatus.long_return.value
+    else:  # 180 < days_since_last_insemination:
+        status = ReturnStatus.first_of_season.value
+
+    return status, days_since_last_insemination
 
 
 @router.get("/cowpoke/inseminations/{job_id}", response_class=HTMLResponse)
@@ -670,6 +718,8 @@ async def complete_planned_insemination(planned_insemination_id: int):
             technician_id = planned_insemination.technician_id,
             bull_id = planned_insemination.bull_id,
             cow_id = planned_insemination.cow_id,
+            days_since_last_insemination = planned_insemination.days_since_last_insemination,
+            status = planned_insemination.status,
         )
         session.add(insemination)
         session.delete(planned_insemination)
@@ -705,10 +755,10 @@ def generate_inseminations(job_id: int):
     planned_inseminations = [
         {
             "cow_tag_id": cow.tag_id,
-            "status": "Normal",
+            "status": pi.status,
+            "days": pi.days_since_last_insemination,
             "bull_code": bull.bull_code,
             "technician": tech.name,
-            "tech_id": tech.id,
             "id": pi.id,
         }
         for pi, cow, bull, tech in planned_insem_records
@@ -717,7 +767,8 @@ def generate_inseminations(job_id: int):
     inseminations = [
         {
             "cow_tag_id": cow.tag_id,
-            "status": "Normal",
+            "status": insem.status,
+            "days": insem.days_since_last_insemination,
             "bull_code": bull.bull_code,
             "technician": tech.name,
             "tech_id": tech.id,
@@ -727,7 +778,7 @@ def generate_inseminations(job_id: int):
     ]
 
     context = {
-        "column_names": ["cow_tag_id", "status", "bull_code", "technician", "tech_id"],
+        "column_names": ["cow_tag_id", "status", "days", "bull_code", "technician"],
         "planned_inseminations": planned_inseminations,
         "inseminations": inseminations,
     }
