@@ -337,5 +337,5 @@ def generate_job_table(records: list) -> templates.TemplateResponse:
         "hxtarget": "#job_view",
         "tabIDtoselect": "tab3",
     }
-    template_path = os.path.join(template_dir, "db_table.html")
+    template_path = os.path.join(template_dir, "db_table_clickable.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)

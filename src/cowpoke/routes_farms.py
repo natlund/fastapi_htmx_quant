@@ -121,7 +121,7 @@ def generate_farm_table(records: list) -> templates.TemplateResponse:
         "hxtarget": "#farm_view",
         "tabIDtoselect": "tab3",
     }
-    template_path = os.path.join(template_dir, "db_table.html")
+    template_path = os.path.join(template_dir, "db_table_clickable.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
@@ -234,5 +234,5 @@ def generate_cow_table(records: list) -> templates.TemplateResponse:
         "hxtarget": "#cow_box",
         "tabIDtoselect": "tab12",
     }
-    template_path = os.path.join(template_dir, "db_table.html")
+    template_path = os.path.join(template_dir, "db_table_clickable.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)

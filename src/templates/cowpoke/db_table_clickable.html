@@ -12,10 +12,15 @@
     <tbody>
         {% for record in table_data %}
             <tr>
-                <td><button hx-get={{ [hxget_stub, record.id]|join }} hx-target={{ hxtarget }} hx-swap="outerHTML">
-                    <label for="{{ tabIDtoselect }}">Select ID {{ record.id }}</label></button></td>
+                <td>
+                    <button hx-get={{ [hxget_stub, record.id]|join }} hx-target={{ hxtarget }} hx-swap="outerHTML">
+                        <label for="{{ tabIDtoselect }}">Select ID {{ record.id }}</label>
+                    </button>
+                </td>
                 {% for col in column_names %}
-                <td>{{ record[col] }}</td>
+                <td>
+                    {{ record[col] }}
+                </td>
                 {% endfor %}
             </tr>
         {% endfor %}
