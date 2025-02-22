@@ -43,10 +43,14 @@
         <label for="tab12" class="tab-label">Technicians</label>
 
         <div class="tab-content" id="content11">
-            All Farms that have used this Bull.
+            <div id="farms-for-bull" hx-get="/cowpoke/farms-for-bull/{{ record.id }}" hx-trigger="load">
+                All Farms that have used this Bull.
+            </div>
         </div>
         <div class="tab-content" id="content12">
-            All Technicians that have inseminated with this Bull
+            <div id="technicians-for-bull" hx-get="/cowpoke/technicians-for-bull/{{ record.id }}" hx-trigger="load">
+                All Technicians that have inseminated with this Bull
+            </div>
         </div>
     </section>
 

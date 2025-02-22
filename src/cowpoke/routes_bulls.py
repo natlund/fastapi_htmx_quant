@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 from sqlmodel import Session, col, select
 
-from src.cowpoke.models import engine, Bull
+from src.cowpoke.models import engine, Bull, Farm, Insemination, Job, Technician
 
 
 templates = Jinja2Templates(directory="templates")
@@ -107,6 +107,48 @@ async def bull_delete(bull_id):
     </div>
     """
     return HTMLResponse(html)
+
+
+@router.get("/cowpoke/farms-for-bull/{bull_id}", response_class=HTMLResponse)
+async def farms_for_bull(bull_id):
+
+    with Session(engine) as session:
+        bull_statement = select(Bull).where(Bull.id == bull_id)
+        bull = session.exec(bull_statement).one()
+
+        statement = (select(Farm).join(Job).join(Insemination)
+                     .where(Insemination.bull_id == bull_id)
+                     .group_by(Farm.id))
+        farm_records = session.exec(statement).all()
+
+    context = {
+        "table_caption": f"Farms That Have Used Bull {bull.bull_code}",
+        "column_names": ["name", "business_name", "contact_person", "postcode"],
+        "table_data": [dict(record) for record in farm_records]
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.get("/cowpoke/technicians-for-bull/{bull_id}", response_class=HTMLResponse)
+async def technicians_for_bull(bull_id):
+
+    with Session(engine) as session:
+        bull_statement = select(Bull).where(Bull.id == bull_id)
+        bull = session.exec(bull_statement).one()
+
+        statement = (select(Technician).join(Job).join(Insemination)
+                     .where(Insemination.bull_id == bull_id)
+                     .group_by(Technician.id))
+        technician_records = session.exec(statement).all()
+
+    context = {
+        "table_caption": f"Technicians That Have Inseminated With Bull {bull.bull_code}",
+        "column_names": ["name", "phone", "email", "postcode"],
+        "table_data": [dict(record) for record in technician_records]
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
 def generate_bull_table(records: list) -> templates.TemplateResponse:
