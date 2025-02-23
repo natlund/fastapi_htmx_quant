@@ -9,6 +9,10 @@
     <label for="tab13" class="tab-label">Technicians</label>
     <input type="radio" id="tab14" name="tabs-farm">
     <label for="tab14" class="tab-label">Bulls</label>
+    <input type="radio" id="tab15" name="tabs-farm">
+    <label for="tab15" class="tab-label">Jobs</label>
+    <input type="radio" id="tab16" name="tabs-farm">
+    <label for="tab16" class="tab-label">Inseminations</label>
 
     <div class="tab-content" id="content11">
         <div id="farm_box" class="result-box" style="margin-top: 1em;"
@@ -104,6 +108,16 @@
     <div class="tab-content" id="content14">
         <div id="bulls-for-farm" hx-get="/cowpoke/bulls-for-farm/{{ record.id }}" hx-trigger="load">
             All Bulls used by this farm.
+        </div>
+    </div>
+    <div class="tab-content" id="content15">
+        <div id="jobs-for-farm" hx-get="/cowpoke/jobs-for-farm/{{ record.id }}" hx-trigger="load">
+            All AI Jobs done on this farm.
+        </div>
+    </div>
+    <div class="tab-content" id="content16">
+        <div id="inseminations-for-farm" hx-get="/cowpoke/inseminations-for-farm/{{ record.id }}" hx-trigger="load">
+            All Inseminations done on this farm.
         </div>
     </div>
 </div>

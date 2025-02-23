@@ -281,3 +281,66 @@ async def bulls_for_farm(farm_id):
     }
     template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.get("/cowpoke/jobs-for-farm/{farm_id}", response_class=HTMLResponse)
+async def jobs_for_farm(farm_id):
+    with Session(engine) as session:
+        farm_statement = select(Farm).where(Farm.id == farm_id)
+        farm = session.exec(farm_statement).one()
+
+        statement = select(Job, Technician).join(Technician).where(Job.farm_id == farm_id)
+        records = session.exec(statement).all()
+
+    rows = []
+    for job, tech in records:
+        rows.append({
+            "id": job.id,
+            "job_date": job.job_date,
+            "lead_technician": tech.name,
+            "notes": job.notes,
+        })
+
+    rows.sort(key=lambda x: x["job_date"], reverse=True)
+
+    context = {
+        "table_caption": f"AI Jobs on farm {farm.name}",
+        "column_names": ["id", "job_date", "lead_technician", "notes"],
+        "table_data": rows,
+    }
+    print(rows)
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.get("/cowpoke/inseminations-for-farm/{farm_id}", response_class=HTMLResponse)
+async def inseminations_for_farm(farm_id):
+    with Session(engine) as session:
+        farm_statement = select(Farm).where(Farm.id == farm_id)
+        farm = session.exec(farm_statement).one()
+
+        statement = (select(Insemination, Cow, Bull, Job, Technician)
+                     .join(Cow).join(Bull).join(Technician, Insemination.technician_id == Technician.id).join(Job)
+                     .where(Job.farm_id == farm_id))
+        records = session.exec(statement).all()
+
+    rows = []
+    for insemination, cow, bull, job, tech in records:
+        rows.append({
+            "job_date": job.job_date,
+            "cow_tag_id": cow.tag_id,
+            "status": insemination.status,
+            "days": insemination.days_since_last_insemination,
+            "bull_code": bull.bull_code,
+            "tech": tech.name,
+        })
+
+    rows.sort(key=lambda x: x["job_date"], reverse=True)
+
+    context = {
+        "table_caption": f"Inseminations on farm {farm.name}",
+        "column_names": ["job_date", "cow_tag_id", "status", "days", "bull_code", "tech"],
+        "table_data": rows,
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)

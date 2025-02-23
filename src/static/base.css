@@ -223,7 +223,9 @@ input[type="radio"]:checked + .tab-label {
 #tab11:checked ~ #content11,
 #tab12:checked ~ #content12,
 #tab13:checked ~ #content13,
-#tab14:checked ~ #content14 {
+#tab14:checked ~ #content14,
+#tab15:checked ~ #content15,
+#tab16:checked ~ #content16 {
     display: block;
 }
 
