@@ -97,9 +97,13 @@
         <div id="cow_table"></div>
     </div>
     <div class="tab-content" id="content13">
-        All Technicians that have worked on this farm.
+        <div id="technicians-for-farm" hx-get="/cowpoke/technicians-for-farm/{{ record.id }}" hx-trigger="load">
+            All Technicians that have worked on this farm.
+        </div>
     </div>
     <div class="tab-content" id="content14">
-        All Bulls used by this farm.
+        <div id="bulls-for-farm" hx-get="/cowpoke/bulls-for-farm/{{ record.id }}" hx-trigger="load">
+            All Bulls used by this farm.
+        </div>
     </div>
 </div>

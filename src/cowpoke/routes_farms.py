@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 from sqlmodel import Session, col, or_, select
 
-from src.cowpoke.models import engine, Cow, Farm
+from src.cowpoke.models import engine, Bull, Cow, Farm, Insemination, Job, Technician
 
 
 templates = Jinja2Templates(directory="templates")
@@ -235,4 +235,49 @@ def generate_cow_table(records: list) -> templates.TemplateResponse:
         "tabIDtoselect": "tab12",
     }
     template_path = os.path.join(template_dir, "db_table_clickable.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+########################################################################################################################
+
+
+@router.get("/cowpoke/technicians-for-farm/{farm_id}", response_class=HTMLResponse)
+async def technicians_for_farm(farm_id):
+    with Session(engine) as session:
+        farm_statement = select(Farm).where(Farm.id == farm_id)
+        farm = session.exec(farm_statement).one()
+
+        statement = (select(Technician).join(Insemination).join(Job).join(Farm)
+                     .where(Farm.id == farm_id)
+                     .group_by(Technician.id))
+
+        technicians = session.exec(statement).all()
+
+    context = {
+        "table_caption": f"Technicians that have worked on farm {farm.name}",
+        "column_names": ["id", "name", "phone", "email", "postcode"],
+        "table_data": [dict(record) for record in technicians],
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.get("/cowpoke/bulls-for-farm/{farm_id}", response_class=HTMLResponse)
+async def bulls_for_farm(farm_id):
+    with Session(engine) as session:
+        farm_statement = select(Farm).where(Farm.id == farm_id)
+        farm = session.exec(farm_statement).one()
+
+        statement = (select(Bull).join(Insemination).join(Job).join(Farm)
+                     .where(Farm.id == farm_id)
+                     .group_by(Bull.id))
+
+        bulls = session.exec(statement).all()
+
+    context = {
+        "table_caption": f"Bulls that have been used on farm {farm.name}",
+        "column_names": ["bull_code", "bull_name", "notes"],
+        "table_data": [dict(record) for record in bulls],
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
     return templates.TemplateResponse(request={}, name=template_path, context=context)
