@@ -6,7 +6,8 @@ from fastapi.templating import Jinja2Templates
 
 from sqlmodel import Session, col, select
 
-from src.cowpoke.models import engine, Technician
+from src.cowpoke.models import engine, Bull, Cow, Farm, Insemination, Job, Technician
+
 
 templates = Jinja2Templates(directory="templates")
 template_dir = "cowpoke"
@@ -109,6 +110,72 @@ async def technician_delete(technician_id):
     </div>
     """
     return HTMLResponse(html)
+
+
+@router.get("/cowpoke/jobs-by-technician/{technician_id}", response_class=HTMLResponse)
+async def jobs_by_technician(technician_id):
+
+    with Session(engine) as session:
+        technician_statement = select(Technician).where(Technician.id == technician_id)
+        technician = session.exec(technician_statement).one()
+
+        statement = (select(Job, Farm, Technician).join(Farm).join(Technician)
+                     .where(Job.lead_technician_id == technician_id))
+        records = session.exec(statement).all()
+
+    rows = []
+    for job, farm, tech in records:
+        rows.append({
+            "id": job.id,
+            "job_date": job.job_date,
+            "farm": farm.name,
+            "lead_tech": tech.name,
+            "notes": job.notes,
+        })
+
+    rows.sort(key=lambda x: x["job_date"], reverse=True)
+
+    context = {
+        "table_caption": f"AI Jobs Where Lead Technician Was {technician.name}",
+        "column_names": ["job_date", "farm", "lead_tech", "notes"],
+        "table_data": rows,
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
+
+
+@router.get("/cowpoke/inseminations-by-technician/{technician_id}", response_class=HTMLResponse)
+async def inseminations_by_technician(technician_id):
+
+    with Session(engine) as session:
+        technician_statement = select(Technician).where(Technician.id == technician_id)
+        technician = session.exec(technician_statement).one()
+
+        statement = (select(Insemination, Cow, Bull, Job, Farm)
+                     .join(Cow, Insemination.cow_id == Cow.id).join(Bull).join(Job).join(Farm)
+                     .where(Insemination.technician_id == technician_id))
+        records = session.exec(statement).all()
+
+    rows = []
+    for insemination, cow, bull, job, farm in records:
+        rows.append({
+            "job_date": job.job_date,
+            "farm": farm.name,
+            "cow_tag_id": cow.tag_id,
+            "status": insemination.status,
+            "days": insemination.days_since_last_insemination,
+            "bull_code": bull.bull_code,
+        })
+
+    rows.sort(key=lambda x: x["job_date"], reverse=True)
+
+    context = {
+        "table_caption": f"Inseminations Where Technician Was {technician.name}",
+        "column_names": ["job_date", "farm", "cow_tag_id", "status", "days", "bull_code"],
+        "table_data": rows,
+    }
+    template_path = os.path.join(template_dir, "db_table.html")
+    return templates.TemplateResponse(request={}, name=template_path, context=context)
 
 
 def generate_technician_table(records: list) -> templates.TemplateResponse:

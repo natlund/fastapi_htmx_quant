@@ -56,10 +56,14 @@
         <label for="tab12" class="tab-label">Inseminations</label>
 
         <div class="tab-content" id="content11">
-            All Jobs done by this Technician.
+            <div id="jobs-by-technician" hx-get="/cowpoke/jobs-by-technician/{{ record.id }}" hx-trigger="load">
+                All Jobs done by this Technician.
+            </div>
         </div>
         <div class="tab-content" id="content12">
-            All Inseminations done by this Technician.
+            <div id="inseminations-by-technician" hx-get="/cowpoke/inseminations-by-technician/{{ record.id }}" hx-trigger="load">
+                All Inseminations done by this Technician.
+            </div>
         </div>
     </section>
 
