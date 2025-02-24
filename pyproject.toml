@@ -10,6 +10,7 @@ packages = [{include = "src"}]
 python = "^3.10"
 fastapi = {extras = ["standard"], version = "^0.115.6"}
 sqlmodel = "*"
+alembic = "*"
 
 [build-system]
 requires = ["poetry-core"]
