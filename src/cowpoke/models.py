@@ -1,6 +1,25 @@
 from datetime import date
 
 from sqlmodel import Field, SQLModel
+"""
+The SQLModel base class has a class attribute 'metadata'.
+When a class inheriting from SQLModel is created (eg. Bull), it is registered in SQLModel.metadata
+SQLModel.metadata can then be used to programmatically create the tables in the database.
+Eg:
+    SQLModel.metadata.create_all(engine)
+
+Note that the model classes must be created *before* SLQModel.metadata is used to create tables in the database.
+(Otherwise, the models will not be registered in SQLModel.metadata.)
+In practice, this means that this 'models.py' file must be imported before SQLModel.metadata is used.
+To guarantee that SQLModel.metadata is correctly populated, import SQLModel *from* this file 'models.py'.
+Eg:
+    from src.cowpoke import models
+    models.SQLModel.metadata.create_all(engine)
+
+Or for Alembic migrations, have the following in env.py:
+    from src.cowpoke import models
+    target_metadata = models.SQLModel.metadata
+"""
 
 
 class Bull(SQLModel, table=True):
