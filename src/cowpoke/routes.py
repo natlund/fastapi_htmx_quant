@@ -6,7 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 from sqlmodel import SQLModel
 
-from src.cowpoke.models import engine
+from src.cowpoke.database_connection import engine
 from src.cowpoke.routes_bulls import router as bulls_router
 from src.cowpoke.routes_farms import router as farms_router
 from src.cowpoke.routes_jobs import router as jobs_router

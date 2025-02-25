@@ -6,7 +6,8 @@ from fastapi.templating import Jinja2Templates
 
 from sqlmodel import Session, col, or_, select
 
-from src.cowpoke.models import engine, Bull, Cow, Farm, Insemination, Job, Technician
+from src.cowpoke.database_connection import engine
+from src.cowpoke.models import Bull, Cow, Farm, Insemination, Job, Technician
 
 
 templates = Jinja2Templates(directory="templates")

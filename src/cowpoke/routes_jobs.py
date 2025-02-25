@@ -9,7 +9,8 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from src.cowpoke.models import engine, Bull, Cow, Farm, Insemination, Job, PlannedInsemination, Technician
+from src.cowpoke.database_connection import engine
+from src.cowpoke.models import Bull, Cow, Farm, Insemination, Job, PlannedInsemination, Technician
 
 
 templates = Jinja2Templates(directory="templates")
