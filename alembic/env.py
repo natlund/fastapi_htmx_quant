@@ -5,6 +5,10 @@ from sqlalchemy import pool
 
 from alembic import context
 
+from src.cowpoke import models
+from src.cowpoke.database_connection import sqlite_url_for_alembic
+
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -18,12 +22,16 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+# target_metadata = None
+target_metadata = models.SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+# Override the 'sqlalchemy.url' set in 'alembic.ini' with the single source of truth in database_connection.py
+config.set_main_option('sqlalchemy.url', sqlite_url_for_alembic)
 
 
 def run_migrations_offline() -> None:
@@ -65,7 +73,10 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            render_as_batch=True,
+            user_module_prefix="sqlmodel.sql.sqltypes.",
         )
 
         with context.begin_transaction():
