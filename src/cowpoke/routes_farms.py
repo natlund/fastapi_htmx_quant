@@ -321,7 +321,9 @@ async def inseminations_for_farm(farm_id):
         farm = session.exec(farm_statement).one()
 
         statement = (select(Insemination, Cow, Bull, Job, Technician)
-                     .join(Cow).join(Bull).join(Technician, Insemination.technician_id == Technician.id).join(Job)
+                     .join(Cow).join(Bull)
+                     .join(Technician, Insemination.technician_id == Technician.id)
+                     .join(Job, Insemination.job_id == Job.id)
                      .where(Job.farm_id == farm_id))
         records = session.exec(statement).all()
 
