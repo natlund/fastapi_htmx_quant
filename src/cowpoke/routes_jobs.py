@@ -171,7 +171,6 @@ async def add_planned_insemination(request: Request):
 
         status, days_since_last_insemination = calculate_return_status(
             job_date=planned_insem.job_date,
-            farm_id=planned_insem.farm_id,
             cow_id=planned_insem.cow_id,
         )
 
@@ -205,11 +204,10 @@ async def add_planned_insemination(request: Request):
     return generate_inseminations(job_id=planned_insem.job_id)
 
 
-def calculate_return_status(job_date: datetime.date, farm_id: int, cow_id: int) -> tuple:
+def calculate_return_status(job_date: datetime.date, cow_id: int) -> tuple:
     with Session(engine) as session:
         statement = (select(Job).join(Insemination)
-                     .where(Insemination.cow_id == cow_id)
-                     .where(Job.farm_id == farm_id))
+                     .where(Insemination.cow_id == cow_id))
         records = session.exec(statement).all()
 
     if not records:
