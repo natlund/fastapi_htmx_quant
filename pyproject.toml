@@ -11,6 +11,12 @@ python = "^3.12"
 fastapi = {extras = ["standard"], version = "^0.115.6"}
 sqlmodel = "*"
 alembic = "*"
+numpy = "*"
+pandas = "*"
+statsmodels ="*"
+matplotlib = "*"
+seaborn = "*"
+yfinance = "*"
 
 [build-system]
 requires = ["poetry-core"]
