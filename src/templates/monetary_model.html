@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monetary Model</title>
+    {% include "styles_and_scripts.html" %}
+</head>
+<body>
+    <header>
+        <h1 class="title">Monetary Model</h1>
+    </header>
+    <nav>
+        {% include "navigation_bar.html" %}
+    </nav>
+    <div class="content">
+        <p>Investigations into building monetary models.</p>
+        <p>This line is to help estimate the width of the main content section.  I think it is 80 characters.</p>
+        <svg width="600" height="100" xmlns="http://www.w3.org/2000/svg">
+            <circle id="circle4" cx="50" cy="50" r="50" style="fill:red;" />
+        </svg>
+        <br/>
+        <input type="button" value="Start" id="startAnimation"/>
+        <input type="button" value="Stop" id="stopAnimation"/>
+
+        <script src="/static/monetary_model.js"></script>
+    </div>
+    <div class="deadspace"></div>
+    <footer>Written with HTMX served by FastAPI.</footer>
+</body>
+</html>

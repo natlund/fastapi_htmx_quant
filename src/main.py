@@ -82,3 +82,8 @@ async def cdmc_calculate(request: Request):
         request=request, name="cdmc_calculation_result.html", context=cdmc_calculation_result
     )
     return cdmc_result_html
+
+
+@app.get("/monetary-model", response_class=HTMLResponse)
+async def monetary_model(request: Request):
+    return templates.TemplateResponse(request=request, name="monetary_model.html")
