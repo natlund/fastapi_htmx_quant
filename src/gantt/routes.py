@@ -31,7 +31,7 @@ async def gantt(request: Request):
 
 
 @router.get("/gantt/task/{task_id}", response_class=HTMLResponse)
-async def gantt(task_id: int):
+async def get_task(task_id: int):
     # with Session(engine) as session:
     #     statement = select(Task).where(Task.id == task_id)
     #     record = session.exec(statement).one()
