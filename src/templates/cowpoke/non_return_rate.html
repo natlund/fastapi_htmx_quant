@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cowpoke</title>
+    {% include "styles_and_scripts.html" %}
+    <style>
+        table th {
+            text-align: center;
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+        table td {text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="title">Non Return Rate</h1>
+    </header>
+    <nav>
+        {% include "navigation_bar.html" %}
+    </nav>
+    <div class="content">
+        <h1>Non Return Rate</h1>
+        <p>Upload a CSV file of inseminations, and the Non Return Rate and other statistics will be calculated.</p>
+        <p>The CSV file should have columns <b>Cow</b>, <b>Mating Date</b>, and <b>Bull</b>.
+            (The order does not matter.  Other columns are allowed to be present.)
+            The date should be in the format like: <b>07 May 24</b>.</p>
+        <p>The uploaded CSV file of inseminations will be augmented with Return status, and sorted by number of
+            returns.
+            The augmented CSV file can be downloaded with the download link below the Return statistics box.</p>
+
+        <div style="background-color: lemonchiffon; margin-bottom: 1em; padding: 1em;">
+            <span style="padding: 1em;">See results using Demo data:</span>
+                <button hx-get="/cowpoke/nrr-demo"  hx-target="#non_return_results">Calculate</button>
+        </div>
+
+        <form id='form' hx-encoding='multipart/form-data'
+              hx-post='/cowpoke/nrr-upload'
+              hx-target="#non_return_results"
+        >
+            <input type='file' name='file'>
+            <button>
+                Upload
+            </button>
+            <progress id='progress' value='0' max='100'></progress>
+        </form>
+        <script>
+            htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+            htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+            });
+        </script>
+
+        <div id="non_return_results" style="margin-top: 1em;"><p>Non Return Rate results will appear here.</p></div>
+
+    </div>
+    <div class="deadspace"></div>
+    <footer>Written with HTMX served by FastAPI.</footer>
+</body>
+</html>

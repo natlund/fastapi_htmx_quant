@@ -14,6 +14,7 @@ from src.cowpoke.routes_bulls import router as bulls_router
 from src.cowpoke.routes_farms import router as farms_router
 from src.cowpoke.routes_jobs import router as jobs_router, calculate_return_status
 from src.cowpoke.routes_technicians import router as technicians_router
+from src.cowpoke.routes_non_return_rates import router as non_return_rate_router
 
 
 templates = Jinja2Templates(directory="templates")
@@ -24,6 +25,7 @@ router.include_router(bulls_router)
 router.include_router(technicians_router)
 router.include_router(farms_router)
 router.include_router(jobs_router)
+router.include_router(non_return_rate_router)
 
 
 @router.on_event("startup")

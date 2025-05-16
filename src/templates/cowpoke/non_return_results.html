@@ -1,0 +1,86 @@
+<div id="non_return_results">
+    <div class="result-box" style="margin-top: 1em;">
+        <h3>Mating Records from {{ first_insemination_date }} to {{ last_insemination_date }}</h3>
+        <p>Total Cows Submitted: <b>{{ total_cows_submitted }}</b></p>
+        <p>Total Inseminations: <b>{{ total_inseminations }}</b></p>
+        <p>Non-Return Inseminations (first mating of cow): <b>{{ first_insems }}</b></p>
+        <p>Eligible Returns: <b>{{ eligible_returns }}</b></p>
+        <p>Eligible Matings: <b>{{ eligible_matings }}</b></p>
+        <p>Non-Return Rate: <b>{{ non_return_rate }}%</b></p>
+        <hr>
+        <p>Total Cows Submitted: {{ total_cows_submitted }}</p>
+        <p>Non-Returned Cows: {{ non_returned_cows }}</p>
+        <p>Non-Returned Cow Rate: {{ non_returned_cow_rate }}%</p>
+        <hr>
+        <p>Total Returns: {{ total_returns }}</p>
+        <p>
+            <table>
+                <thead>
+                <tr><th></th><th>Number</th><th>% of Total</th></tr><th></th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="text-align: left;">First Inseminations</td>
+                    <td>{{ first_insems }}</td><td>{{ first_mating_rate }}%</td><td>("First Mating Rate")</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Total Returns</td>
+                    <td>{{ total_returns }}</td><td>{{ total_return_rate }}%</td><td></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Total Inseminations</td>
+                    <td>{{ total_inseminations }}</td><td>100%</td><td></td>
+                </tr>
+
+                </tbody>
+
+            </table>
+        </p>
+
+        <p>
+        <table>
+            <thead>
+                <tr>
+                    <th></th><th>Number</th><th>% of Total</th><th>% of Returns</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">Short Returns</td><td>{{ short_returns }}</td>
+                    <td>{{ short_returns_pct_total }}%</td><td>{{ short_returns_pct_returns }}%</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Normal Returns</td><td>{{ normal_returns }}</td>
+                    <td>{{ normal_returns_pct_total }}%</td><td>{{ normal_returns_pct_returns }}%</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Long Returns</td><td>{{ long_returns }}</td>
+                    <td>{{ long_returns_pct_total }}%</td><td>{{ long_returns_pct_returns }}%</td>
+                </tr>
+            </tbody>
+        </table>
+        </p>
+        <hr>
+        <p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bull</th><th>Inseminations</th><th>% of Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bull in bull_statistics %}
+                    <tr>
+                        <td style="text-align: left;">{{ bull.bull_name }}</td><td>{{ bull.count }}</td><td>{{ bull.pct }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </p>
+    </div>
+    <div>
+        <p>
+        <a href="/cowpoke/nrr-download" download>Download Mating With Returns CSV File</a>
+        </p>
+    </div>
+</div>
