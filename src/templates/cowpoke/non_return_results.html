@@ -1,65 +1,10 @@
 <div id="non_return_results">
     <div class="result-box" style="margin-top: 1em;">
+        <h2>{{ farm_name }}</h2>
         <h3>Mating Records from {{ first_insemination_date }} to {{ last_insemination_date }}</h3>
+        <p>Herd Size: <b>{{ herd_size }}</b></p>
         <p>Total Cows Submitted: <b>{{ total_cows_submitted }}</b></p>
         <p>Total Inseminations: <b>{{ total_inseminations }}</b></p>
-        <p>Non-Return Inseminations (first mating of cow): <b>{{ first_insems }}</b></p>
-        <p>Eligible Returns: <b>{{ eligible_returns }}</b></p>
-        <p>Eligible Matings: <b>{{ eligible_matings }}</b></p>
-        <p>Non-Return Rate: <b>{{ non_return_rate }}%</b></p>
-        <hr>
-        <p>Total Cows Submitted: {{ total_cows_submitted }}</p>
-        <p>Non-Returned Cows: {{ non_returned_cows }}</p>
-        <p>Non-Returned Cow Rate: {{ non_returned_cow_rate }}%</p>
-        <hr>
-        <p>Total Returns: {{ total_returns }}</p>
-        <p>
-            <table>
-                <thead>
-                <tr><th></th><th>Number</th><th>% of Total</th></tr><th></th>
-                </thead>
-                <tbody>
-                <tr>
-                    <td style="text-align: left;">First Inseminations</td>
-                    <td>{{ first_insems }}</td><td>{{ first_mating_rate }}%</td><td>("First Mating Rate")</td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;">Total Returns</td>
-                    <td>{{ total_returns }}</td><td>{{ total_return_rate }}%</td><td></td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;">Total Inseminations</td>
-                    <td>{{ total_inseminations }}</td><td>100%</td><td></td>
-                </tr>
-
-                </tbody>
-
-            </table>
-        </p>
-
-        <p>
-        <table>
-            <thead>
-                <tr>
-                    <th></th><th>Number</th><th>% of Total</th><th>% of Returns</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="text-align: left;">Short Returns</td><td>{{ short_returns }}</td>
-                    <td>{{ short_returns_pct_total }}%</td><td>{{ short_returns_pct_returns }}%</td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;">Normal Returns</td><td>{{ normal_returns }}</td>
-                    <td>{{ normal_returns_pct_total }}%</td><td>{{ normal_returns_pct_returns }}%</td>
-                </tr>
-                <tr>
-                    <td style="text-align: left;">Long Returns</td><td>{{ long_returns }}</td>
-                    <td>{{ long_returns_pct_total }}%</td><td>{{ long_returns_pct_returns }}%</td>
-                </tr>
-            </tbody>
-        </table>
-        </p>
         <hr>
         <p>
         <table>
@@ -72,6 +17,175 @@
                 {% for bull in bull_statistics %}
                     <tr>
                         <td style="text-align: left;">{{ bull.bull_name }}</td><td>{{ bull.count }}</td><td>{{ bull.pct }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </p>
+        <hr>
+        <p>
+            <table>
+                <thead>
+                    <tr><th></th><th>Cows Submitted</th><th>% of Total</th><th>Target %</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: left;">End of Week 1</td>
+                        <td>{{ cum_insem_stats.week_1_count }}</td>
+                        <td>{{ cum_insem_stats.week_1_cum_pct }}%</td>
+                        <td>30%</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">End of Week 2</td>
+                        <td>{{ cum_insem_stats.week_2_count }}</td>
+                        <td>{{ cum_insem_stats.week_2_cum_pct }}%</td>
+                        <td>60%</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">End of Week 3</td>
+                        <td>{{ cum_insem_stats.week_3_count }}</td>
+                        <td>{{ cum_insem_stats.week_3_cum_pct }}%</td>
+                        <td>90%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </p>
+
+<!--        <p>Non-Return Inseminations (first mating of cow): <b>{{ first_insems }}</b></p>-->
+<!--        <p>Eligible Returns: <b>{{ eligible_returns }}</b></p>-->
+<!--        <p>Eligible Matings: <b>{{ eligible_matings }}</b></p>-->
+<!--        <p>Non-Return Rate: <b>{{ non_return_rate }}%</b></p>-->
+<!--        <hr>-->
+<!--        <p>Total Cows Submitted: {{ total_cows_submitted }}</p>-->
+<!--        <p>Non-Returned Cows: {{ non_returned_cows }}</p>-->
+<!--        <p>Non-Returned Cow Rate: {{ non_returned_cow_rate }}%</p>-->
+        <hr>
+        <h4>Non Return Rates</h4>
+        <p>
+            <table>
+                <thead>
+                    <tr><th></th><th>Six Weeks</th><th>Full Season</th><th>Full Season Unconfirmed</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: left;">Analysis Start Date</td>
+                        <td>{{ nrr.six_weeks_confirmed.start_date }}</td>
+                        <td>{{ nrr.full_season_confirmed.start_date }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.start_date }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Analysis Cut-Off Date</td>
+                        <td>{{ nrr.six_weeks_confirmed.cutoff_date }}</td>
+                        <td>{{ nrr.full_season_confirmed.cutoff_date }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.cutoff_date }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Total Cows</td>
+                        <td>{{ nrr.six_weeks_confirmed.total_cows }}</td>
+                        <td>{{ nrr.full_season_confirmed.total_cows }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.total_cows }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Excluded From Analysis</td>
+                        <td>{{ nrr.six_weeks_confirmed.excluded_from_analysis }}</td>
+                        <td>{{ nrr.full_season_confirmed.excluded_from_analysis }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.excluded_from_analysis }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Eligible Cows</td>
+                        <td><b>{{ nrr.six_weeks_confirmed.eligible_cows }}</b></td>
+                        <td>{{ nrr.full_season_confirmed.eligible_cows }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.eligible_cows }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Non-Returned Cows</td>
+                        <td><b>{{ nrr.six_weeks_confirmed.non_return_cows }}</b></td>
+                        <td>{{ nrr.full_season_confirmed.non_return_cows }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.non_return_cows }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">One Day Return Cows</td>
+                        <td><b>{{ nrr.six_weeks_confirmed.one_day_return_cows }}</b></td>
+                        <td>{{ nrr.full_season_confirmed.one_day_return_cows }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.one_day_return_cows }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Returned Cows</td>
+                        <td>{{ nrr.six_weeks_confirmed.returned_cows }}</td>
+                        <td>{{ nrr.full_season_confirmed.returned_cows }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.returned_cows }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Non Return Rate</td>
+                        <td><b>{{ nrr.six_weeks_confirmed.non_return_rate }}%</b></td>
+                        <td>{{ nrr.full_season_confirmed.non_return_rate }}%</td>
+                        <td>{{ nrr.full_season_unconfirmed.non_return_rate }}%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </p>
+        <hr>
+        <p>Total Returns: {{ rss.total_returns }}</p>
+        <p>
+            <table>
+                <thead>
+                    <tr><th></th><th>Number</th><th>% of Total</th><th></th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: left;">First Inseminations</td>
+                        <td>{{ rss.first_inseminations }}</td><td>{{ rss.first_insemination_rate }}%</td><td>("First Insemination Rate")</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Total Returns</td>
+                        <td>{{ rss.total_returns }}</td><td>{{ rss.total_return_rate }}%</td><td></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">Total Inseminations</td>
+                        <td>{{ rss.total_inseminations }}</td><td>100%</td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </p>
+        <p>
+        <table>
+            <thead>
+                <tr>
+                    <th></th><th>Number</th><th>% of Total</th><th>% of Returns</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">One Day Returns</td><td>{{ rss.one_day_returns }}</td>
+                    <td>{{ rss.one_day_returns_pct_total }}%</td><td>{{ rss.one_day_returns_pct_returns }}%</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Short Returns</td><td>{{ rss.short_returns }}</td>
+                    <td>{{ rss.short_returns_pct_total }}%</td><td>{{ rss.short_returns_pct_returns }}%</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Normal Returns</td><td>{{ rss.normal_returns }}</td>
+                    <td>{{ rss.normal_returns_pct_total }}%</td><td>{{ rss.normal_returns_pct_returns }}%</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Long Returns</td><td>{{ rss.long_returns }}</td>
+                    <td>{{ rss.long_returns_pct_total }}%</td><td>{{ rss.long_returns_pct_returns }}%</td>
+                </tr>
+            </tbody>
+        </table>
+        </p>
+        <hr>
+        <p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Days Elapsed</th><th>Number Of Returns</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data_point in rss.return_days_histogram %}
+                    <tr>
+                        <td style="text-align: center;">{{ data_point[0] }}</td><td>{{ data_point[1] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

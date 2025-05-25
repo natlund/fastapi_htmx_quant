@@ -38,7 +38,12 @@
         <form id='form' hx-encoding='multipart/form-data'
               hx-post='/cowpoke/nrr-upload'
               hx-target="#non_return_results"
+              hx-swap="outerHTML"
         >
+            <p><label>Farm Name: <input type="text" name="farm_name" size="60"></label></p>
+            <p>
+                <label>Herd Size: <input type="number" name="herd_size" id="number"></label>
+            </p>
             <input type='file' name='file'>
             <button>
                 Upload

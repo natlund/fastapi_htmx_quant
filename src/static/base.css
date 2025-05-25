@@ -128,6 +128,8 @@ form {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+#number { width: 5em; }
+
 .result-box {
     background: Gainsboro;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
