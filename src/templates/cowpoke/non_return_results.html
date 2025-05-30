@@ -1,7 +1,8 @@
 <div id="non_return_results">
     <div class="result-box" style="margin-top: 1em;">
+        <h3>Mating Records</h3>
         <h2>{{ farm_name }}</h2>
-        <h3>Mating Records from {{ first_insemination_date }} to {{ last_insemination_date }}</h3>
+        <h3>{{ first_insemination_date }} to {{ last_insemination_date }}</h3>
         <p>Herd Size: <b>{{ herd_size }}</b></p>
         <p>Total Cows Submitted: <b>{{ total_cows_submitted }}</b></p>
         <p>Total Inseminations: <b>{{ total_inseminations }}</b></p>
@@ -55,7 +56,7 @@
         <p>
             <table>
                 <thead>
-                    <tr><th></th><th>Six Weeks</th><th>Full Season</th><th>Full Season Unconfirmed</th></tr>
+                    <tr><th></th><th>Six Weeks</th><th>Full Season</th><th>Full Season<br>Unconfirmed</th></tr>
                 </thead>
                 <tbody>
                     <tr>
@@ -95,7 +96,7 @@
                         <td>{{ nrr.full_season_unconfirmed.non_return_cows }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">One Day Return Cows</td>
+                        <td style="text-align: left;">One-Day Returned Cows</td>
                         <td><b>{{ nrr.six_weeks_confirmed.one_day_return_cows }}</b></td>
                         <td>{{ nrr.full_season_confirmed.one_day_return_cows }}</td>
                         <td>{{ nrr.full_season_unconfirmed.one_day_return_cows }}</td>
@@ -147,7 +148,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td style="text-align: left;">One Day Returns</td><td>{{ rss.one_day_returns }}</td>
+                    <td style="text-align: left;">One-Day Returns</td><td>{{ rss.one_day_returns }}</td>
                     <td>{{ rss.one_day_returns_pct_total }}%</td><td>{{ rss.one_day_returns_pct_returns }}%</td>
                 </tr>
                 <tr>
@@ -167,21 +168,27 @@
         </p>
         <hr>
         <p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Days Elapsed</th><th>Number Of Returns</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data_point in rss.return_days_histogram %}
-                    <tr>
-                        <td style="text-align: center;">{{ data_point[0] }}</td><td>{{ data_point[1] }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            <figure>
+                <img src="/cowpoke/return_days_bar_chart"
+                     alt="Counts of returns by days elapsed" />
+            </figure>
         </p>
+<!--        <p>-->
+<!--        <table>-->
+<!--            <thead>-->
+<!--                <tr>-->
+<!--                    <th>Days Elapsed</th><th>Number Of Returns</th>-->
+<!--                </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--                {% for data_point in return_days_histogram %}-->
+<!--                    <tr>-->
+<!--                        <td style="text-align: center;">{{ data_point[0] }}</td><td>{{ data_point[1] }}</td>-->
+<!--                    </tr>-->
+<!--                {% endfor %}-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--        </p>-->
     </div>
     <div>
         <p>

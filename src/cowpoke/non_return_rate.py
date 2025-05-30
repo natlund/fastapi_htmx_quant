@@ -1,8 +1,12 @@
 import datetime
 from decimal import Decimal
 
+from matplotlib import pyplot as plt
 
-def calculate_non_return_rate_results(input_file_path: str, output_file_path: str) -> dict:
+
+def calculate_non_return_rate_results(
+        input_file_path: str, output_file_path: str, returns_bar_chart_file_path: str
+) -> dict:
     inseminations = _parse_csv_file(file_path=input_file_path)
 
     bull_statistics = calculate_bull_statistics(inseminations)
@@ -72,8 +76,11 @@ def calculate_non_return_rate_results(input_file_path: str, output_file_path: st
     total_cows_submitted = len(cow_dict)
     total_inseminations = len(inseminations)
 
-    return_status_statistics = calculate_return_status_statistics(cow_dict)
+    return_status_statistics = calculate_return_status_statistics(cow_dict=cow_dict)
 
+    return_days_histogram = create_return_days_histogram(  # Writes bar chart file to disk at "temp/cowpoke".
+        cow_dict=cow_dict, bar_chart_filename=returns_bar_chart_file_path
+    )
     cumulative_insemination_statistics = calculate_cumulative_insemination_statistics(cow_dict=cow_dict)
 
     ############################################################################################
@@ -96,6 +103,7 @@ def calculate_non_return_rate_results(input_file_path: str, output_file_path: st
             "six_weeks_confirmed": six_weeks_confirmed_nrr,
         },
         "rss": return_status_statistics,
+        "return_days_histogram": return_days_histogram,
     }
 
 
@@ -177,23 +185,6 @@ def calculate_return_status_statistics(cow_dict: dict) -> dict:
     long_returns_pct_tot = 100 * Decimal(long_returns)/Decimal(total_inseminations)
     long_returns_pct_ret = 100 * Decimal(long_returns)/Decimal(total_returns)
 
-
-    return_days_histogram = dict()
-    for cow, data in cow_dict.items():
-        for insem in data["inseminations"]:
-            days_elapsed_str = insem[3]
-            try:
-                days_elapsed = int(days_elapsed_str)
-            except ValueError:
-                continue
-            if days_elapsed not in return_days_histogram:
-                return_days_histogram[days_elapsed] = 1
-            else:
-                return_days_histogram[days_elapsed] += 1
-
-    return_days_histogram_list = [(days, count) for days, count in return_days_histogram.items()]
-    return_days_histogram_list.sort(key=lambda x: x[0])
-
     return {
         "total_inseminations": total_inseminations,
         "first_inseminations": first_inseminations,
@@ -212,8 +203,60 @@ def calculate_return_status_statistics(cow_dict: dict) -> dict:
         "long_returns": long_returns,
         "long_returns_pct_total": f"{long_returns_pct_tot:.1f}",
         "long_returns_pct_returns": f"{long_returns_pct_ret:.1f}",
-        "return_days_histogram": return_days_histogram_list,
     }
+
+
+def create_return_days_histogram(cow_dict: dict, bar_chart_filename: str) -> list:
+
+    return_days_histogram = dict()
+
+    for cow, data in cow_dict.items():
+        for insem in data["inseminations"]:
+            days_elapsed_str = insem[3]
+            try:
+                days_elapsed = int(days_elapsed_str)
+            except ValueError:
+                continue
+            if days_elapsed not in return_days_histogram:
+                return_days_histogram[days_elapsed] = 1
+            else:
+                return_days_histogram[days_elapsed] += 1
+
+    return_days_histogram_list = [(days, count) for days, count in return_days_histogram.items()]
+    return_days_histogram_list.sort(key=lambda x: x[0])
+
+    ########################################################################
+    # Create Bar Chart of Counts of Returns by Days Elapsed.
+
+    days = [day for (day, count) in return_days_histogram_list]
+    counts = [count for (day, count) in return_days_histogram_list]
+
+    num_bars_short = len([day for (day, count) in return_days_histogram_list if day < 18])
+    num_bars_normal = len([day for (day, count) in return_days_histogram_list if 18 <= day <= 24])
+    num_bars_long = len([day for (day, count) in return_days_histogram_list if 24 < day])
+    colours = (["gold" for x in range(num_bars_short)]
+               + ["green" for x in range(num_bars_normal)]
+               + ["blue" for x in range(num_bars_long)])
+
+    plt.bar(days, counts, color=colours, zorder=2)
+
+    plt.xlabel("Days Since Previous Insemination")
+    plt.ylabel("Count")
+    plt.title("Counts of Returns by Days")
+
+    max_days = max(return_days_histogram.keys())
+    x_labels = range(0, max_days+1, 2)
+    plt.xticks(ticks=x_labels, labels=x_labels)
+
+    max_count = max(return_days_histogram.values())
+    y_labels = range(0, max_count+1, 2)
+    plt.yticks(ticks=y_labels, labels=y_labels)
+
+    plt.grid(visible=True, axis='y', zorder=0)
+
+    plt.savefig(bar_chart_filename)
+
+    return return_days_histogram_list
 
 
 def calculate_cumulative_insemination_statistics(cow_dict: dict) -> dict:
@@ -348,6 +391,10 @@ def _parse_csv_file(file_path) -> list:
 
 
 if __name__ == "__main__":
-    result = calculate_non_return_rate("../temp/cowpoke/nrr_data.csv")
+    result = calculate_non_return_rate_results(
+        input_file_path="../temp/cowpoke/nrr_data.csv",
+        output_file_path="../temp/cowpoke/nrr_data_output.csv",
+        returns_bar_chart_file_path="../temp/cowpoke/return_days_bar_chart.svg",
+    )
     for k, v in result.items():
         print(k, v)
