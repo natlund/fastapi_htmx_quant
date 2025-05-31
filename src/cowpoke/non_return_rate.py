@@ -1,8 +1,25 @@
 import datetime
 from decimal import Decimal
+from dataclasses import dataclass
 from enum import Enum
 
 from matplotlib import pyplot as plt
+
+
+class ReturnType(Enum):
+    FIRST_INSEMINATION = "First Insemination"
+    ONE_DAY = "1-Day Return"
+    TWO_17_DAY = "2-17 Day Return"
+    NORMAL = "Normal Return"
+    LONG = "Long Return"
+
+
+@dataclass
+class Insemination:
+    insemination_date: datetime.date
+    bull: int
+    return_type: ReturnType
+    days_elapsed: str
 
 
 def calculate_non_return_rate_results(
@@ -30,15 +47,27 @@ def calculate_non_return_rate_results(
         first_insem = insems[0]
         remaining_insems = insems[1:]  # (May be empty.)
         first_insemination_date = first_insem[0]
-        new_insems = [first_insem + (ReturnType.FIRST_INSEMINATION, "")]
+        new_insem = Insemination(
+            insemination_date=first_insem[0],
+            bull=first_insem[1],
+            return_type=ReturnType.FIRST_INSEMINATION,
+            days_elapsed="",
+        )
+        new_insems = [new_insem]
 
         previous_insem = first_insem
         for insem in remaining_insems:
             days_elapsed = (insem[0] - previous_insem[0]).days
             return_status = calculate_return_status(days_elapsed=days_elapsed)
-            new_insems.append(insem + (return_status, days_elapsed))
+            new_insem = Insemination(
+                insemination_date=insem[0],
+                bull=insem[1],
+                return_type=return_status,
+                days_elapsed=days_elapsed,
+            )
+            new_insems.append(new_insem)
 
-        return_statuses = [x[2] for x in new_insems]
+        return_statuses = [x.return_type for x in new_insems]
         has_one_day_return = True if ReturnType.ONE_DAY in return_statuses else False
         has_two_17_day_return = True if ReturnType.TWO_17_DAY in return_statuses else False
         has_long_return = True if ReturnType.LONG in return_statuses else False
@@ -160,16 +189,15 @@ def calculate_return_status_statistics(cow_dict: dict) -> dict:
     for cow, data in cow_dict.items():
         for insem in data["inseminations"]:
             total_inseminations += 1
-            return_type = insem[2]
-            if return_type == ReturnType.FIRST_INSEMINATION:
+            if insem.return_type == ReturnType.FIRST_INSEMINATION:
                 first_inseminations += 1
-            elif return_type == ReturnType.ONE_DAY:
+            elif insem.return_type == ReturnType.ONE_DAY:
                 one_day_returns += 1
-            elif return_type == ReturnType.TWO_17_DAY:
+            elif insem.return_type == ReturnType.TWO_17_DAY:
                 two_17_day_returns += 1
-            elif return_type == ReturnType.NORMAL:
+            elif insem.return_type == ReturnType.NORMAL:
                 normal_returns += 1
-            elif return_type == ReturnType.LONG:
+            elif insem.return_type == ReturnType.LONG:
                 long_returns += 1
 
     total_returns = one_day_returns + two_17_day_returns + normal_returns + long_returns
@@ -213,9 +241,8 @@ def create_return_days_histogram(cow_dict: dict, bar_chart_filename: str) -> lis
 
     for cow, data in cow_dict.items():
         for insem in data["inseminations"]:
-            days_elapsed_str = insem[3]
             try:
-                days_elapsed = int(days_elapsed_str)
+                days_elapsed = int(insem.days_elapsed)
             except ValueError:
                 continue
             if days_elapsed not in return_days_histogram:
@@ -296,14 +323,6 @@ def calculate_cumulative_insemination_statistics(cow_dict: dict) -> dict:
     }
 
 
-class ReturnType(Enum):
-    FIRST_INSEMINATION = "First Insemination"
-    ONE_DAY = "1-Day Return"
-    TWO_17_DAY = "2-17 Day Return"
-    NORMAL = "Normal Return"
-    LONG = "Long Return"
-
-
 def calculate_return_status(days_elapsed: int) -> ReturnType:
     if days_elapsed < 1:
         return ReturnType.FIRST_INSEMINATION
@@ -364,10 +383,10 @@ def generate_augmented_insemination_file(cow_dict: dict, output_file_path: str):
         for cow_id, num_insems in inseminations_per_cow:
             cow = str(cow_id)
             cow_insems = cow_dict[cow]["inseminations"]
-            for mating_date, bull, rtn, days in cow_insems:
-                date_string = mating_date.strftime("%d-%b-%y")
-                return_type = return_type_map[rtn]
-                line = f"{cow},{date_string},{bull},{return_type},{days}" + "\n"
+            for insem in cow_insems:
+                date_string = insem.insemination_date.strftime("%d-%b-%y")
+                return_type = return_type_map[insem.return_type]
+                line = f"{cow},{date_string},{insem.bull},{return_type},{insem.days_elapsed}" + "\n"
                 g.write(line)
 
 
