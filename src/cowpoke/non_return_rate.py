@@ -356,7 +356,7 @@ def generate_augmented_insemination_file(cow_dict: dict, output_file_path: str):
             for mating_date, bull, rtn, days in cow_insems:
                 date_string = mating_date.strftime("%d-%b-%y")
                 return_type = return_type_map[rtn.strip()]
-                line = f"{cow}, {date_string}, {bull}, {return_type}, {days}" + "\n"
+                line = f"{cow},{date_string},{bull},{return_type},{days}" + "\n"
                 g.write(line)
 
 
