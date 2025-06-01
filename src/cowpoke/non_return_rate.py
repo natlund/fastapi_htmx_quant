@@ -69,6 +69,7 @@ def calculate_non_return_rate_results(
                 days_elapsed=days_elapsed,
             )
             new_insems.append(new_insem)
+            previous_insem = insem  # Bugfix!  This line was missing, causing ALL returns to compare to First Insem.
 
         return_statuses = [x.return_type for x in new_insems]
         has_one_day_return = True if ReturnType.ONE_DAY in return_statuses else False
