@@ -364,6 +364,7 @@ def create_cow_submission_graph(cow_dict: dict, graph_filename: str):
     cows_cumulative = [cum_cows for day, cum_cows, cum_insems in day_cumulative_counts]
     insems_cumulative = [cum_insems for day, cum_cows, cum_insems in day_cumulative_counts]
 
+    plt.cla()
     plt.plot(x_days, insems_cumulative, color="green", label="Inseminations")
     plt.plot(x_days, cows_cumulative, color="blue", label="Cow Submissions")
     plt.legend()
