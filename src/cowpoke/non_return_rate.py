@@ -23,7 +23,10 @@ class Insemination:
 
 
 def calculate_non_return_rate_results(
-        input_file_path: str, output_file_path: str, returns_bar_chart_file_path: str
+        input_file_path: str,
+        output_file_path: str,
+        returns_bar_chart_file_path: str,
+        cow_submission_graph_file_path: str,
 ) -> dict:
     inseminations = _parse_csv_file(file_path=input_file_path)
 
@@ -105,6 +108,8 @@ def calculate_non_return_rate_results(
 
     total_cows_submitted = len(cow_dict)
     total_inseminations = len(inseminations)
+
+    create_cow_submission_graph(cow_dict=cow_dict, graph_filename=cow_submission_graph_file_path)
 
     return_status_statistics = calculate_return_status_statistics(cow_dict=cow_dict)
 
@@ -266,6 +271,7 @@ def create_return_days_histogram(cow_dict: dict, bar_chart_filename: str) -> lis
                + ["green" for x in range(num_bars_normal)]
                + ["blue" for x in range(num_bars_long)])
 
+    plt.cla()
     plt.bar(days, counts, color=colours, zorder=2)
 
     plt.xlabel("Days Since Previous Insemination")
@@ -321,6 +327,62 @@ def calculate_cumulative_insemination_statistics(cow_dict: dict) -> dict:
         "week_3_count": week_3_count,
         "week_3_cum_pct": f"{week_3_cum_pct:.1f}",
     }
+
+
+def create_cow_submission_graph(cow_dict: dict, graph_filename: str):
+    date_dict = dict()
+
+    for cow, data in cow_dict.items():
+        first_insem_date = data["first_insemination_date"]
+        if first_insem_date in date_dict:
+            date_dict[first_insem_date]["cows"] += 1
+        else:
+            date_dict[first_insem_date] = {"cows": 1, "inseminations": 0}
+
+        for insem in data["inseminations"]:
+            if insem.insemination_date in date_dict:
+                date_dict[insem.insemination_date]["inseminations"] += 1
+            else:
+                date_dict[insem.insemination_date] = {"inseminations": 1, "cows": 0}
+
+    date_list = [(d, counts) for d, counts in date_dict.items()]
+    date_list.sort(key=lambda x: x[0])
+
+    start_date = date_list[0][0]
+
+    day_cumulative_counts = []
+    cow_cum_count = 0
+    insems_cum_count = 0
+    for d, counts in date_list:
+        day = (d - start_date).days + 1
+        cow_cum_count += counts["cows"]
+        insems_cum_count += counts["inseminations"]
+        day_cumulative_counts.append((day, cow_cum_count, insems_cum_count))
+
+    x_days = [day for day, cum_cows, cum_insems in day_cumulative_counts]
+    cows_cumulative = [cum_cows for day, cum_cows, cum_insems in day_cumulative_counts]
+    insems_cumulative = [cum_insems for day, cum_cows, cum_insems in day_cumulative_counts]
+
+    plt.plot(x_days, insems_cumulative, color="green", label="Inseminations")
+    plt.plot(x_days, cows_cumulative, color="blue", label="Cow Submissions")
+    plt.legend()
+
+    plt.xlabel("Days into Season")
+    plt.ylabel("Cumulative Counts")
+    plt.title("Cow Submissions and Inseminations")
+
+    max_days = x_days[-1]
+    x_labels = range(0, max_days+1, 2)
+    plt.xticks(ticks=x_labels, labels=x_labels)
+
+    max_count = insems_cumulative[-1]
+    y_labels = range(0, max_count+50, 100)
+    plt.yticks(ticks=y_labels, labels=y_labels)
+
+    plt.vlines([7, 14, 21], ymin=0, ymax=max_count, linestyles="dashed")
+    plt.grid(visible=True, axis='y', linestyle="dashed", zorder=0)
+
+    plt.savefig(graph_filename)
 
 
 def calculate_return_status(days_elapsed: int) -> ReturnType:

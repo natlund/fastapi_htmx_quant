@@ -11,6 +11,7 @@ from src.cowpoke.non_return_rate import calculate_non_return_rate_results
 templates = Jinja2Templates(directory="templates")
 template_dir = "cowpoke"
 
+cow_submission_graph_file_name = "temp/cowpoke/cow_submission.svg"
 returns_bar_chart_file_name = "temp/cowpoke/return_days_bar_chart.svg"
 output_file_name = "temp/cowpoke/nrr_data_output.csv"
 
@@ -40,6 +41,7 @@ async def non_return_rate_upload(request: Request):
         input_file_path=input_temp_file_name,
         output_file_path=output_file_name,
         returns_bar_chart_file_path=returns_bar_chart_file_name,
+        cow_submission_graph_file_path=cow_submission_graph_file_name,
     )
     non_return_result["farm_name"] = farm_name
     non_return_result["herd_size"] = herd_size
@@ -50,6 +52,11 @@ async def non_return_rate_upload(request: Request):
 @router.get("/cowpoke/nrr-download")
 async def non_return_rate_download():
     return FileResponse(path=output_file_name, filename="matings_with_returns.csv")
+
+
+@router.get("/cowpoke/cow_submission_graph")
+async def cow_submission_graph_download():
+    return FileResponse(path=cow_submission_graph_file_name)
 
 
 @router.get("/cowpoke/return_days_bar_chart")
@@ -65,6 +72,7 @@ async def non_return_rate_demo(request: Request):
         input_file_path=demo_file_name,
         output_file_path=output_file_name,
         returns_bar_chart_file_path=returns_bar_chart_file_name,
+        cow_submission_graph_file_path=cow_submission_graph_file_name,
     )
     non_return_result["farm_name"] = "Old MacDonald's"
     non_return_result["herd_size"] = 275
