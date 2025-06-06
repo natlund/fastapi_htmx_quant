@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 from dataclasses import dataclass
 from enum import Enum
+from typing import Union
 
 from matplotlib import pyplot as plt
 
@@ -23,6 +24,7 @@ class Insemination:
 
 
 def calculate_non_return_rate_results(
+        herd_size_str,
         input_file_path: str,
         output_file_path: str,
         returns_bar_chart_file_path: str,
@@ -110,6 +112,14 @@ def calculate_non_return_rate_results(
     total_cows_submitted = len(cow_dict)
     total_inseminations = len(inseminations)
 
+    try:
+        herd_size = int(herd_size_str)
+    except ValueError:
+        herd_size = None
+
+    cumulative_insemination_statistics = calculate_cumulative_insemination_statistics(
+        cow_dict=cow_dict, herd_size=herd_size
+    )
     create_cow_submission_graph(cow_dict=cow_dict, graph_filename=cow_submission_graph_file_path)
 
     return_status_statistics = calculate_return_status_statistics(cow_dict=cow_dict)
@@ -117,7 +127,6 @@ def calculate_non_return_rate_results(
     return_days_histogram = create_return_days_histogram(  # Writes bar chart file to disk at "temp/cowpoke".
         cow_dict=cow_dict, bar_chart_filename=returns_bar_chart_file_path
     )
-    cumulative_insemination_statistics = calculate_cumulative_insemination_statistics(cow_dict=cow_dict)
 
     ############################################################################################
 
@@ -294,40 +303,62 @@ def create_return_days_histogram(cow_dict: dict, bar_chart_filename: str) -> lis
     return return_days_histogram_list
 
 
-def calculate_cumulative_insemination_statistics(cow_dict: dict) -> dict:
+def calculate_cumulative_insemination_statistics(cow_dict: dict, herd_size: Union[int, None]) -> dict:
     total_cows_submitted = len(cow_dict)
 
     first_submissions = [(cow, data["first_insemination_date"]) for cow, data in cow_dict.items()]
     first_submissions.sort(key=lambda x: x[1])  # Sort by date.
 
     start_date = first_submissions[0][1]
-    week_1 = start_date + datetime.timedelta(weeks=1)
-    week_2 = start_date + datetime.timedelta(weeks=2)
-    week_3 = start_date + datetime.timedelta(weeks=3)
+    end_week_1 = start_date + datetime.timedelta(weeks=1)
+    end_week_2 = start_date + datetime.timedelta(weeks=2)
+    end_week_3 = start_date + datetime.timedelta(weeks=3)
 
     week_1_count = 0
     week_2_count = 0
     week_3_count = 0
     for cow, insem_date in first_submissions:
-        if insem_date < week_1:
+        if insem_date < end_week_1:
             week_1_count += 1
-        if insem_date < week_2:
+        if end_week_1 <= insem_date < end_week_2:
             week_2_count += 1
-        if insem_date < week_3:
+        if end_week_2 <= insem_date < end_week_3:
             week_3_count += 1
 
-    week_1_cum_pct = 100 * Decimal(week_1_count)/Decimal(total_cows_submitted)
-    week_2_cum_pct = 100 * Decimal(week_2_count)/Decimal(total_cows_submitted)
-    week_3_cum_pct = 100 * Decimal(week_3_count)/Decimal(total_cows_submitted)
+    week_1_cum = week_1_count
+    week_2_cum = week_1_cum + week_2_count
+    week_3_cum = week_2_cum + week_3_count
 
-    return {
+    week_1_cum_pct = 100 * Decimal(week_1_cum)/Decimal(total_cows_submitted)
+    week_2_cum_pct = 100 * Decimal(week_2_cum)/Decimal(total_cows_submitted)
+    week_3_cum_pct = 100 * Decimal(week_3_cum)/Decimal(total_cows_submitted)
+
+    submission_rate_dict = {
         "week_1_count": week_1_count,
-        "week_1_cum_pct": f"{week_1_cum_pct:.1f}",
+        "week_1_cum": week_1_cum,
+        "week_1_cum_pct": f"{week_1_cum_pct:.1f}%",
         "week_2_count": week_2_count,
-        "week_2_cum_pct": f"{week_2_cum_pct:.1f}",
+        "week_2_cum": week_2_cum,
+        "week_2_cum_pct": f"{week_2_cum_pct:.1f}%",
         "week_3_count": week_3_count,
-        "week_3_cum_pct": f"{week_3_cum_pct:.1f}",
+        "week_3_cum": week_3_cum,
+        "week_3_cum_pct": f"{week_3_cum_pct:.1f}%",
     }
+    if herd_size is not None:
+        week_1_pct_herd = 100 * Decimal(week_1_cum) / Decimal(herd_size)
+        week_2_pct_herd = 100 * Decimal(week_2_cum) / Decimal(herd_size)
+        week_3_pct_herd = 100 * Decimal(week_3_cum) / Decimal(herd_size)
+
+        submission_rate_dict["week_1_pct_herd"] = f"{week_1_pct_herd:.1f}%"
+        submission_rate_dict["week_2_pct_herd"] = f"{week_2_pct_herd:.1f}%"
+        submission_rate_dict["week_3_pct_herd"] = f"{week_3_pct_herd:.1f}%"
+
+    else:
+        submission_rate_dict["week_1_pct_herd"] = "N/A"
+        submission_rate_dict["week_2_pct_herd"] = "N/A"
+        submission_rate_dict["week_3_pct_herd"] = "N/A"
+
+    return submission_rate_dict
 
 
 def create_cow_submission_graph(cow_dict: dict, graph_filename: str):

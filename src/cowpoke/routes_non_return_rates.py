@@ -38,6 +38,7 @@ async def non_return_rate_upload(request: Request):
             shutil.copyfileobj(file_object, g)  # Save locally so can be re-opened in 'string' mode.
 
     non_return_result = calculate_non_return_rate_results(
+        herd_size_str=herd_size,
         input_file_path=input_temp_file_name,
         output_file_path=output_file_name,
         returns_bar_chart_file_path=returns_bar_chart_file_name,

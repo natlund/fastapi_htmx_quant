@@ -25,27 +25,34 @@
         </p>
         <hr>
         <p>
+        <h3>Cow Submissions</h3>
             <table>
                 <thead>
-                    <tr><th></th><th>Cows Submitted</th><th>% of Total</th><th>Target %</th></tr>
+                    <tr><th></th><th>Per<br>Week</th><th>Cumulative</th><th>% of<br>Submissions</th><th>% of Herd</th><th>Target %</th></tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="text-align: left;">End of Week 1</td>
+                        <td style="text-align: left;">Week 1</td>
                         <td>{{ cum_insem_stats.week_1_count }}</td>
-                        <td>{{ cum_insem_stats.week_1_cum_pct }}%</td>
+                        <td>{{ cum_insem_stats.week_1_cum }}</td>
+                        <td>{{ cum_insem_stats.week_1_cum_pct }}</td>
+                        <td>{{ cum_insem_stats.week_1_pct_herd }}</td>
                         <td>30%</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">End of Week 2</td>
+                        <td style="text-align: left;">Week 2</td>
                         <td>{{ cum_insem_stats.week_2_count }}</td>
-                        <td>{{ cum_insem_stats.week_2_cum_pct }}%</td>
+                        <td>{{ cum_insem_stats.week_2_cum }}</td>
+                        <td>{{ cum_insem_stats.week_2_cum_pct }}</td>
+                        <td>{{ cum_insem_stats.week_2_pct_herd }}</td>
                         <td>60%</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">End of Week 3</td>
+                        <td style="text-align: left;">Week 3</td>
                         <td>{{ cum_insem_stats.week_3_count }}</td>
-                        <td>{{ cum_insem_stats.week_3_cum_pct }}%</td>
+                        <td>{{ cum_insem_stats.week_3_cum }}</td>
+                        <td>{{ cum_insem_stats.week_3_cum_pct }}</td>
+                        <td>{{ cum_insem_stats.week_3_pct_herd }}</td>
                         <td>90%</td>
                     </tr>
                 </tbody>
