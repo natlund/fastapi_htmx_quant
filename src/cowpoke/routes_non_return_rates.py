@@ -1,3 +1,4 @@
+import datetime
 import os.path
 import shutil
 
@@ -11,7 +12,7 @@ from src.cowpoke.non_return_rate import calculate_non_return_rate_results
 templates = Jinja2Templates(directory="templates")
 template_dir = "cowpoke"
 
-cow_submission_graph_file_name = "temp/cowpoke/cow_submission.svg"
+cow_submission_graph_file_name = "temp/cowpoke/cow_submissions_chart.svg"
 returns_bar_chart_file_name = "temp/cowpoke/return_days_bar_chart.svg"
 output_file_name = "temp/cowpoke/nrr_data_output.csv"
 
@@ -46,6 +47,7 @@ async def non_return_rate_upload(request: Request):
     )
     non_return_result["farm_name"] = farm_name
     non_return_result["herd_size"] = herd_size
+    non_return_result["utcnow"] = str(datetime.datetime.now(datetime.UTC)).replace(" ", "::")
     template_path = os.path.join(template_dir, "non_return_results.html")
     return templates.TemplateResponse(request={}, name=template_path, context=non_return_result)
 
@@ -55,12 +57,12 @@ async def non_return_rate_download():
     return FileResponse(path=output_file_name, filename="matings_with_returns.csv")
 
 
-@router.get("/cowpoke/cow_submission_graph")
+@router.get("/cowpoke/nrr-images/cow-submissions-chart.svg")
 async def cow_submission_graph_download():
     return FileResponse(path=cow_submission_graph_file_name)
 
 
-@router.get("/cowpoke/return_days_bar_chart")
+@router.get("/cowpoke/nrr-images/return-days-bar-chart.svg")
 async def return_days_bar_chart_download():
     return FileResponse(path=returns_bar_chart_file_name)
 
@@ -70,6 +72,7 @@ async def non_return_rate_demo(request: Request):
     demo_file_name = "cowpoke/nrr_data_demo.csv"
 
     non_return_result = calculate_non_return_rate_results(
+        herd_size_str="275",
         input_file_path=demo_file_name,
         output_file_path=output_file_name,
         returns_bar_chart_file_path=returns_bar_chart_file_name,
@@ -77,5 +80,6 @@ async def non_return_rate_demo(request: Request):
     )
     non_return_result["farm_name"] = "Old MacDonald's"
     non_return_result["herd_size"] = 275
+    non_return_result["utcnow"] = str(datetime.datetime.now(datetime.UTC)).replace(" ", "::")
     template_path = os.path.join(template_dir, "non_return_results.html")
     return templates.TemplateResponse(request={}, name=template_path, context=non_return_result)
