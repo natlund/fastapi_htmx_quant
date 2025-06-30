@@ -17,6 +17,7 @@ pandas = "*"
 statsmodels ="*"
 matplotlib = "*"
 seaborn = "*"
+WeasyPrint = "*"
 yfinance = "*"
 
 [build-system]
