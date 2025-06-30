@@ -25,7 +25,7 @@
         </p>
         <hr>
         <p>
-        <h3>Cow Submissions</h3>
+        <h3 style="break-before: page;">Cow Submissions</h3>
             <table>
                 <thead>
                     <tr><th></th><th>Per<br>Week</th><th>Cumulative</th><th>% of<br>Submissions</th><th>% of Herd</th><th>Target %</th></tr>
@@ -59,13 +59,15 @@
             </table>
         </p>
         <p>
-            <figure>
+            <figure id="cow_submissions_chart">
                 <img src="/cowpoke/nrr-images/cow-submissions-chart.svg?utcnow={{ utcnow }}"
                      alt="Cumulative Counts of Cow Submissions and Inseminations" />
             </figure>
         </p>
-        <hr>
-        <h4>Non Return Rates</h4>
+        <div class="delete_div_from_pdf">
+            <hr>
+        </div>
+        <h3 style="break-before: page;">Non Return Rates</h3>
         <p>
             <table>
                 <thead>
@@ -179,17 +181,21 @@
             </tbody>
         </table>
         </p>
-        <hr>
         <p>
-            <figure>
+            <figure id="return_days_bar_chart">
                 <img src="/cowpoke/nrr-images/return-days-bar-chart.svg?utcnow={{ utcnow }}"
                      alt="Counts of returns by days elapsed" />
             </figure>
         </p>
     </div>
-    <div>
+    <div class="delete_div_from_pdf">
         <p>
-        <a href="/cowpoke/nrr-download" download>Download Mating With Returns CSV File</a>
+        <a href="/cowpoke/nrr-download?utcnow={{ utcnow }}" download>Download Mating With Returns CSV File</a>
+        </p>
+        <p>
+        <a href="/cowpoke/mating-report-download?utcnow={{ utcnow }}" download>
+            Generate and Download Mating Report as PDF
+        </a>
         </p>
     </div>
 </div>
