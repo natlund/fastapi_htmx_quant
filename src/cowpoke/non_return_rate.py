@@ -454,12 +454,45 @@ def calculate_bull_statistics(inseminations: list) -> list:
     return bull_list
 
 
+def cow_id_sort_key(s):
+    """
+    Allows 'natural' sorting of Cow IDs where some IDs have a non-numeric prefix.
+    Cow IDs are usually purely numeric (integers) eg. 1234, 78, 456.
+    But some Cow IDs have a non-numeric prefix eg. A123, F567.
+    For completeness, we'll also allow Cow IDs to be purely non-numeric eg. ABC, PQR.
+
+    We want all numeric IDs to be sorted numerically, NOT lexically (alphabetically).
+    And we want non-numeric-prefixed IDs to be sorted lexically by the prefix,
+    then numerically by the numerical part.
+    
+    List [123, A12, A111, 45, xyz] should sort to
+         [45, 123, A12, A111, xyz], whereas lexical sorting gives the unnatural
+         [123, 45, A111, A12, xyz]
+    """
+    if s[0].isdigit():
+        key = (["0", int(s)], s)
+        return key
+
+    prefix = ""
+    numeric = 0  # In case no characters are digits.
+
+    for k, char in enumerate(s):
+        if char.isdigit():
+            numeric = s[k:]
+            break
+        else:
+            prefix += char
+
+    key = ([prefix, int(numeric)], s)
+    return key
+
+
 def generate_augmented_insemination_file(cow_dict: dict, output_file_path: str):
     inseminations_per_cow = []
     for cow, data in cow_dict.items():
-        inseminations_per_cow.append((int(cow), len(data["inseminations"])))
+        inseminations_per_cow.append((cow, len(data["inseminations"])))
 
-    inseminations_per_cow.sort(key=lambda x: x[0])  # Sort by Cow ID.
+    inseminations_per_cow.sort(key=lambda x: cow_id_sort_key(x[0]))  # Sort by Cow ID.
     inseminations_per_cow.sort(key=lambda x: x[1], reverse=True)  # Sort by Num Inseminations.
     # Since sorts are *stable*, records with same Num Inseminations keep their original order (which was sorted).
 
@@ -516,6 +549,13 @@ def _parse_csv_file(file_path) -> list:
 
 
 if __name__ == "__main__":
+
+    cows = ["123", "A12", "A111", "45", "xyz"]
+    cows.sort()
+    print(cows)
+    cows.sort(key=cow_id_sort_key)
+    print(cows)
+
     result = calculate_non_return_rate_results(
         input_file_path="../temp/cowpoke/nrr_data.csv",
         output_file_path="../temp/cowpoke/nrr_data_output.csv",
