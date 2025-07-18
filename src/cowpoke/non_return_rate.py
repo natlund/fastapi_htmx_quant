@@ -117,9 +117,10 @@ def calculate_non_return_rate_results(
     except ValueError:
         herd_size = None
 
-    cumulative_insemination_statistics = calculate_cumulative_insemination_statistics(
+    cumulative_insemination_statistics = calculate_cumulative_insemination_statistics_old(
         cow_dict=cow_dict, herd_size=herd_size
     )
+    submission_statistics = calculate_cumulative_insemination_statistics(cow_dict=cow_dict, herd_size=herd_size)
     create_cow_submission_graph(cow_dict=cow_dict, graph_filename=cow_submission_graph_file_path)
 
     return_status_statistics = calculate_return_status_statistics(cow_dict=cow_dict)
@@ -142,6 +143,7 @@ def calculate_non_return_rate_results(
         "total_cows_submitted": total_cows_submitted,
         "total_inseminations": total_inseminations,
         "cum_insem_stats": cumulative_insemination_statistics,
+        "submission_statistics": submission_statistics,
         "nrr": {
             "full_season_unconfirmed": full_season_unconfirmed_nrr,
             "full_season_confirmed": full_season_confirmed_nrr,
@@ -303,7 +305,67 @@ def create_return_days_histogram(cow_dict: dict, bar_chart_filename: str) -> lis
     return return_days_histogram_list
 
 
-def calculate_cumulative_insemination_statistics(cow_dict: dict, herd_size: Union[int, None]) -> dict:
+def calculate_cumulative_insemination_statistics(cow_dict: dict, herd_size: Union[int, None]) -> list[dict]:
+    target_weekly_pcts = {
+        1: "30%",
+        2: "60%",
+        3: "90%",
+    }
+    total_cows_submitted = len(cow_dict)
+
+    first_submissions = [(cow, data["first_insemination_date"]) for cow, data in cow_dict.items()]
+    first_submissions.sort(key=lambda x: x[1])  # Sort by date.
+
+    start_date = first_submissions[0][1]
+    end_date = first_submissions[-1][1]
+
+    week_start_date = start_date
+    week_end_date = start_date + datetime.timedelta(weeks=1)
+
+    week = 1
+    cumulative_count = 0
+
+    submissions_by_week = []
+
+    while week_start_date <= end_date or week <= 3:
+        week_count = 0
+
+        for cow, insem_date in first_submissions:
+            if week_start_date <= insem_date < week_end_date:
+                week_count += 1
+
+        cumulative_count += week_count
+        cumulative_pct_insems = 100 * Decimal(cumulative_count)/Decimal(total_cows_submitted)
+
+        weekly_data = {
+            "week": week,
+            "week_count": week_count,
+            "cumulative_count": cumulative_count,
+            "cumulative_pct_insems": f"{cumulative_pct_insems:.1f}%",
+        }
+
+        if herd_size is not None:
+            cumulative_pct_herd = 100 * Decimal(cumulative_count)/Decimal(herd_size)
+            weekly_data["cumulative_pct_herd"] = f"{cumulative_pct_herd:.1f}%"
+        else:
+            weekly_data["cumulative_pct_herd"] = "N/A"
+
+        if week <= 3:
+            weekly_data["target_pct"] = target_weekly_pcts[week]
+        else:
+            weekly_data["target_pct"] = ""
+
+        submissions_by_week.append(weekly_data)
+
+        week += 1
+        week_start_date = week_end_date
+        week_end_date += datetime.timedelta(weeks=1)
+
+    print(submissions_by_week)
+    return submissions_by_week
+
+
+def calculate_cumulative_insemination_statistics_old(cow_dict: dict, herd_size: Union[int, None]) -> dict:
     total_cows_submitted = len(cow_dict)
 
     first_submissions = [(cow, data["first_insemination_date"]) for cow, data in cow_dict.items()]
