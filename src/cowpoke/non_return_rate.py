@@ -79,8 +79,11 @@ def calculate_non_return_rate_results(
         has_long_return = True if ReturnType.LONG in return_statuses else False
         no_returns = True if len(new_insems) == 1 else False
 
+        bulls = list({x.bull for x in new_insems})
+
         cow_dict[cow] = {
             "inseminations": new_insems,
+            "bulls": bulls,
             "first_insemination_date": first_insemination_date,
             "no_returns": no_returns,
             "has_one_day_return": has_one_day_return,
@@ -105,6 +108,13 @@ def calculate_non_return_rate_results(
     end_of_period_minus_24 = end_of_period - datetime.timedelta(days=24)
     six_weeks_confirmed_nrr = calculate_non_return_rate(
         cow_dict=cow_dict, start_date=first_date, cut_off_date=end_of_period_minus_24
+    )
+
+    nrr_by_bull = calculate_nrr_by_bull(
+        bull_statistics=bull_statistics,
+        cow_dict=cow_dict,
+        start_date=first_date,
+        cut_off_date=end_of_period_minus_24
     )
     #######################################################################################
     # Generate other statistics.
@@ -147,6 +157,7 @@ def calculate_non_return_rate_results(
         },
         "rss": return_status_statistics,
         "return_days_histogram": return_days_histogram,
+        "nrr_by_bull": nrr_by_bull,
     }
 
 
@@ -189,6 +200,31 @@ def calculate_non_return_rate(cow_dict: dict, start_date: datetime.date, cut_off
             "returned_cows": returned_cows,
             "non_return_rate": f"{non_return_rate:.1f}",
         }
+
+
+def calculate_nrr_by_bull(
+        bull_statistics: list[dict], cow_dict: dict, start_date: datetime.date, cut_off_date: datetime.date
+) -> list[dict]:
+
+    bulls = [x["bull_name"] for x in bull_statistics]
+
+    nrr_by_bull = []
+
+    for bull in bulls:
+        cow_dict_for_bull = dict()
+        for cow, data in cow_dict.items():
+            if bull in data["bulls"]:
+                cow_dict_for_bull[cow] = data
+
+        nrr_for_bull = calculate_non_return_rate(
+            cow_dict=cow_dict_for_bull, start_date=start_date, cut_off_date=cut_off_date
+        )
+        nrr_by_bull.append({
+            "bull_name": bull,
+            "nrr": nrr_for_bull,
+        })
+
+    return nrr_by_bull
 
 
 def calculate_return_status_statistics(cow_dict: dict) -> dict:

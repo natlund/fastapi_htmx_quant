@@ -175,6 +175,42 @@
                      alt="Counts of returns by days elapsed" />
             </figure>
         </p>
+        <div class="delete_div_from_pdf">
+            <hr>
+        </div>
+        <h3 style="break-before: page;">Non Return Rates per Bull</h3>
+        <p style="font-size: 11pt;">
+            The Non-Return Rate (NRR) for a given bull is calculated from the set of cows that have been<br>
+            inseminated at least once by that bull.  A cow may be inseminated by more than one bull.
+        </p>
+        <p>
+        <table>
+            <tbody>
+                <tr><td style="text-align: left;">Analysis Start Date:</td><td>{{ nrr_by_bull[0].nrr.start_date }}</td></tr>
+                <tr><td style="text-align: left;">Analysis Cutoff Date:</td><td>{{ nrr_by_bull[0].nrr.cutoff_date }}</td></tr>
+            </tbody>
+        </table>
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bull</th><th>NRR</th><th>Total<br>Cows</th>
+                    <th>Eligible</th><th>Non-<br>Return</th><th>1-Day<br>Return</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bull in nrr_by_bull %}
+                <tr>
+                    <td style="text-align: left;">{{ bull.bull_name }}</td>
+                    <td>{{ bull.nrr.non_return_rate }}%</td>
+                    <td>{{ bull.nrr.total_cows }}</td>
+                    <td>{{ bull.nrr.eligible_cows }}</td>
+                    <td>{{ bull.nrr.non_return_cows }}</td>
+                    <td>{{ bull.nrr.one_day_return_cows }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     <div class="delete_div_from_pdf">
         <p>
