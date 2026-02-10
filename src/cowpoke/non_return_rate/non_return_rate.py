@@ -596,9 +596,9 @@ if __name__ == "__main__":
     print(cows)
 
     result = calculate_non_return_rate_results(
-        input_file_path="../temp/cowpoke/nrr_data.csv",
-        output_file_path="../temp/cowpoke/nrr_data_output.csv",
-        returns_bar_chart_file_path="../temp/cowpoke/return_days_bar_chart.svg",
+        input_file_path="../../temp/cowpoke/nrr_data.csv",
+        output_file_path="../../temp/cowpoke/nrr_data_output.csv",
+        returns_bar_chart_file_path="../../temp/cowpoke/return_days_bar_chart.svg",
     )
     for k, v in result.items():
         print(k, v)

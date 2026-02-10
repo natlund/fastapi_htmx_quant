@@ -1,5 +1,4 @@
 import datetime
-import os.path
 import shutil
 
 from fastapi import APIRouter, Request
@@ -7,11 +6,10 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from weasyprint import CSS, HTML
 
-from src.cowpoke.non_return_rate import calculate_non_return_rate_results
+from src.cowpoke.non_return_rate.non_return_rate import calculate_non_return_rate_results
 
 
-templates = Jinja2Templates(directory="templates")
-template_dir = "cowpoke"
+templates = Jinja2Templates(directory=["cowpoke/non_return_rate/templates", "templates"])
 
 cow_submissions_chart_file_name = "temp/cowpoke/cow_submissions_chart.svg"
 returns_bar_chart_file_name = "temp/cowpoke/return_days_bar_chart.svg"
@@ -25,8 +23,7 @@ router = APIRouter()
 @router.get("/cowpoke/non-return-rate", response_class=HTMLResponse)
 async def non_return_rate(request: Request):
     context = {}
-    template_path = os.path.join(template_dir, "non_return_rate.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="non_return_rate.html", context=context)
 
 
 @router.post("/cowpoke/nrr-upload", response_class=HTMLResponse)
@@ -52,8 +49,7 @@ async def non_return_rate_upload(request: Request):
     non_return_result["herd_size"] = herd_size
     non_return_result["utcnow"] = str(datetime.datetime.now(datetime.UTC)).replace(" ", "::")
 
-    template_path = os.path.join(template_dir, "non_return_results.html")
-    template_resp = templates.TemplateResponse(request={}, name=template_path, context=non_return_result)
+    template_resp = templates.TemplateResponse(request={}, name="non_return_results.html", context=non_return_result)
 
     generate_report_html(template_response=template_resp)
 
@@ -83,7 +79,7 @@ async def return_days_bar_chart_download():
 
 @router.get("/cowpoke/nrr-demo", response_class=HTMLResponse)
 async def non_return_rate_demo(request: Request):
-    demo_file_name = "cowpoke/nrr_data_demo.csv"
+    demo_file_name = "cowpoke/non_return_rate/nrr_data_demo.csv"
 
     non_return_result = calculate_non_return_rate_results(
         herd_size_str="275",
@@ -96,8 +92,7 @@ async def non_return_rate_demo(request: Request):
     non_return_result["herd_size"] = 275
     non_return_result["utcnow"] = str(datetime.datetime.now(datetime.UTC)).replace(" ", "::")
 
-    template_path = os.path.join(template_dir, "non_return_results.html")
-    template_resp = templates.TemplateResponse(request={}, name=template_path, context=non_return_result)
+    template_resp = templates.TemplateResponse(request={}, name="non_return_results.html", context=non_return_result)
 
     generate_report_html(template_response=template_resp)
 
