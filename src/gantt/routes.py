@@ -1,4 +1,3 @@
-import os.path
 import datetime
 
 from fastapi import APIRouter, Request
@@ -11,8 +10,7 @@ from src.gantt.database_connection import engine
 from src.gantt.models import SQLModel, Task
 
 
-templates = Jinja2Templates(directory="templates")
-template_dir = "gantt"
+templates = Jinja2Templates(directory=["gantt/templates", "templates"])
 
 router = APIRouter()
 
@@ -26,8 +24,7 @@ router = APIRouter()
 
 @router.get("/gantt", response_class=HTMLResponse)
 async def gantt(request: Request):
-    template_path = os.path.join(template_dir, "gantt_home.html")
-    return templates.TemplateResponse(request=request, name=template_path)
+    return templates.TemplateResponse(request=request, name="gantt_home.html")
 
 
 @router.get("/gantt/task/{task_id}", response_class=HTMLResponse)
@@ -43,8 +40,7 @@ async def get_task(task_id: int):
         "description": "Plan for the feature."
     }
     context = {"record": record}
-    template_path = os.path.join(template_dir, "ticket.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="ticket.html", context=context)
 
 
 def insert_example_data_if_db_empty():
