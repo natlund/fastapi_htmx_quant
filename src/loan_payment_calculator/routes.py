@@ -1,5 +1,3 @@
-import os.path
-
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -10,22 +8,19 @@ from src.processing.loan_payment_calculator import create_priced_loan
 from src.loan_payment_calculator.models import LoanSpec
 
 
-templates = Jinja2Templates(directory="templates")
-template_dir = "loan_payment_calculator"
+templates = Jinja2Templates(directory=["loan_payment_calculator/templates", "templates"])
 
 router = APIRouter()
 
 
 @router.get("/loan-payment-calculator", response_class=HTMLResponse)
 async def loan_payment_calculator(request: Request):
-    template_path = os.path.join(template_dir, "loan_payment_calculator.html")
-    return templates.TemplateResponse(request=request, name=template_path)
+    return templates.TemplateResponse(request=request, name="loan_payment_calculator.html")
 
 
 @router.get("/annuity-formula-derivation", response_class=HTMLResponse)
 async def loan_payment_calculator(request: Request):
-    template_path = os.path.join(template_dir, "annuity_formula_derivation.html")
-    return templates.TemplateResponse(request=request, name=template_path)
+    return templates.TemplateResponse(request=request, name="annuity_formula_derivation.html")
 
 
 @router.post(path="/amortise", response_class=HTMLResponse)
@@ -38,7 +33,6 @@ async def amortise(request: Request):
 
     priced_loan = create_priced_loan(loan_spec=loan_spec)
 
-    template_path = os.path.join(template_dir, "cashflow_table.html")
-    cashflow_html = templates.TemplateResponse(request=request, name=template_path, context=priced_loan)
+    cashflow_html = templates.TemplateResponse(request=request, name="cashflow_table.html", context=priced_loan)
 
     return cashflow_html
