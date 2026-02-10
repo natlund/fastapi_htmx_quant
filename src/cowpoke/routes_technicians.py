@@ -1,5 +1,3 @@
-import os.path
-
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -10,16 +8,14 @@ from src.cowpoke.database_connection import engine
 from src.cowpoke.models import Bull, Cow, Farm, Insemination, Job, Technician
 
 
-templates = Jinja2Templates(directory="templates")
-template_dir = "cowpoke"
+templates = Jinja2Templates(directory=["cowpoke/templates", "templates"])
 
 router = APIRouter()
 
 
 @router.get("/cowpoke/technicians", response_class=HTMLResponse)
 async def technicians(request: Request):
-    template_path = os.path.join(template_dir, "technicians.html")
-    return templates.TemplateResponse(request=request, name=template_path)
+    return templates.TemplateResponse(request=request, name="technicians.html")
 
 
 @router.post("/cowpoke/search-technicians", response_class=HTMLResponse)
@@ -65,8 +61,7 @@ async def technician(technician_id):
         record = session.exec(statement).one()
 
     context = {"record": record}
-    template_path = os.path.join(template_dir, "technician_view.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="technician_view.html", context=context)
 
 
 @router.post("/cowpoke/edit-technician", response_class=HTMLResponse)
@@ -90,8 +85,7 @@ async def technician_edit(request: Request):
         session.refresh(techie)
 
     context = {"record": techie}
-    template_path = os.path.join(template_dir, "technician_box.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="technician_box.html", context=context)
 
 
 @router.delete("/cowpoke/technician/{technician_id}", response_class=HTMLResponse)
@@ -141,8 +135,7 @@ async def jobs_by_technician(technician_id):
         "column_names": ["job_date", "farm", "lead_tech", "notes"],
         "table_data": rows,
     }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table.html", context=context)
 
 
 @router.get("/cowpoke/inseminations-by-technician/{technician_id}", response_class=HTMLResponse)
@@ -175,8 +168,7 @@ async def inseminations_by_technician(technician_id):
         "column_names": ["job_date", "farm", "cow_tag_id", "status", "days", "bull_code"],
         "table_data": rows,
     }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table.html", context=context)
 
 
 def generate_technician_table(records: list) -> templates.TemplateResponse:
@@ -188,5 +180,4 @@ def generate_technician_table(records: list) -> templates.TemplateResponse:
         "hxtarget": "#technician_view",
         "tabIDtoselect": "tab3"
     }
-    template_path = os.path.join(template_dir, "db_table_clickable.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table_clickable.html", context=context)

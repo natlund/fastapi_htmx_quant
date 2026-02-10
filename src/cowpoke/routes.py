@@ -1,4 +1,3 @@
-import os.path
 import datetime
 
 from fastapi import APIRouter, Request
@@ -17,8 +16,7 @@ from src.cowpoke.routes_technicians import router as technicians_router
 from src.cowpoke.non_return_rate.routes import router as non_return_rate_router
 
 
-templates = Jinja2Templates(directory="templates")
-template_dir = "cowpoke"
+templates = Jinja2Templates(directory=["cowpoke/templates", "templates"])
 
 router = APIRouter()
 router.include_router(bulls_router)
@@ -37,8 +35,7 @@ def on_startup():
 
 @router.get("/cowpoke", response_class=HTMLResponse)
 async def cowpoke(request: Request):
-    template_path = os.path.join(template_dir, "cowpoke_home.html")
-    return templates.TemplateResponse(request=request, name=template_path)
+    return templates.TemplateResponse(request=request, name="cowpoke_home.html")
 
 
 def insert_example_data_if_db_empty():

@@ -1,5 +1,3 @@
-import os.path
-
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -10,16 +8,14 @@ from src.cowpoke.database_connection import engine
 from src.cowpoke.models import Bull, Cow, Farm, Insemination, Job, Technician
 
 
-templates = Jinja2Templates(directory="templates")
-template_dir = "cowpoke"
+templates = Jinja2Templates(directory=["cowpoke/templates", "templates"])
 
 router = APIRouter()
 
 
 @router.get("/cowpoke/farms", response_class=HTMLResponse)
 async def farms(request: Request):
-    template_path = os.path.join(template_dir, "farms.html")
-    return templates.TemplateResponse(request=request, name=template_path)
+    return templates.TemplateResponse(request=request, name="farms.html")
 
 
 @router.post("/cowpoke/search-farms", response_class=HTMLResponse)
@@ -65,8 +61,7 @@ async def farm(farm_id):
         record = session.exec(statement).one()
 
     context = {"record": record}
-    template_path = os.path.join(template_dir, "farm_view.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="farm_view.html", context=context)
 
 
 @router.post("/cowpoke/edit-farm", response_class=HTMLResponse)
@@ -90,8 +85,7 @@ async def farm_edit(request: Request):
         session.refresh(farm)
 
     context = {"record": edited_farm}
-    template_path = os.path.join(template_dir, "farm_view.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="farm_view.html", context=context)
 
 
 @router.delete("/cowpoke/farm/{farm_id}", response_class=HTMLResponse)
@@ -122,8 +116,7 @@ def generate_farm_table(records: list) -> templates.TemplateResponse:
         "hxtarget": "#farm_view",
         "tabIDtoselect": "tab3",
     }
-    template_path = os.path.join(template_dir, "db_table_clickable.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table_clickable.html", context=context)
 
 
 ########################################################################################################################
@@ -178,8 +171,7 @@ async def cow(cow_id):
         record = session.exec(statement).one()
 
     context = {"record": record}
-    template_path = os.path.join(template_dir, "cow_box.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="cow_box.html", context=context)
 
 
 @router.get("/cowpoke/close-cow", response_class=HTMLResponse)
@@ -205,8 +197,7 @@ async def cow_edit(request: Request):
         session.refresh(cow)
 
     context = {"record": edited_cow}
-    template_path = os.path.join(template_dir, "cow_box.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="cow_box.html", context=context)
 
 
 @router.delete("/cowpoke/cow/{cow_id}", response_class=HTMLResponse)
@@ -235,8 +226,7 @@ def generate_cow_table(records: list) -> templates.TemplateResponse:
         "hxtarget": "#cow_box",
         "tabIDtoselect": "tab12",
     }
-    template_path = os.path.join(template_dir, "db_table_clickable.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table_clickable.html", context=context)
 
 
 ########################################################################################################################
@@ -259,8 +249,7 @@ async def technicians_for_farm(farm_id):
         "column_names": ["id", "name", "phone", "email", "postcode"],
         "table_data": [dict(record) for record in technicians],
     }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table.html", context=context)
 
 
 @router.get("/cowpoke/bulls-for-farm/{farm_id}", response_class=HTMLResponse)
@@ -280,8 +269,7 @@ async def bulls_for_farm(farm_id):
         "column_names": ["bull_code", "bull_name", "notes"],
         "table_data": [dict(record) for record in bulls],
     }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table.html", context=context)
 
 
 @router.get("/cowpoke/jobs-for-farm/{farm_id}", response_class=HTMLResponse)
@@ -310,8 +298,7 @@ async def jobs_for_farm(farm_id):
         "table_data": rows,
     }
     print(rows)
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table.html", context=context)
 
 
 @router.get("/cowpoke/inseminations-for-farm/{farm_id}", response_class=HTMLResponse)
@@ -345,5 +332,4 @@ async def inseminations_for_farm(farm_id):
         "column_names": ["job_date", "cow_tag_id", "status", "days", "bull_code", "tech"],
         "table_data": rows,
     }
-    template_path = os.path.join(template_dir, "db_table.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table.html", context=context)

@@ -1,6 +1,5 @@
 import datetime
 from enum import Enum
-import os.path
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
@@ -13,8 +12,7 @@ from src.cowpoke.database_connection import engine
 from src.cowpoke.models import Bull, Cow, Farm, Insemination, Job, PlannedInsemination, Technician
 
 
-templates = Jinja2Templates(directory="templates")
-template_dir = "cowpoke"
+templates = Jinja2Templates(directory=["cowpoke/templates", "templates"])
 
 router = APIRouter()
 
@@ -33,8 +31,7 @@ async def jobs(request: Request):
         "farms": [{"id": record.id, "name": record.name} for record in farm_records],
         "technicians": [{"id": record.id, "name": record.name} for record in tech_records],
     }
-    template_path = os.path.join(template_dir, "jobs.html")
-    return templates.TemplateResponse(request=request, name=template_path, context=context)
+    return templates.TemplateResponse(request=request, name="jobs.html", context=context)
 
 
 class JobPydantic(BaseModel):
@@ -139,8 +136,7 @@ async def job_view(job_id):
             "lead_technician": technician.name,
         }
     }
-    template_path = os.path.join(template_dir, "job_view.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="job_view.html", context=context)
 
 
 class PlannedInseminationForm(BaseModel):
@@ -311,8 +307,7 @@ def generate_inseminations(job_id: int):
         "planned_inseminations": planned_inseminations,
         "inseminations": inseminations,
     }
-    template_path = os.path.join(template_dir, "inseminations.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="inseminations.html", context=context)
 
 
 def generate_job_table(records: list) -> templates.TemplateResponse:
@@ -336,5 +331,4 @@ def generate_job_table(records: list) -> templates.TemplateResponse:
         "hxtarget": "#job_view",
         "tabIDtoselect": "tab3",
     }
-    template_path = os.path.join(template_dir, "db_table_clickable.html")
-    return templates.TemplateResponse(request={}, name=template_path, context=context)
+    return templates.TemplateResponse(request={}, name="db_table_clickable.html", context=context)
