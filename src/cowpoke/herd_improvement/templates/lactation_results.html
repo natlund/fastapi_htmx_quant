@@ -1,0 +1,31 @@
+<div id="lactation_results">
+    <div class="result-box" style="margin-top: 1em;">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Eartag</th><th>Merit Score</th><th>Rank</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cow in cows.values() %}
+                <tr>
+                    <td>{{ cow.raw_data.eartag }}</td><td>{{ cow.statistics.merit_score }}</td>
+                    <td>{{ cow.statistics.merit_score_rank }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <div class="delete_div_from_pdf">
+        <p>
+        <a href="/cowpoke/lactation-download?utcnow={{ utcnow }}" download>Download Lactation with Calculations CSV File</a>
+        </p>
+<!--        <p>-->
+<!--        <a href="/cowpoke/mating-report-download?utcnow={{ utcnow }}" download>-->
+<!--            Generate and Download Mating Report as PDF-->
+<!--        </a>-->
+<!--        </p>-->
+    </div>
+</div>
