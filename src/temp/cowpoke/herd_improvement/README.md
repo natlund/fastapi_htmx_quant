@@ -1,0 +1,4 @@
+This file exists only to cause the creation of the
+'temp/cowpoke/herd_improvement' directory in which it resides.
+(Because Git does not recognise an empty directory, so the
+empty directory will not be created in the remote repo.)
