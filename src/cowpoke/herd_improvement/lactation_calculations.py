@@ -1,18 +1,27 @@
+import dataclasses
 import datetime
 from decimal import Decimal
+from pathlib import Path
+
+import seaborn as sns
 
 
 def calculate_lactation_results(lactation_file_path: str, output_file_path: str) -> dict:
-    cow_dict, header_fields = _parse_lactation_csv_file(lactation_file_path=lactation_file_path)
+    cow_dict, cow_list, header_fields = _parse_lactation_csv_file(lactation_file_path=lactation_file_path)
 
     augmented_cow_dict = _calculate_statistics(cow_dict=cow_dict)
 
-    _write_output_file(output_file_path=output_file_path, cow_dict=augmented_cow_dict, header_fields=header_fields)
+    _write_output_file(
+        output_file_path=output_file_path, cow_dict=augmented_cow_dict, cow_list=cow_list, header_fields=header_fields
+    )
 
-    import pprint
-    pprint.pprint(augmented_cow_dict)
+    summary_stats = calculate_summary_statistics(cow_dict=augmented_cow_dict)
+    # import pprint
+    # pprint.pprint(summary_stats)
 
-    return augmented_cow_dict
+    create_graphs(cow_dict=augmented_cow_dict)
+
+    return summary_stats
 
 
 def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
@@ -25,6 +34,7 @@ def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
 
         fields_to_parse = fields  # Just copy all fields.
         cow_dict = {}
+        cow_list = []
 
         for row in f:
             row_values = [x.strip() for x in row.split(",")]
@@ -32,6 +42,7 @@ def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
                 continue
 
             eartag = row_values[field_indices["eartag"]]
+            cow_list.append(eartag)  # Keep track of the original ordering of cows in the CSV file.
             raw_lactation_data = {
                 field: row_values[field_indices[field]]
                 for field in fields_to_parse
@@ -39,7 +50,7 @@ def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
             lactation_data = _convert_raw_data(raw_lactation_data)
             cow_dict[eartag] = {"lactation_data": lactation_data}
 
-    return cow_dict, fields
+    return cow_dict, cow_list, fields
 
 
 field_name_lookup = {
@@ -104,7 +115,10 @@ def _calculate_statistics(cow_dict: dict) -> dict:
 
         weight_score, merit_score = _calculate_merit_score(lactation_data=lactation_data)
 
+        group = _calculate_group(lactation_data=lactation_data)
+
         cow_dict[eartag]["statistics"] = {
+            "group": group,
             "fat_percentage": round(fat_percentage, 2),
             "protein_percentage": round(protein_percentage, 2),
             "milk_solids_percentage": round(milk_solids_percentage, 2),
@@ -159,7 +173,20 @@ def _calculate_merit_score(lactation_data: dict) -> tuple[Decimal, Decimal]:
     return weight_score, merit_score
 
 
-def _write_output_file(output_file_path: str, cow_dict: dict, header_fields: list) -> None:
+def _calculate_group(lactation_data: dict) -> str:
+    days_in_milk = lactation_data["lact_len"]
+    lactations = lactation_data["lact_num"]
+
+    if 220 <= days_in_milk <= 305:
+        if 1 <= lactations <= 2:
+            return "2"
+        if 3 <= lactations <= 8:
+            return "1"
+
+    return "3"
+
+
+def _write_output_file(output_file_path: str, cow_dict: dict, cow_list: list, header_fields: list) -> None:
     reverse_field_lookup = {
         val: key for key, val in field_name_lookup.items()
     }
@@ -174,13 +201,14 @@ def _write_output_file(output_file_path: str, cow_dict: dict, header_fields: lis
         "weight_score_rank": "Weight Score Rank",
         "merit_score": "Score",
         "merit_score_rank": "Score Rank",
+        "group": "Group",
     }
     reverse_field_lookup.update(reverse_statistics_field_lookup)
 
     augmented_header_fields = [
         "SCC_rank", "milk_solids_rank", "milk_solids_percentage",
         "fat_percentage", "protein_percentage", "protein_percentage_rank",
-        "weight_score", "weight_score_rank", "merit_score", "merit_score_rank"
+        "group", "weight_score", "weight_score_rank", "merit_score", "merit_score_rank"
     ]
     all_fields = header_fields + augmented_header_fields
 
@@ -189,7 +217,8 @@ def _write_output_file(output_file_path: str, cow_dict: dict, header_fields: lis
     with open(output_file_path, "w") as g:
         g.write(header)
 
-        for cow, data in cow_dict.items():
+        for cow_eartag in cow_list:
+            data = cow_dict[cow_eartag]
             lactation_data = data["lactation_data"]
             existing_row = [str(lactation_data[x]) for x in header_fields]
             statistics = data["statistics"]
@@ -197,6 +226,144 @@ def _write_output_file(output_file_path: str, cow_dict: dict, header_fields: lis
             row = existing_row + stats_row
             line = ",".join(row) + "\n"
             g.write(line)
+
+
+########################################################################################################################
+# Summary Statistics
+
+def calculate_summary_statistics(cow_dict: dict) -> dict:
+    number_of_cows = len(cow_dict)
+    summary_statistics = {
+        "number_of_cows": number_of_cows,
+    }
+
+    cows = []
+    for eartag, data in cow_dict.items():
+        if data["lactation_data"]["lact_num"] in (1, 2):
+            cows.append(data)
+    summary_statistics["one_and_two"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+
+    cows = []
+    for eartag, data in cow_dict.items():
+        lactations = data["lactation_data"]["lact_num"]
+        if 3 <= lactations <= 8:
+            cows.append(data)
+    summary_statistics["three_to_eight"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+
+    cows = []
+    for eartag, data in cow_dict.items():
+        lactations = data["lactation_data"]["lact_num"]
+        if 9 <= lactations:
+            cows.append(data)
+    summary_statistics["nine_plus"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+
+    cows = []
+    for eartag, data in cow_dict.items():
+        cows.append(data)
+    summary_statistics["total"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+
+    cows = []
+    for eartag, data in cow_dict.items():
+        lactations = data["lactation_data"]["lact_num"]
+        if lactations == 1:
+            cows.append(data)
+    summary_statistics["one"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+
+    cows = []
+    for eartag, data in cow_dict.items():
+        lactations = data["lactation_data"]["lact_num"]
+        if lactations == 2:
+            cows.append(data)
+    summary_statistics["two"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+
+    return summary_statistics
+
+
+def calculate_group_data(cow_list: list, herd_size: int) -> dict:
+    # Lactation, No of Cows, % of Herd,
+    # Vol of Milk kg, Avg Vol of Milk,
+    # Milk Solids kg, Ave Milk Solids,
+    # Days in Milk, Ave Weight, Avg Fat %, Avg Protein %
+
+    num_cows = 0
+    milk_vol = 0
+    milk_solids = 0
+    days_in_milk = 0
+    weight = 0
+    fat_pct = 0
+    protein_pct = 0
+
+    for cow in cow_list:
+        lactation_data = cow["lactation_data"]
+        statistics = cow["statistics"]
+        num_cows += 1
+        milk_vol += lactation_data["milk"]
+        milk_solids += lactation_data["milk_solids"]
+        days_in_milk += lactation_data["lact_len"]
+        weight += lactation_data.get("weight", 500)
+        fat_pct += statistics["fat_percentage"]
+        protein_pct += statistics["protein_percentage"]
+
+    return {
+        "num_cows": num_cows,
+        "pct_of_herd": round(100 * Decimal(num_cows) / herd_size),
+        "milk_volume": milk_vol,
+        "avg_milk_volume": round(Decimal(milk_vol) / num_cows),
+        "milk_solids": milk_solids,
+        "avg_milk_solids": round(Decimal(milk_solids) / num_cows),
+        "days_in_milk": round(Decimal(days_in_milk) / num_cows),
+        "avg_weight": round(Decimal(weight) / num_cows),
+        "avg_fat_pct": round(Decimal(fat_pct) / num_cows, 2),
+        "avg_protein_pct": round(Decimal(protein_pct) / num_cows, 2),
+    }
+
+
+@dataclasses.dataclass(frozen=True)
+class FilePaths:
+    src_dir = Path(__file__).parent.parent.parent
+    temp_dir = src_dir.joinpath("temp", "cowpoke", "herd_improvement")
+
+    output_csv = temp_dir.joinpath("lactation_calculations.csv")
+
+    protein_pct_histogram = temp_dir.joinpath("protein_pct_histogram.svg")
+    milk_solids_histogram = temp_dir.joinpath("milk_solids_histogram.svg")
+    scc_histogram = temp_dir.joinpath("scc_histogram.svg")
+    merit_score_histogram = temp_dir.joinpath("merit_score_histogram.svg")
+    cow_age_chart = temp_dir.joinpath("cow_age_chart.svg")
+
+
+def create_graphs(cow_dict: dict) -> dict:
+    protein_percentage = []
+    ave_scc = []
+    milk_solids = []
+    merit_score = []
+    age = []
+
+    for cow, data in cow_dict.items():
+        stats = data["statistics"]
+        lactation_data = data["lactation_data"]
+        protein_percentage.append(stats["protein_percentage"])
+        ave_scc.append(lactation_data["ave_SCC"])
+        milk_solids.append(lactation_data["milk_solids"])
+        merit_score.append(stats["merit_score"])
+        age.append(lactation_data["lact_num"])
+
+    sns.set_theme(style="darkgrid")
+
+    g = sns.displot(data={"Protein %": protein_percentage}, x="Protein %", binwidth=0.1, binrange=[3,5.5], kde=True)
+    g.savefig(FilePaths.protein_pct_histogram)
+
+    g = sns.displot(data={"Milk Solids kg": milk_solids}, x="Milk Solids kg", binwidth=20, binrange=[300,900], kde=True)
+    g.savefig(FilePaths.milk_solids_histogram)
+
+    g = sns.displot(data={"Average SCC": ave_scc}, x="Average SCC", binwidth=50, stat="percent")
+    g.savefig(FilePaths.scc_histogram)
+
+    g = sns.displot(data={"Score": merit_score}, x="Score", binwidth=50, binrange=[0,1800], stat="percent", kde=True)
+    g.savefig(FilePaths.merit_score_histogram)
+
+    g = sns.catplot(data={"Age": age}, x="Age", kind="count", stat="percent")
+    g.savefig(FilePaths.cow_age_chart)
 
 
 if __name__ == "__main__":

@@ -1,23 +1,4 @@
 <div id="lactation_results">
-    <div class="result-box" style="margin-top: 1em;">
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Eartag</th><th>Merit Score</th><th>Rank</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for cow in cows.values() %}
-                <tr>
-                    <td>{{ cow.raw_data.eartag }}</td><td>{{ cow.statistics.merit_score }}</td>
-                    <td>{{ cow.statistics.merit_score_rank }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-    </div>
     <div class="delete_div_from_pdf">
         <p>
         <a href="/cowpoke/lactation-download?utcnow={{ utcnow }}" download>Download Lactation with Calculations CSV File</a>
@@ -27,5 +8,122 @@
 <!--            Generate and Download Mating Report as PDF-->
 <!--        </a>-->
 <!--        </p>-->
+    </div>
+    <div class="result-box" style="margin-top: 1em;">
+        <h3>Lactation Calculations</h3>
+        <h2>{{ farm_name }}</h2>
+        <p>Number Of Cows: {{ stats.number_of_cows }}</p>
+        <table style="font-size: 12pt;">
+            <thead>
+                <tr>
+                    <th>Lactation</th>
+                    <th>No of<br>Cows</th><th>% of<br>Herd</th>
+                    <th>Vol of<br>Milk kg</th><th>Avg Vol<br>of Milk</th>
+                    <th>Milk Solids<br>kg</th><th>Avg Milk<br>Solids</th>
+                    <th>Days in Milk</th><th>Avg of<br>Weight</th>
+                    <th>Avg<br>Fat %</th><th>Avg<br>Protein %</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1 & 2</td>
+                    <td>{{ stats.one_and_two.num_cows }}</td><td>{{ stats.one_and_two.pct_of_herd }}</td>
+                    <td>{{ stats.one_and_two.milk_volume }}</td><td>{{ stats.one_and_two.avg_milk_volume }}</td>
+                    <td>{{ stats.one_and_two.milk_solids }}</td><td>{{ stats.one_and_two.avg_milk_solids }}</td>
+                    <td>{{ stats.one_and_two.days_in_milk }}</td><td>{{ stats.one_and_two.avg_weight }}</td>
+                    <td>{{ stats.one_and_two.avg_fat_pct }}</td><td>{{ stats.one_and_two.avg_protein_pct }}</td>
+                </tr>
+                <tr>
+                    <td>3 to 8</td>
+                    <td>{{ stats.three_to_eight.num_cows }}</td><td>{{ stats.three_to_eight.pct_of_herd }}</td>
+                    <td>{{ stats.three_to_eight.milk_volume }}</td><td>{{ stats.three_to_eight.avg_milk_volume }}</td>
+                    <td>{{ stats.three_to_eight.milk_solids }}</td><td>{{ stats.three_to_eight.avg_milk_solids }}</td>
+                    <td>{{ stats.three_to_eight.days_in_milk }}</td><td>{{ stats.three_to_eight.avg_weight }}</td>
+                    <td>{{ stats.three_to_eight.avg_fat_pct }}</td><td>{{ stats.three_to_eight.avg_protein_pct }}</td>
+                </tr>
+                <tr>
+                    <td>9+</td>
+                    <td>{{ stats.nine_plus.num_cows }}</td><td>{{ stats.nine_plus.pct_of_herd }}</td>
+                    <td>{{ stats.nine_plus.milk_volume }}</td><td>{{ stats.nine_plus.avg_milk_volume }}</td>
+                    <td>{{ stats.nine_plus.milk_solids }}</td><td>{{ stats.nine_plus.avg_milk_solids }}</td>
+                    <td>{{ stats.nine_plus.days_in_milk }}</td><td>{{ stats.nine_plus.avg_weight }}</td>
+                    <td>{{ stats.nine_plus.avg_fat_pct }}</td><td>{{ stats.nine_plus.avg_protein_pct }}</td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td>{{ stats.total.num_cows }}</td><td>{{ stats.total.pct_of_herd }}</td>
+                    <td>{{ stats.total.milk_volume }}</td><td>{{ stats.total.avg_milk_volume }}</td>
+                    <td>{{ stats.total.milk_solids }}</td><td>{{ stats.total.avg_milk_solids }}</td>
+                    <td>{{ stats.total.days_in_milk }}</td><td>{{ stats.total.avg_weight }}</td>
+                    <td>{{ stats.total.avg_fat_pct }}</td><td>{{ stats.total.avg_protein_pct }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr>
+        <table style="font-size: 12pt;">
+            <thead>
+                <tr>
+                    <th>Lactation</th>
+                    <th>No of<br>Cows</th><th>% of<br>Herd</th>
+                    <th>Vol of<br>Milk kg</th><th>Avg Vol<br>of Milk</th>
+                    <th>Milk Solids<br>kg</th><th>Avg Milk<br>Solids</th>
+                    <th>Days in Milk</th><th>Avg of<br>Weight</th>
+                    <th>Avg<br>Fat %</th><th>Avg<br>Protein %</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>{{ stats.one.num_cows }}</td><td>{{ stats.one.pct_of_herd }}</td>
+                    <td>{{ stats.one.milk_volume }}</td><td>{{ stats.one.avg_milk_volume }}</td>
+                    <td>{{ stats.one.milk_solids }}</td><td>{{ stats.one.avg_milk_solids }}</td>
+                    <td>{{ stats.one.days_in_milk }}</td><td>{{ stats.one.avg_weight }}</td>
+                    <td>{{ stats.one.avg_fat_pct }}</td><td>{{ stats.one.avg_protein_pct }}</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>{{ stats.two.num_cows }}</td><td>{{ stats.two.pct_of_herd }}</td>
+                    <td>{{ stats.two.milk_volume }}</td><td>{{ stats.two.avg_milk_volume }}</td>
+                    <td>{{ stats.two.milk_solids }}</td><td>{{ stats.two.avg_milk_solids }}</td>
+                    <td>{{ stats.two.days_in_milk }}</td><td>{{ stats.two.avg_weight }}</td>
+                    <td>{{ stats.two.avg_fat_pct }}</td><td>{{ stats.two.avg_protein_pct }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Cow Age Distribution</h3>
+        <p>
+            <figure id="cow_age_histogram">
+                <img src="/cowpoke/herd-images/cow-age-chart.svg?utcnow={{ utcnow }}"
+                     alt="Distribution of Cow Ages" />
+            </figure>
+        </p>
+       <h3>Cow Health Distribution</h3>
+        <p>
+            <figure id="scc_histogram">
+                <img src="/cowpoke/herd-images/scc-histogram.svg?utcnow={{ utcnow }}"
+                     alt="Distribution of Cow Somatic Cell Counts" />
+            </figure>
+        </p>
+       <h3>Milk Solids Distribution</h3>
+        <p>
+            <figure id="milk_solids_histogram">
+                <img src="/cowpoke/herd-images/milk-solids-histogram.svg?utcnow={{ utcnow }}"
+                     alt="Distribution of Milk Solids Production" />
+            </figure>
+        </p>
+       <h3>Protein Concentration Distribution</h3>
+        <p>
+            <figure id="protein_pct_histogram">
+                <img src="/cowpoke/herd-images/protein-pct-histogram.svg?utcnow={{ utcnow }}"
+                     alt="Distribution of Protein Percentage" />
+            </figure>
+        </p>
+       <h3>Score Distribution</h3>
+        <p>
+            <figure id="merit_score_histogram">
+                <img src="/cowpoke/herd-images/merit-score-histogram.svg?utcnow={{ utcnow }}"
+                     alt="Distribution of Merit Scores" />
+            </figure>
+        </p>
     </div>
 </div>
