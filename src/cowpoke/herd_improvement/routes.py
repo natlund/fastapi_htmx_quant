@@ -91,3 +91,8 @@ async def milk_solids_histogram_download():
 @router.get("/cowpoke/herd-images/merit-score-histogram.svg")
 async def merit_score_histogram_download():
     return FileResponse(path=FilePaths.merit_score_histogram, filename="merit_score_histogram.svg")
+
+
+@router.get("/cowpoke/herd-images/cow-performance-chart.svg")
+async def cow_performance_chart_download():
+    return FileResponse(path=FilePaths.cow_performance_chart, filename="cow_performance_chart.svg")

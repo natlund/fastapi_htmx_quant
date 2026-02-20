@@ -330,6 +330,7 @@ class FilePaths:
     scc_histogram = temp_dir.joinpath("scc_histogram.svg")
     merit_score_histogram = temp_dir.joinpath("merit_score_histogram.svg")
     cow_age_chart = temp_dir.joinpath("cow_age_chart.svg")
+    cow_performance_chart = temp_dir.joinpath("cow_performance_chart.svg")
 
 
 def create_graphs(cow_dict: dict) -> dict:
@@ -337,6 +338,7 @@ def create_graphs(cow_dict: dict) -> dict:
     ave_scc = []
     milk_solids = []
     merit_score = []
+    weight_score = []
     age = []
 
     for cow, data in cow_dict.items():
@@ -346,6 +348,7 @@ def create_graphs(cow_dict: dict) -> dict:
         ave_scc.append(lactation_data["ave_SCC"])
         milk_solids.append(lactation_data["milk_solids"])
         merit_score.append(stats["merit_score"])
+        weight_score.append(stats["weight_score"])
         age.append(lactation_data["lact_num"])
 
     sns.set_theme(style="darkgrid")
@@ -364,6 +367,10 @@ def create_graphs(cow_dict: dict) -> dict:
 
     g = sns.catplot(data={"Age": age}, x="Age", kind="count", stat="percent")
     g.savefig(FilePaths.cow_age_chart)
+
+    g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Richness": protein_percentage },
+                    x="Cow Efficiency", y="Milk Richness", kind="scatter")
+    g.savefig(FilePaths.cow_performance_chart)
 
 
 if __name__ == "__main__":

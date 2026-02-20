@@ -13,14 +13,15 @@
         <h3>Lactation Calculations</h3>
         <h2>{{ farm_name }}</h2>
         <p>Number Of Cows: {{ stats.number_of_cows }}</p>
-        <table style="font-size: 12pt;">
+        <p>
+        <table style="font-size: 11pt;" class="cashflow-table">
             <thead>
                 <tr>
                     <th>Lactation</th>
                     <th>No of<br>Cows</th><th>% of<br>Herd</th>
-                    <th>Vol of<br>Milk kg</th><th>Avg Vol<br>of Milk</th>
-                    <th>Milk Solids<br>kg</th><th>Avg Milk<br>Solids</th>
-                    <th>Days in Milk</th><th>Avg of<br>Weight</th>
+                    <th>kg&nbsp;of<br>Milk</th><th>Avg&nbsp;kg<br>of&nbsp;Milk</th>
+                    <th>kg&nbsp;Milk<br>Solids</th><th>Avg&nbsp;kg<br>Milk<br>Solids</th>
+                    <th>Days in Milk</th><th>Avg<br>Weight</th>
                     <th>Avg<br>Fat %</th><th>Avg<br>Protein %</th>
                 </tr>
             </thead>
@@ -50,7 +51,7 @@
                     <td>{{ stats.nine_plus.avg_fat_pct }}</td><td>{{ stats.nine_plus.avg_protein_pct }}</td>
                 </tr>
                 <tr>
-                    <td>Total</td>
+                    <th>Total</th>
                     <td>{{ stats.total.num_cows }}</td><td>{{ stats.total.pct_of_herd }}</td>
                     <td>{{ stats.total.milk_volume }}</td><td>{{ stats.total.avg_milk_volume }}</td>
                     <td>{{ stats.total.milk_solids }}</td><td>{{ stats.total.avg_milk_solids }}</td>
@@ -59,15 +60,16 @@
                 </tr>
             </tbody>
         </table>
-        <hr>
-        <table style="font-size: 12pt;">
+        </p>
+        <p>
+        <table style="font-size: 11pt;" class="cashflow-table">
             <thead>
                 <tr>
                     <th>Lactation</th>
                     <th>No of<br>Cows</th><th>% of<br>Herd</th>
-                    <th>Vol of<br>Milk kg</th><th>Avg Vol<br>of Milk</th>
-                    <th>Milk Solids<br>kg</th><th>Avg Milk<br>Solids</th>
-                    <th>Days in Milk</th><th>Avg of<br>Weight</th>
+                    <th>kg&nbsp;of<br>Milk</th><th>Avg&nbsp;kg<br>of&nbsp;Milk</th>
+                    <th>kg&nbsp;Milk<br>Solids</th><th>Avg&nbsp;kg<br>Milk<br>Solids</th>
+                    <th>Days in Milk</th><th>Avg<br>Weight</th>
                     <th>Avg<br>Fat %</th><th>Avg<br>Protein %</th>
                 </tr>
             </thead>
@@ -90,6 +92,7 @@
                 </tr>
             </tbody>
         </table>
+        </p>
         <h3>Cow Age Distribution</h3>
         <p>
             <figure id="cow_age_histogram">
@@ -118,11 +121,19 @@
                      alt="Distribution of Protein Percentage" />
             </figure>
         </p>
-       <h3>Score Distribution</h3>
+        <h3>Score Distribution</h3>
         <p>
             <figure id="merit_score_histogram">
                 <img src="/cowpoke/herd-images/merit-score-histogram.svg?utcnow={{ utcnow }}"
                      alt="Distribution of Merit Scores" />
+            </figure>
+        </p>
+        <h3>Cow Performance</h3>
+        <p>Scatter plot of cows.  Top performers are in the top-right corner.</p>
+        <p>
+            <figure id="cow_performance_chart">
+                <img src="/cowpoke/herd-images/cow-performance-chart.svg?utcnow={{ utcnow }}"
+                     alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>
     </div>
