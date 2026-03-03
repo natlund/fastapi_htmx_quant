@@ -6,8 +6,12 @@ from pathlib import Path
 import seaborn as sns
 
 
-def calculate_lactation_results(lactation_file_path: str, output_file_path: str) -> dict:
+def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: str, output_file_path: str) -> dict:
     cow_dict, cow_list, header_fields = _parse_lactation_csv_file(lactation_file_path=lactation_file_path)
+
+    if liveweight_file_path:
+        liveweight_dict = _parse_liveweight_csv_file(liveweight_file_path=liveweight_file_path)
+        cow_dict = _add_liveweight_to_cow_dict(cow_dict=cow_dict, liveweight_dict=liveweight_dict)
 
     augmented_cow_dict = _calculate_statistics(cow_dict=cow_dict)
 
@@ -99,6 +103,57 @@ def _convert_raw_data(raw_data: dict) -> dict:
     return raw_data
 
 
+def _parse_liveweight_csv_file(liveweight_file_path: str) -> dict:
+    herdwatch_field_name_lookup = {
+        "Tag": "eartag",
+        "First weight date": "date",
+        "First Weight": "liveweight",
+    }
+
+    with open(liveweight_file_path) as f:
+        # First line(s) of file may be empty or bogus, because the HerdWatch logo was there.
+
+        for _ in range(100):  # Header should be in first 100 lines.
+            header = f.readline()
+            if header.startswith("Tag"):
+                field_lookup = herdwatch_field_name_lookup
+                break
+
+        fields = [field_lookup.get(x, "_") for x in header.split(",")]
+        field_indices = {
+            field: idx for idx, field in enumerate(fields)
+        }
+
+        liveweight_dict = {}
+
+        for row in f:
+            row_values = [x.strip() for x in row.split(",")]
+            if row_values[0] == "":
+                continue
+
+            eartag = row_values[field_indices["eartag"]]
+            liveweight = row_values[field_indices["liveweight"]]
+            liveweight_dict[eartag] = Decimal(liveweight)
+
+        return liveweight_dict
+
+
+def _add_liveweight_to_cow_dict(cow_dict: dict, liveweight_dict: dict) -> dict:
+    for eartag, data in cow_dict.items():
+        lactation_data = data["lactation_data"]
+        if eartag in liveweight_dict:
+            lactation_data["liveweight"] = liveweight_dict[eartag]
+            lactation_data["liveweight_estimated"] = False
+        else:
+            if lactation_data["lact_num"] in (1, 2):
+                lactation_data["liveweight"] = Decimal(450)
+            else:
+                lactation_data["liveweight"] = Decimal(500)
+            lactation_data["liveweight_estimated"] = True
+
+    return cow_dict
+
+
 def _calculate_statistics(cow_dict: dict) -> dict:
     weight_score_sortlist = []
     score_sortlist = []
@@ -156,7 +211,7 @@ def _calculate_statistics(cow_dict: dict) -> dict:
 
 
 def _calculate_merit_score(lactation_data: dict) -> tuple[Decimal, Decimal]:
-    cow_weight = lactation_data.get("weight", 500)
+    cow_weight = lactation_data["liveweight"]
     milk = lactation_data["milk"]
     fat = lactation_data["fat"]
     protein = lactation_data["protein"]
@@ -190,6 +245,8 @@ def _write_output_file(output_file_path: str, cow_dict: dict, cow_list: list, he
     reverse_field_lookup = {
         val: key for key, val in field_name_lookup.items()
     }
+    reverse_field_lookup["liveweight"] = "Liveweight"
+
     reverse_statistics_field_lookup = {
         "fat_percentage": "Fat %",
         "protein_percentage": "Protein %",
@@ -210,7 +267,7 @@ def _write_output_file(output_file_path: str, cow_dict: dict, cow_list: list, he
         "fat_percentage", "protein_percentage", "protein_percentage_rank",
         "group", "weight_score", "weight_score_rank", "merit_score", "merit_score_rank"
     ]
-    all_fields = header_fields + augmented_header_fields
+    all_fields = header_fields + ["liveweight"] + augmented_header_fields
 
     header = ",".join(reverse_field_lookup[x] for x in all_fields) + "\n"
 
@@ -220,10 +277,18 @@ def _write_output_file(output_file_path: str, cow_dict: dict, cow_list: list, he
         for cow_eartag in cow_list:
             data = cow_dict[cow_eartag]
             lactation_data = data["lactation_data"]
+
             existing_row = [str(lactation_data[x]) for x in header_fields]
+
+            if lactation_data["liveweight_estimated"]:
+                liveweight = str(lactation_data["liveweight"]) + "*"
+            else:
+                liveweight = str(lactation_data["liveweight"])
+
             statistics = data["statistics"]
             stats_row = [str(statistics[x]) for x in augmented_header_fields]
-            row = existing_row + stats_row
+
+            row = existing_row + [liveweight] + stats_row
             line = ",".join(row) + "\n"
             g.write(line)
 
@@ -300,7 +365,7 @@ def calculate_group_data(cow_list: list, herd_size: int) -> dict:
         milk_vol += lactation_data["milk"]
         milk_solids += lactation_data["milk_solids"]
         days_in_milk += lactation_data["lact_len"]
-        weight += lactation_data.get("weight", 500)
+        weight += lactation_data["liveweight"]
         fat_pct += statistics["fat_percentage"]
         protein_pct += statistics["protein_percentage"]
 
@@ -374,6 +439,11 @@ def create_graphs(cow_dict: dict) -> dict:
 
 
 if __name__ == "__main__":
-    demo_file_name = "LatestLactation_2025_25_01_26.csv"
+    demo_file_name = "demo_data/LatestLactation_2026_02_20.csv"
+    liveweight_file_name = "demo_data/Herdwatch_Liveweight_2025_10_08.csv"
     output_file_path = "../../temp/cowpoke/herd_improvement/lactation_calculations.csv"
-    calculate_lactation_results(lactation_file_path=demo_file_name, output_file_path=output_file_path)
+    calculate_lactation_results(
+        lactation_file_path=demo_file_name,
+        liveweight_file_path=liveweight_file_name,
+        output_file_path=output_file_path
+    )

@@ -23,10 +23,13 @@ async def herd_improvement(request: Request):
 
 @router.get("/cowpoke/lactation-demo", response_class=HTMLResponse)
 async def lactation_demo(request: Request):
-    demo_file_name = "cowpoke/herd_improvement/LatestLactation_2025_25_01_26.csv"
+    demo_lactation_file = "cowpoke/herd_improvement/demo_data/LatestLactation_2026_02_20.csv"
+    demo_liveweigh_file = "cowpoke/herd_improvement/demo_data/Herdwatch_Liveweight_2025_10_08.csv"
 
     lactation_results = calculate_lactation_results(
-        lactation_file_path=demo_file_name, output_file_path=output_file_path
+        lactation_file_path=demo_lactation_file,
+        liveweight_file_path=demo_liveweigh_file,
+        output_file_path=output_file_path
     )
     template_context = {
         "stats": lactation_results,
@@ -41,17 +44,26 @@ async def lactation_demo(request: Request):
 
 @router.post("/cowpoke/lactation-upload", response_class=HTMLResponse)
 async def lactation_upload(request: Request):
-    input_temp_file_name = "temp/cowpoke/herd_improvement/lactation.csv"
+    lactation_temp_file = "temp/cowpoke/herd_improvement/lactation.csv"
+    liveweight_temp_file = "temp/cowpoke/herd_improvement/liveweight.csv"
 
     async with request.form() as form:
         farm_name = form["farm_name"]
-        upload_file = form["file"]
-        file_object = upload_file.file  # File object is in 'bytes' mode, not 'string' mode.
-        with open(input_temp_file_name, "wb") as g:
+
+        uploaded_lactation_file = form["lactation_file"]
+        file_object = uploaded_lactation_file.file  # File object is in 'bytes' mode, not 'string' mode.
+        with open(lactation_temp_file, "wb") as g:
+            shutil.copyfileobj(file_object, g)  # Save locally so can be re-opened in 'string' mode.
+
+        uploaded_liveweight_file = form["liveweight_file"]
+        file_object = uploaded_liveweight_file.file  # File object is in 'bytes' mode, not 'string' mode.
+        with open(liveweight_temp_file, "wb") as g:
             shutil.copyfileobj(file_object, g)  # Save locally so can be re-opened in 'string' mode.
 
     lactation_results = calculate_lactation_results(
-        lactation_file_path=input_temp_file_name, output_file_path=output_file_path
+        lactation_file_path=lactation_temp_file,
+        liveweight_file_path=liveweight_temp_file,
+        output_file_path=output_file_path
     )
     template_context = {
         "stats": lactation_results,

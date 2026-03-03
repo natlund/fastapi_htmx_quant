@@ -43,11 +43,15 @@
             <p>
                 <label>Farm Name: <input type="text" name="farm_name" size="60"></label>
             </p>
-            <input type='file' name='file' size="60">
-            <button>
-                Upload
-            </button>
-            <progress id='progress' value='0' max='100'></progress>
+            <p>
+                Lactation CSV file: <input type='file' name='lactation_file' size="60">
+            </p>
+            <p>
+                Liveweight CSV file: <input type='file' name='liveweight_file' size="60">
+            </p>
+            <p>
+                <button>Upload Files</button> <progress id='progress' value='0' max='100'></progress>
+            </p>
         </form>
         <script>
             htmx.on('#form', 'htmx:xhr:progress', function(evt) {
