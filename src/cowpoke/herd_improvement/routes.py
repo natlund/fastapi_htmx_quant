@@ -123,3 +123,23 @@ async def efficiency_milk_solids_chart_download():
 @router.get("/cowpoke/herd-images/cow-performance-chart.svg")
 async def cow_performance_chart_download():
     return FileResponse(path=FilePaths.cow_performance_chart, filename="cow_performance_chart.svg")
+
+
+@router.get("/cowpoke/herd-images/milk-solids-by-age-chart.svg")
+async def milk_solids_by_age_chart_download():
+    return FileResponse(path=FilePaths.milk_solids_by_age_chart, filename="milk_solids_by_age_chart.svg")
+
+
+@router.get("/cowpoke/herd-images/milk-solids-by-age-boxplot.svg")
+async def milk_solids_by_age_boxplot_download():
+    return FileResponse(path=FilePaths.milk_solids_by_age_boxplot, filename="milk_solids_by_age_boxplot.svg")
+
+
+@router.get("/cowpoke/herd-images/efficiency-by-age-chart.svg")
+async def efficiency_by_age_chart_download():
+    return FileResponse(path=FilePaths.efficiency_by_age_chart, filename="efficiency_by_age_chart.svg")
+
+
+@router.get("/cowpoke/herd-images/efficiency-by-age-boxplot.svg")
+async def efficiency_by_age_boxplot_download():
+    return FileResponse(path=FilePaths.efficiency_by_age_boxplot, filename="efficiency_by_age_boxplot.svg")

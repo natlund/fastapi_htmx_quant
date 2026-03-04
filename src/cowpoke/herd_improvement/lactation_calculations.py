@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 
@@ -399,6 +400,10 @@ class FilePaths:
     liveweight_histogram = temp_dir.joinpath("liveweight_histogram.svg")
     liveweight_milk_solids_chart = temp_dir.joinpath("liveweight_milk_solids_chart.svg")
     efficiency_milk_solids_chart = temp_dir.joinpath("efficiency_milk_solids_chart.svg")
+    milk_solids_by_age_chart = temp_dir.joinpath("milk_solids_by_age_chart.svg")
+    milk_solids_by_age_boxplot = temp_dir.joinpath("milk_solids_by_age_boxplot.svg")
+    efficiency_by_age_chart = temp_dir.joinpath("efficiency_by_age_chart.svg")
+    efficiency_by_age_boxplot = temp_dir.joinpath("efficiency_by_age_boxplot.svg")
 
 
 def create_graphs(cow_dict: dict) -> dict:
@@ -429,33 +434,59 @@ def create_graphs(cow_dict: dict) -> dict:
 
     g = sns.displot(data={"Protein %": protein_percentage}, x="Protein %", binwidth=0.1, binrange=[3,5.5], kde=True)
     g.savefig(FilePaths.protein_pct_histogram)
+    plt.close()
 
     g = sns.displot(data={"Milk Solids kg": milk_solids}, x="Milk Solids kg", binwidth=20, binrange=[300,900], kde=True)
     g.savefig(FilePaths.milk_solids_histogram)
+    plt.close()
 
     g = sns.displot(data={"Average SCC": ave_scc}, x="Average SCC", binwidth=50, stat="percent")
     g.savefig(FilePaths.scc_histogram)
+    plt.close()
 
     g = sns.displot(data={"Score": merit_score}, x="Score", binwidth=50, binrange=[0,1800], stat="percent", kde=True)
     g.savefig(FilePaths.merit_score_histogram)
+    plt.close()
 
-    g = sns.displot(data={"Liveweight": liveweight}, x="Liveweight", binwidth=25, binrange=[300,800], stat="percent", kde=True)
+    g = sns.displot(data={"Liveweight": liveweight}, x="Liveweight", binwidth=25, binrange=[300,800],
+                    stat="percent", kde=True)
     g.savefig(FilePaths.liveweight_histogram)
+    plt.close()
 
     g = sns.catplot(data={"Age": age}, x="Age", kind="count", stat="percent")
     g.savefig(FilePaths.cow_age_chart)
+    plt.close()
 
     g = sns.relplot(data={"Liveweight": liveweight, "Milk Solids": milk_solids },
                     x="Liveweight", y="Milk Solids", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.liveweight_milk_solids_chart)
+    plt.close()
 
     g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Solids": milk_solids },
                     x="Cow Efficiency", y="Milk Solids", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.efficiency_milk_solids_chart)
+    plt.close()
 
     g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Richness": protein_percentage },
                     x="Cow Efficiency", y="Milk Richness", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.cow_performance_chart)
+    plt.close()
+
+    g = sns.catplot(data={"Age": age, "Milk Solids": milk_solids }, x="Age", y="Milk Solids")
+    g.savefig(FilePaths.milk_solids_by_age_chart)
+    plt.close()
+
+    g = sns.catplot(data={"Age": age, "Milk Solids": milk_solids }, x="Age", y="Milk Solids", kind="box")
+    g.savefig(FilePaths.milk_solids_by_age_boxplot)
+    plt.close()
+
+    g = sns.catplot(data={"Age": age, "Cow Efficiency": weight_score}, x="Age", y="Cow Efficiency", hue=liveweight_true)
+    g.savefig(FilePaths.efficiency_by_age_chart)
+    plt.close()
+
+    g = sns.catplot(data={"Age": age, "Cow Efficiency": weight_score }, x="Age", y="Cow Efficiency", kind="box")
+    g.savefig(FilePaths.efficiency_by_age_boxplot)
+    plt.close()
 
 
 if __name__ == "__main__":
