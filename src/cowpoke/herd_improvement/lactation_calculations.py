@@ -396,6 +396,9 @@ class FilePaths:
     merit_score_histogram = temp_dir.joinpath("merit_score_histogram.svg")
     cow_age_chart = temp_dir.joinpath("cow_age_chart.svg")
     cow_performance_chart = temp_dir.joinpath("cow_performance_chart.svg")
+    liveweight_histogram = temp_dir.joinpath("liveweight_histogram.svg")
+    liveweight_milk_solids_chart = temp_dir.joinpath("liveweight_milk_solids_chart.svg")
+    efficiency_milk_solids_chart = temp_dir.joinpath("efficiency_milk_solids_chart.svg")
 
 
 def create_graphs(cow_dict: dict) -> dict:
@@ -405,6 +408,8 @@ def create_graphs(cow_dict: dict) -> dict:
     merit_score = []
     weight_score = []
     age = []
+    liveweight = []
+    liveweight_est = []
 
     for cow, data in cow_dict.items():
         stats = data["statistics"]
@@ -415,6 +420,10 @@ def create_graphs(cow_dict: dict) -> dict:
         merit_score.append(stats["merit_score"])
         weight_score.append(stats["weight_score"])
         age.append(lactation_data["lact_num"])
+        liveweight.append(lactation_data["liveweight"])
+        liveweight_est.append(lactation_data["liveweight_estimated"])
+
+    liveweight_true = ["Estimated" if x else "True Weight" for x in liveweight_est]
 
     sns.set_theme(style="darkgrid")
 
@@ -430,11 +439,22 @@ def create_graphs(cow_dict: dict) -> dict:
     g = sns.displot(data={"Score": merit_score}, x="Score", binwidth=50, binrange=[0,1800], stat="percent", kde=True)
     g.savefig(FilePaths.merit_score_histogram)
 
+    g = sns.displot(data={"Liveweight": liveweight}, x="Liveweight", binwidth=25, binrange=[300,800], stat="percent", kde=True)
+    g.savefig(FilePaths.liveweight_histogram)
+
     g = sns.catplot(data={"Age": age}, x="Age", kind="count", stat="percent")
     g.savefig(FilePaths.cow_age_chart)
 
+    g = sns.relplot(data={"Liveweight": liveweight, "Milk Solids": milk_solids },
+                    x="Liveweight", y="Milk Solids", hue=liveweight_true, kind="scatter")
+    g.savefig(FilePaths.liveweight_milk_solids_chart)
+
+    g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Solids": milk_solids },
+                    x="Cow Efficiency", y="Milk Solids", hue=liveweight_true, kind="scatter")
+    g.savefig(FilePaths.efficiency_milk_solids_chart)
+
     g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Richness": protein_percentage },
-                    x="Cow Efficiency", y="Milk Richness", kind="scatter")
+                    x="Cow Efficiency", y="Milk Richness", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.cow_performance_chart)
 
 

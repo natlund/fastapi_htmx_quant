@@ -105,6 +105,21 @@ async def merit_score_histogram_download():
     return FileResponse(path=FilePaths.merit_score_histogram, filename="merit_score_histogram.svg")
 
 
+@router.get("/cowpoke/herd-images/liveweight-histogram.svg")
+async def liveweight_histogram_download():
+    return FileResponse(path=FilePaths.liveweight_histogram, filename="liveweight_histogram.svg")
+
+
+@router.get("/cowpoke/herd-images/liveweight-milk-solids-chart.svg")
+async def liveweight_milk_solids_chart_download():
+    return FileResponse(path=FilePaths.liveweight_milk_solids_chart, filename="liveweight_milk_solids_chart.svg")
+
+
+@router.get("/cowpoke/herd-images/efficiency-milk-solids-chart.svg")
+async def efficiency_milk_solids_chart_download():
+    return FileResponse(path=FilePaths.efficiency_milk_solids_chart, filename="efficiency_milk_solids_chart.svg")
+
+
 @router.get("/cowpoke/herd-images/cow-performance-chart.svg")
 async def cow_performance_chart_download():
     return FileResponse(path=FilePaths.cow_performance_chart, filename="cow_performance_chart.svg")
