@@ -404,6 +404,8 @@ class FilePaths:
     milk_solids_by_age_boxplot = temp_dir.joinpath("milk_solids_by_age_boxplot.svg")
     efficiency_by_age_chart = temp_dir.joinpath("efficiency_by_age_chart.svg")
     efficiency_by_age_boxplot = temp_dir.joinpath("efficiency_by_age_boxplot.svg")
+    milk_solids_vs_scc_chart = temp_dir.joinpath("milk_solids_vs_scc.svg")
+    efficiency_vs_scc_chart = temp_dir.joinpath("efficiency_vs_scc.svg")
 
 
 def create_graphs(cow_dict: dict) -> dict:
@@ -486,6 +488,16 @@ def create_graphs(cow_dict: dict) -> dict:
 
     g = sns.catplot(data={"Age": age, "Cow Efficiency": weight_score }, x="Age", y="Cow Efficiency", kind="box")
     g.savefig(FilePaths.efficiency_by_age_boxplot)
+    plt.close()
+
+    g = sns.relplot(data={"Average SCC": ave_scc, "Milk Solids": milk_solids },
+                    x="Average SCC", y="Milk Solids", kind="scatter")
+    g.savefig(FilePaths.milk_solids_vs_scc_chart)
+    plt.close()
+
+    g = sns.relplot(data={"Average SCC": ave_scc, "Cow Efficiency": weight_score },
+                    x="Average SCC", y="Cow Efficiency", kind="scatter")
+    g.savefig(FilePaths.efficiency_vs_scc_chart)
     plt.close()
 
 

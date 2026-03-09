@@ -99,6 +99,8 @@ async def result_images(image_file: str):
         "milk-solids-by-age-boxplot.svg": FilePaths.milk_solids_by_age_boxplot,
         "efficiency-by-age-chart.svg": FilePaths.efficiency_by_age_chart,
         "efficiency-by-age-boxplot.svg": FilePaths.efficiency_by_age_boxplot,
+        "milk-solids-vs-scc-chart.svg": FilePaths.milk_solids_vs_scc_chart,
+        "efficiency-vs-scc-chart.svg": FilePaths.efficiency_vs_scc_chart,
     }
     download_filename = image_file.replace("-", "_")
     return FileResponse(path=file_lookup[image_file], filename=download_filename)
