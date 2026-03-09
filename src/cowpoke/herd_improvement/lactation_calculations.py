@@ -496,7 +496,7 @@ def create_graphs(cow_dict: dict) -> dict:
     plt.close()
 
     g = sns.relplot(data={"Average SCC": ave_scc, "Cow Efficiency": weight_score },
-                    x="Average SCC", y="Cow Efficiency", kind="scatter")
+                    x="Average SCC", y="Cow Efficiency", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.efficiency_vs_scc_chart)
     plt.close()
 
