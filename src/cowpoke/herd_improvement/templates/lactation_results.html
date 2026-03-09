@@ -1,13 +1,10 @@
 <div id="lactation_results">
     <div class="delete_div_from_pdf">
         <p>
-        <a href="/cowpoke/lactation-download?utcnow={{ utcnow }}" download>Download Lactation with Calculations CSV File</a>
+            <a href="/cowpoke/herd-improvement/download/lactation-calculations.csv?utcnow={{ utcnow }}" download>
+                Download Lactation with Calculations CSV File
+            </a>
         </p>
-<!--        <p>-->
-<!--        <a href="/cowpoke/mating-report-download?utcnow={{ utcnow }}" download>-->
-<!--            Generate and Download Mating Report as PDF-->
-<!--        </a>-->
-<!--        </p>-->
     </div>
     <div class="result-box" style="margin-top: 1em;">
         <h3>Lactation Calculations</h3>
@@ -96,42 +93,42 @@
         <h3>Cow Age Distribution</h3>
         <p>
             <figure id="cow_age_histogram">
-                <img src="/cowpoke/herd-images/cow-age-chart.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/cow-age-chart.svg?utcnow={{ utcnow }}"
                      alt="Distribution of Cow Ages" />
             </figure>
         </p>
        <h3>Cow Health Distribution</h3>
         <p>
             <figure id="scc_histogram">
-                <img src="/cowpoke/herd-images/scc-histogram.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/scc-histogram.svg?utcnow={{ utcnow }}"
                      alt="Distribution of Cow Somatic Cell Counts" />
             </figure>
         </p>
        <h3>Milk Solids Distribution</h3>
         <p>
             <figure id="milk_solids_histogram">
-                <img src="/cowpoke/herd-images/milk-solids-histogram.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/milk-solids-histogram.svg?utcnow={{ utcnow }}"
                      alt="Distribution of Milk Solids Production" />
             </figure>
         </p>
        <h3>Protein Concentration Distribution</h3>
         <p>
             <figure id="protein_pct_histogram">
-                <img src="/cowpoke/herd-images/protein-pct-histogram.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/protein-pct-histogram.svg?utcnow={{ utcnow }}"
                      alt="Distribution of Protein Percentage" />
             </figure>
         </p>
         <h3>Score Distribution</h3>
         <p>
             <figure id="merit_score_histogram">
-                <img src="/cowpoke/herd-images/merit-score-histogram.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/merit-score-histogram.svg?utcnow={{ utcnow }}"
                      alt="Distribution of Merit Scores" />
             </figure>
         </p>
         <h3>Liveweight Distribution</h3>
         <p>
             <figure id="liveweight_histogram">
-                <img src="/cowpoke/herd-images/liveweight-histogram.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/liveweight-histogram.svg?utcnow={{ utcnow }}"
                      alt="Distribution of Cow Liveweights" />
             </figure>
         </p>
@@ -139,7 +136,7 @@
         <p>Scatter plot of cows.  Top performers are in the top-left corner.</p>
         <p>
             <figure id="liveweight_milk_solids_chart">
-                <img src="/cowpoke/herd-images/liveweight-milk-solids-chart.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/liveweight-milk-solids-chart.svg?utcnow={{ utcnow }}"
                      alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>
@@ -147,7 +144,7 @@
         <p>Scatter plot of cows.  Top performers are in the top-right corner.</p>
         <p>
             <figure id="efficiency_milk_solids_chart">
-                <img src="/cowpoke/herd-images/efficiency-milk-solids-chart.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/efficiency-milk-solids-chart.svg?utcnow={{ utcnow }}"
                      alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>
@@ -155,7 +152,7 @@
         <p>Scatter plot of cows.  Top performers are in the top-right corner.</p>
         <p>
             <figure id="cow_performance_chart">
-                <img src="/cowpoke/herd-images/cow-performance-chart.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/cow-performance-chart.svg?utcnow={{ utcnow }}"
                      alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>
@@ -163,28 +160,28 @@
         <p>Milk Solids production by age of cow.  The peak of production is clearly from years 3 to 8.</p>
         <p>
             <figure id="milk_solids_by_age_chart">
-                <img src="/cowpoke/herd-images/milk-solids-by-age-chart.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/milk-solids-by-age-chart.svg?utcnow={{ utcnow }}"
                      alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>
         <p>Milk Solids production by age of cow, summarized in box plots.</p>
         <p>
             <figure id="milk_solids_by_age_boxplot">
-                <img src="/cowpoke/herd-images/milk-solids-by-age-boxplot.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/milk-solids-by-age-boxplot.svg?utcnow={{ utcnow }}"
                      alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>
         <p>Efficiency by age of cow.  Efficiency ramps up to maximum in the first three years.</p>
         <p>
             <figure id="efficiency_by_age_chart">
-                <img src="/cowpoke/herd-images/efficiency-by-age-chart.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/efficiency-by-age-chart.svg?utcnow={{ utcnow }}"
                      alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>
         <p>Efficiency by age of cow, summarized in box plots.</p>
         <p>
             <figure id="efficiency_by_age_boxplot">
-                <img src="/cowpoke/herd-images/efficiency-by-age-boxplot.svg?utcnow={{ utcnow }}"
+                <img src="/cowpoke/herd-improvement/images/efficiency-by-age-boxplot.svg?utcnow={{ utcnow }}"
                      alt="Scatter Plot of Cows.  Top performers are in top-right corner." />
             </figure>
         </p>

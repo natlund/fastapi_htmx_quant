@@ -21,7 +21,7 @@ async def herd_improvement(request: Request):
     return templates.TemplateResponse(request={}, name="herd_improvement.html", context=context)
 
 
-@router.get("/cowpoke/lactation-demo", response_class=HTMLResponse)
+@router.get("/cowpoke/herd-improvement/demo", response_class=HTMLResponse)
 async def lactation_demo(request: Request):
     demo_lactation_file = "cowpoke/herd_improvement/demo_data/LatestLactation_2026_02_20.csv"
     demo_liveweigh_file = "cowpoke/herd_improvement/demo_data/Herdwatch_Liveweight_2025_10_08.csv"
@@ -42,7 +42,7 @@ async def lactation_demo(request: Request):
     return template_resp
 
 
-@router.post("/cowpoke/lactation-upload", response_class=HTMLResponse)
+@router.post("/cowpoke/herd-improvement/uploads", response_class=HTMLResponse)
 async def lactation_upload(request: Request):
     lactation_temp_file = "temp/cowpoke/herd_improvement/lactation.csv"
     liveweight_temp_file = "temp/cowpoke/herd_improvement/liveweight.csv"
@@ -75,71 +75,30 @@ async def lactation_upload(request: Request):
     return template_resp
 
 
-@router.get("/cowpoke/lactation-download")
-async def lactation_calculations_download():
-    return FileResponse(path=output_file_path, filename="lactation_calculations.csv")
+@router.get("/cowpoke/herd-improvement/download/{result_filename}")
+async def lactation_calculations_download(result_filename: str):
+    file_lookup = {
+        "lactation-calculations.csv": output_file_path,
+    }
+    return FileResponse(path=file_lookup[result_filename], filename=result_filename.replace("-", "_"))
 
 
-@router.get("/cowpoke/herd-images/cow-age-chart.svg")
-async def cow_ages_chart_download():
-    return FileResponse(path=FilePaths.cow_age_chart, filename="cow_age_chart.svg")
-
-
-@router.get("/cowpoke/herd-images/scc-histogram.svg")
-async def scc_histogram_download():
-    return FileResponse(path=FilePaths.scc_histogram, filename="scc_histogram.svg")
-
-
-@router.get("/cowpoke/herd-images/protein-pct-histogram.svg")
-async def protein_pct_histogram_download():
-    return FileResponse(path=FilePaths.protein_pct_histogram, filename="protein_pct_histogram.svg")
-
-
-@router.get("/cowpoke/herd-images/milk-solids-histogram.svg")
-async def milk_solids_histogram_download():
-    return FileResponse(path=FilePaths.milk_solids_histogram, filename="milk_solids_histogram.svg")
-
-
-@router.get("/cowpoke/herd-images/merit-score-histogram.svg")
-async def merit_score_histogram_download():
-    return FileResponse(path=FilePaths.merit_score_histogram, filename="merit_score_histogram.svg")
-
-
-@router.get("/cowpoke/herd-images/liveweight-histogram.svg")
-async def liveweight_histogram_download():
-    return FileResponse(path=FilePaths.liveweight_histogram, filename="liveweight_histogram.svg")
-
-
-@router.get("/cowpoke/herd-images/liveweight-milk-solids-chart.svg")
-async def liveweight_milk_solids_chart_download():
-    return FileResponse(path=FilePaths.liveweight_milk_solids_chart, filename="liveweight_milk_solids_chart.svg")
-
-
-@router.get("/cowpoke/herd-images/efficiency-milk-solids-chart.svg")
-async def efficiency_milk_solids_chart_download():
-    return FileResponse(path=FilePaths.efficiency_milk_solids_chart, filename="efficiency_milk_solids_chart.svg")
-
-
-@router.get("/cowpoke/herd-images/cow-performance-chart.svg")
-async def cow_performance_chart_download():
-    return FileResponse(path=FilePaths.cow_performance_chart, filename="cow_performance_chart.svg")
-
-
-@router.get("/cowpoke/herd-images/milk-solids-by-age-chart.svg")
-async def milk_solids_by_age_chart_download():
-    return FileResponse(path=FilePaths.milk_solids_by_age_chart, filename="milk_solids_by_age_chart.svg")
-
-
-@router.get("/cowpoke/herd-images/milk-solids-by-age-boxplot.svg")
-async def milk_solids_by_age_boxplot_download():
-    return FileResponse(path=FilePaths.milk_solids_by_age_boxplot, filename="milk_solids_by_age_boxplot.svg")
-
-
-@router.get("/cowpoke/herd-images/efficiency-by-age-chart.svg")
-async def efficiency_by_age_chart_download():
-    return FileResponse(path=FilePaths.efficiency_by_age_chart, filename="efficiency_by_age_chart.svg")
-
-
-@router.get("/cowpoke/herd-images/efficiency-by-age-boxplot.svg")
-async def efficiency_by_age_boxplot_download():
-    return FileResponse(path=FilePaths.efficiency_by_age_boxplot, filename="efficiency_by_age_boxplot.svg")
+@router.get("/cowpoke/herd-improvement/images/{image_file}")
+async def result_images(image_file: str):
+    file_lookup = {
+        "cow-age-chart.svg": FilePaths.cow_age_chart,
+        "scc-histogram.svg": FilePaths.scc_histogram,
+        "protein-pct-histogram.svg": FilePaths.protein_pct_histogram,
+        "milk-solids-histogram.svg": FilePaths.milk_solids_histogram,
+        "merit-score-histogram.svg": FilePaths.merit_score_histogram,
+        "liveweight-histogram.svg": FilePaths.liveweight_histogram,
+        "liveweight-milk-solids-chart.svg": FilePaths.liveweight_milk_solids_chart,
+        "efficiency-milk-solids-chart.svg": FilePaths.efficiency_milk_solids_chart,
+        "cow-performance-chart.svg": FilePaths.cow_performance_chart,
+        "milk-solids-by-age-chart.svg": FilePaths.milk_solids_by_age_chart,
+        "milk-solids-by-age-boxplot.svg": FilePaths.milk_solids_by_age_boxplot,
+        "efficiency-by-age-chart.svg": FilePaths.efficiency_by_age_chart,
+        "efficiency-by-age-boxplot.svg": FilePaths.efficiency_by_age_boxplot,
+    }
+    download_filename = image_file.replace("-", "_")
+    return FileResponse(path=file_lookup[image_file], filename=download_filename)

@@ -32,11 +32,13 @@
 
         <div style="background-color: lemonchiffon; margin-bottom: 1em; padding: 1em;">
             <span style="padding: 1em;">See results using Demo data:</span>
-                <button hx-get="/cowpoke/lactation-demo"  hx-target="#lactation_results">Calculate</button>
+                <button hx-get="/cowpoke/herd-improvement/demo"  hx-target="#lactation_results" hx-swap="outerHTML">
+                    Calculate
+                </button>
         </div>
 
         <form id='form' hx-encoding='multipart/form-data'
-              hx-post='/cowpoke/lactation-upload'
+              hx-post='/cowpoke/herd-improvement/uploads'
               hx-target="#lactation_results"
               hx-swap="outerHTML"
         >
