@@ -34,7 +34,8 @@ def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: 
 def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
     with open(lactation_file_path) as f:
         header = f.readline()
-        fields = [field_name_lookup[x.strip()] for x in header.split(",")]
+        raw_fields = [x.strip() for x in header.split(",")]
+        fields = [field_name_lookup[x] for x in raw_fields if x in field_name_lookup]
         field_indices = {
             field: idx for idx, field in enumerate(fields)
         }
@@ -81,6 +82,8 @@ field_name_lookup = {
     "Johne's Group": "johnes_group",
     "Fertility Status": "fertility_status",
     "Sire name": "sire_name",
+    "Weight": "liveweight",
+    "Liveweight": "liveweight",
 }
 
 
