@@ -259,6 +259,7 @@ def _write_output_file(output_file_path: str, cow_dict: dict, cow_list: list, he
     reverse_field_lookup = {
         val: key for key, val in field_name_lookup.items()
     }
+    # Re-set "Liveweight" here, because "liveweight" maps to either "Liveweight" or "Weight"
     reverse_field_lookup["liveweight"] = "Liveweight"
 
     reverse_statistics_field_lookup = {
@@ -281,7 +282,10 @@ def _write_output_file(output_file_path: str, cow_dict: dict, cow_list: list, he
         "fat_percentage", "protein_percentage", "protein_percentage_rank",
         "group", "weight_score", "weight_score_rank", "merit_score", "merit_score_rank"
     ]
-    all_fields = header_fields + ["liveweight"] + augmented_header_fields
+    if "liveweight" in header_fields:
+        all_fields = header_fields + augmented_header_fields
+    else:
+        all_fields = header_fields + ["liveweight"] + augmented_header_fields
 
     header = ",".join(reverse_field_lookup[x] for x in all_fields) + "\n"
 
