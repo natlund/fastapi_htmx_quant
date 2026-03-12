@@ -14,6 +14,8 @@ def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: 
         liveweight_dict = _parse_liveweight_csv_file(liveweight_file_path=liveweight_file_path)
         cow_dict = _add_liveweight_to_cow_dict(cow_dict=cow_dict, liveweight_dict=liveweight_dict)
 
+    cow_dict = _add_estimated_weights_to_cow_dict(cow_dict=cow_dict)
+
     augmented_cow_dict = _calculate_statistics(cow_dict=cow_dict)
 
     _write_output_file(
@@ -145,7 +147,15 @@ def _add_liveweight_to_cow_dict(cow_dict: dict, liveweight_dict: dict) -> dict:
         if eartag in liveweight_dict:
             lactation_data["liveweight"] = liveweight_dict[eartag]
             lactation_data["liveweight_estimated"] = False
-        else:
+
+    return cow_dict
+
+
+def _add_estimated_weights_to_cow_dict(cow_dict: dict) -> dict:
+    for _, data in cow_dict.items():
+        lactation_data = data["lactation_data"]
+
+        if lactation_data.get("liveweight") is None:
             if lactation_data["lact_num"] in (1, 2):
                 lactation_data["liveweight"] = Decimal(450)
             else:

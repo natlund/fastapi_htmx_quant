@@ -22,8 +22,8 @@
     </nav>
     <div class="content">
         <h1>Herd Improvement</h1>
-        <p>Upload a CSV file of lactation data, and various statistics will be calculated, including a merit score
-            and ranking for each cow.</p>
+        <p>Upload a CSV file of lactation data, and optionally upload a CSV file of cow liveweights.
+            Then various statistics will be calculated, including a merit score and ranking for each cow.</p>
 <!--        <p>The CSV file should have columns <b>Cow</b>, <b>Mating Date</b>, and <b>Bull</b>.-->
 <!--            (The order does not matter.  Other columns are allowed to be present.)-->
 <!--            The date should be in the format like: <b>07 May 24</b>.</p>-->
@@ -49,7 +49,7 @@
                 Lactation CSV file: <input type='file' name='lactation_file' size="60">
             </p>
             <p>
-                Liveweight CSV file: <input type='file' name='liveweight_file' size="60">
+                Liveweight CSV file (optional): <input type='file' name='liveweight_file' size="60">
             </p>
             <p>
                 <button>Upload Files</button> <progress id='progress' value='0' max='100'></progress>

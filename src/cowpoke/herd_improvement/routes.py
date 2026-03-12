@@ -44,21 +44,26 @@ async def lactation_demo(request: Request):
 
 @router.post("/cowpoke/herd-improvement/uploads", response_class=HTMLResponse)
 async def lactation_upload(request: Request):
-    lactation_temp_file = "temp/cowpoke/herd_improvement/lactation.csv"
-    liveweight_temp_file = "temp/cowpoke/herd_improvement/liveweight.csv"
+    lactation_temp_file_path = "temp/cowpoke/herd_improvement/lactation.csv"
+    liveweight_temp_file_path = "temp/cowpoke/herd_improvement/liveweight.csv"
 
     async with request.form() as form:
         farm_name = form["farm_name"]
 
         uploaded_lactation_file = form["lactation_file"]
         file_object = uploaded_lactation_file.file  # File object is in 'bytes' mode, not 'string' mode.
-        with open(lactation_temp_file, "wb") as g:
+        with open(lactation_temp_file_path, "wb") as g:
             shutil.copyfileobj(file_object, g)  # Save locally so can be re-opened in 'string' mode.
+        lactation_temp_file = lactation_temp_file_path
 
-        uploaded_liveweight_file = form["liveweight_file"]
-        file_object = uploaded_liveweight_file.file  # File object is in 'bytes' mode, not 'string' mode.
-        with open(liveweight_temp_file, "wb") as g:
-            shutil.copyfileobj(file_object, g)  # Save locally so can be re-opened in 'string' mode.
+        uploaded_liveweight_file = form.get("liveweight_file")  # Liveweight file upload is optional.
+        if uploaded_liveweight_file:
+            file_object = uploaded_liveweight_file.file  # File object is in 'bytes' mode, not 'string' mode.
+            with open(liveweight_temp_file_path, "wb") as g:
+                shutil.copyfileobj(file_object, g)  # Save locally so can be re-opened in 'string' mode.
+            liveweight_temp_file = liveweight_temp_file_path
+        else:
+            liveweight_temp_file = None
 
     lactation_results = calculate_lactation_results(
         lactation_file_path=lactation_temp_file,
