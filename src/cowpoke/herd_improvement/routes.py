@@ -5,7 +5,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from src.cowpoke.herd_improvement.lactation_calculations import calculate_lactation_results, FilePaths
+from src.cowpoke.herd_improvement.lactation_calculations import (
+    calculate_lactation_results, DownloadFilePaths, FilePaths,
+)
 
 
 templates = Jinja2Templates(directory=["cowpoke/herd_improvement/templates", "templates"])
@@ -84,6 +86,7 @@ async def lactation_upload(request: Request):
 async def lactation_calculations_download(result_filename: str):
     file_lookup = {
         "lactation-calculations.csv": output_file_path,
+        "report.xlsx": DownloadFilePaths.output_spreadsheet,
     }
     return FileResponse(path=file_lookup[result_filename], filename=result_filename.replace("-", "_"))
 

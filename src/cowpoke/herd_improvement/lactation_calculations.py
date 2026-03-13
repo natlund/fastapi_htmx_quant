@@ -6,6 +6,17 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from src.cowpoke.herd_improvement.create_reports import create_excel_spreadsheet
+
+
+@dataclasses.dataclass(frozen=True)
+class DownloadFilePaths:
+    src_dir = Path(__file__).parent.parent.parent
+    temp_dir = src_dir.joinpath("temp", "cowpoke", "herd_improvement")
+
+    output_csv = temp_dir.joinpath("lactation_calculations.csv")
+    output_spreadsheet = temp_dir.joinpath("report.xlsx")
+
 
 def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: str, output_file_path: str) -> dict:
     cow_dict, cow_list, header_fields = _parse_lactation_csv_file(lactation_file_path=lactation_file_path)
@@ -21,6 +32,8 @@ def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: 
     _write_output_file(
         output_file_path=output_file_path, cow_dict=augmented_cow_dict, cow_list=cow_list, header_fields=header_fields
     )
+
+    create_excel_spreadsheet(cow_dict=augmented_cow_dict, file_path=DownloadFilePaths.output_spreadsheet)
 
     summary_stats = calculate_summary_statistics(cow_dict=augmented_cow_dict)
     # import pprint
