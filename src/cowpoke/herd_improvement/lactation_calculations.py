@@ -131,6 +131,11 @@ def _parse_liveweight_csv_file(liveweight_file_path: str) -> dict:
         "First weight date": "date",
         "First Weight": "liveweight",
     }
+    herdcompanion_field_name_lookup = {
+        "Line No.": "line_number",
+        "Eartag": "eartag",
+        "Liveweight": "liveweight",
+    }
 
     with open(liveweight_file_path) as f:
         # First line(s) of file may be empty or bogus, because the HerdWatch logo was there.
@@ -139,6 +144,9 @@ def _parse_liveweight_csv_file(liveweight_file_path: str) -> dict:
             header = f.readline()
             if header.startswith("Tag"):
                 field_lookup = herdwatch_field_name_lookup
+                break
+            if header.startswith("Line"):
+                field_lookup = herdcompanion_field_name_lookup
                 break
 
         fields = [field_lookup.get(x, "_") for x in header.split(",")]
