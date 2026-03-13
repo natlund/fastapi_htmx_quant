@@ -102,8 +102,10 @@ field_name_lookup = {
 
 def _convert_raw_data(raw_data: dict) -> dict:
     integer_fields = (
-        "milk_solids", "fat", "protein", "milk", "ave_SCC", "SCC_over_limit",
-        "lact_len", "lact_num", "tests", "calving_interval", "CPI", "line_number"
+        "milk_solids", "fat", "protein", "milk", "ave_SCC",
+        "lact_len", "lact_num",
+        # "tests", "calving_interval", "CPI", "SCC_over_limit", # Not used in calculations.  Bung formatting breaks stuff.
+        # "line_number"  # Can be a string.
     )
     for field in integer_fields:
         if field in raw_data:
@@ -114,7 +116,8 @@ def _convert_raw_data(raw_data: dict) -> dict:
         if field in raw_data:
             raw_data[field] = Decimal(raw_data[field])
 
-    date_fields = ("birth_date", "calving_date")
+    # date_fields = ("birth_date", "calving_date")
+    date_fields = ()  # Disabled.  Not needed for calculations, and date formatting irregularities break it.
     for field in date_fields:
         if field in raw_data:
             raw_data[field] = datetime.datetime.strptime(raw_data[field], "%d/%m/%y")
