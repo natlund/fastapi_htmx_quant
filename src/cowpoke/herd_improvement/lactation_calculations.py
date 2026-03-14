@@ -149,7 +149,8 @@ def _parse_liveweight_csv_file(liveweight_file_path: str) -> dict:
                 field_lookup = herdcompanion_field_name_lookup
                 break
 
-        fields = [field_lookup.get(x, "_") for x in header.split(",")]
+        header_names = [x.strip() for x in header.split(",")]  # x.strip() to remove newline "\n" from last header name.
+        fields = [field_lookup.get(x, "_") for x in header_names]
         field_indices = {
             field: idx for idx, field in enumerate(fields)
         }
