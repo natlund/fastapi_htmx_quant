@@ -33,11 +33,15 @@ def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: 
         output_file_path=output_file_path, cow_dict=augmented_cow_dict, cow_list=cow_list, header_fields=header_fields
     )
 
-    create_excel_spreadsheet(cow_dict=augmented_cow_dict, file_path=DownloadFilePaths.output_spreadsheet)
-
     summary_stats = calculate_summary_statistics(cow_dict=augmented_cow_dict)
     # import pprint
     # pprint.pprint(summary_stats)
+
+    create_excel_spreadsheet(
+        cow_dict=augmented_cow_dict,
+        xlsx_file_path=DownloadFilePaths.output_spreadsheet,
+        csv_file_path=DownloadFilePaths.output_csv,
+    )
 
     create_graphs(cow_dict=augmented_cow_dict)
 

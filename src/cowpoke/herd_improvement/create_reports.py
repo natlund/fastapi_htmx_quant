@@ -9,7 +9,7 @@ from pptx.util import Cm, Pt
 from xlsxwriter import Workbook
 
 
-def create_excel_spreadsheet(cow_dict: dict, file_path: Path):
+def create_excel_spreadsheet(cow_dict: dict, xlsx_file_path: Path, csv_file_path: Path):
 
     cow_list = []
     for cow in cow_dict.values():
@@ -78,7 +78,7 @@ def create_excel_spreadsheet(cow_dict: dict, file_path: Path):
     )
     rank_comparison_column = field_order.index("rank_comparison")
 
-    workbook = Workbook(filename=file_path)
+    workbook = Workbook(filename=xlsx_file_path)
 
     bold_format = workbook.add_format({"bold": True})
 
@@ -101,6 +101,58 @@ def create_excel_spreadsheet(cow_dict: dict, file_path: Path):
         # "min_type": "percent", "max_type": "percent", "min_value": "10", "max_value": "90",
     }
 
+    #################################################################################################
+    # Data Summary copied from CSV file that has already been constructed.
+    data_summary = workbook.add_worksheet("Data Summary")
+
+    data_group_format = workbook.add_format()
+    data_group_format.set_bg_color("#767171")
+    data_group_format.set_font_color("white")
+
+    data_header_format = workbook.add_format()
+    data_header_format.set_align("center")
+    data_header_format.set_bold()
+    data_header_format.set_bg_color("#D0CECE")
+
+    stats_group_format = workbook.add_format()
+    stats_group_format.set_bg_color("#BF9000")
+    stats_group_format.set_font_color("white")
+
+    stats_header_format = workbook.add_format()
+    stats_header_format.set_align("center")
+    stats_header_format.set_bold()
+    stats_header_format.set_bg_color("#FFE699")
+
+    for col in range(21):
+        data_summary.write(0, col, "", data_group_format)
+    data_summary.write(0, 3, "Data from input CSV file (Lactation Data)", data_group_format)
+
+    for col in range(21, 32):
+        data_summary.write(0, col, "", stats_group_format)
+    data_summary.write(0, 23, "Calculated based on input data", stats_group_format)
+
+    row = 1
+
+    with open(csv_file_path) as f:
+        header = f.readline()
+        header_fields = [x.strip() for x in header.split(",")]
+        for col, field in enumerate(header_fields):
+            if col < 21:
+                cell_format = data_header_format
+            else:
+                cell_format = stats_header_format
+            data_summary.write(row, col, field, cell_format)
+        row += 1
+
+        for line in f:
+            values = [x.strip() for x in line.split(",")]
+            for col, value in enumerate(values):
+                data_summary.write(row, col, value)
+            row += 1
+
+    data_summary.set_column(first_col=0, last_col=32, width=15)
+
+    ################################################################################################
     # Report for all cows.
 
     report = workbook.add_worksheet("Report")
@@ -127,6 +179,7 @@ def create_excel_spreadsheet(cow_dict: dict, file_path: Path):
     for idx, field in enumerate(field_order):
         report.set_column(first_col=idx, last_col=idx, width=column_width_lookup[field])
 
+    ##########################################################################################################
     # Report 3-8 for cows in seasons 3-8.
 
     report_3_8 = workbook.add_worksheet("Report 3-8")
