@@ -1,3 +1,4 @@
+from decimal import Decimal
 from enum import Enum
 from pathlib import Path
 
@@ -109,8 +110,33 @@ def create_report_worksheet(cow_list: list[dict], workbook: Workbook, worksheet_
     for cow in cow_list:
         cow["rank_comparison"] = cow["milk_solids_rank"] - cow["merit_score_rank"]
 
+    # Calculate milk solids production of top and bottom 25% of cows.
+    herd_size = len(cow_list)
+    total_milk_solids = sum(cow["milk_solids"] for cow in cow_list)
+    avg_milk_solids = total_milk_solids / herd_size
+
+    lower_quartile_rank = Decimal(herd_size) * Decimal("0.75")
+    upper_quartile_rank = Decimal(herd_size) * Decimal("0.25")
+    num_cows_in_lower_quartile = 0
+    num_cows_in_upper_quartile = 0
+    lower_quartile_milk_solids = 0
+    upper_quartile_milk_solids = 0
+
+    for cow in cow_list:
+        if cow["milk_solids_rank"] <= upper_quartile_rank:
+            upper_quartile_milk_solids += cow["milk_solids"]
+            num_cows_in_upper_quartile += 1
+        elif cow["milk_solids_rank"] > lower_quartile_rank:
+            lower_quartile_milk_solids += cow["milk_solids"]
+            num_cows_in_lower_quartile += 1
+
+    avg_upper_quartile_milk_solids = upper_quartile_milk_solids / num_cows_in_upper_quartile
+    avg_lower_quartile_milk_solids = lower_quartile_milk_solids / num_cows_in_lower_quartile
+    quartile_difference = avg_upper_quartile_milk_solids - avg_lower_quartile_milk_solids
+
     # Define Formats.
     bold_format = workbook.add_format({"bold": True})
+    bold_centred_format = workbook.add_format({"bold": True, "align": "center"})
 
     header_format = workbook.add_format()
     header_format.set_align("center")
@@ -152,6 +178,28 @@ def create_report_worksheet(cow_list: list[dict], workbook: Workbook, worksheet_
     )
 
     report = workbook.add_worksheet(worksheet_name)
+
+    ############################################################################################
+    # Upper and Lower Quartile milk solids production.
+
+    overview_start_row = 4
+    label_col = 1
+    data_col = label_col + 1
+
+    report.write(overview_start_row, label_col, "OVERVIEW", bold_format)
+    report.write(overview_start_row + 1, label_col, "Herd Size", bold_centred_format)
+    report.write(overview_start_row + 1, data_col, herd_size, bold_centred_format)
+    report.write(overview_start_row + 2, label_col, "Average Milk Solids", header_format)
+    report.write(overview_start_row + 2, data_col, round(avg_milk_solids), centred_data_format)
+    report.write(overview_start_row + 3, label_col, "Top 25%", header_format)
+    report.write(overview_start_row + 3, data_col, round(avg_upper_quartile_milk_solids), centred_data_format)
+    report.write(overview_start_row + 4, label_col, "Bottom 25%", header_format)
+    report.write(overview_start_row + 4, data_col, round(avg_lower_quartile_milk_solids), centred_data_format)
+    report.write(overview_start_row + 5, label_col, "Difference", header_format)
+    report.write(overview_start_row + 5, data_col, round(quartile_difference), centred_data_format)
+
+    #######################################################################################################
+    # Individual Animal Analysis
 
     report.write(17, 0, "INDIVIDUAL ANIMAL ANALYSIS", bold_format)
 
