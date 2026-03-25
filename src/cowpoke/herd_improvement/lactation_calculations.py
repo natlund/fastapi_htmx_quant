@@ -60,6 +60,7 @@ def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
         fields_to_parse = fields  # Just copy all fields.
         cow_dict = {}
         cow_list = []
+        original_order = 1
 
         for row in f:
             row_values = [x.strip() for x in row.split(",")]
@@ -73,7 +74,8 @@ def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
                 for field in fields_to_parse
             }
             lactation_data = _convert_raw_data(raw_lactation_data)
-            cow_dict[eartag] = {"lactation_data": lactation_data}
+            cow_dict[eartag] = {"original_order": original_order, "lactation_data": lactation_data}
+            original_order += 1
 
     return cow_dict, cow_list, fields
 

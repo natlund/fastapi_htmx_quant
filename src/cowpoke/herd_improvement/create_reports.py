@@ -16,7 +16,7 @@ def create_excel_spreadsheet(cow_dict: dict, xlsx_file_path: Path, csv_file_path
 
     #################################################################################################
     # Data Summary copied from CSV file that has already been constructed.
-    data_summary = workbook.add_worksheet("Data Summary")
+    herd_companion = workbook.add_worksheet("Herd Companion +")
 
     data_group_format = workbook.add_format()
     data_group_format.set_bg_color("#767171")
@@ -37,12 +37,12 @@ def create_excel_spreadsheet(cow_dict: dict, xlsx_file_path: Path, csv_file_path
     stats_header_format.set_bg_color("#FFE699")
 
     for col in range(21):
-        data_summary.write(0, col, "", data_group_format)
-    data_summary.write(0, 3, "Data from input CSV file (Lactation Data)", data_group_format)
+        herd_companion.write(0, col, "", data_group_format)
+    herd_companion.write(0, 3, "Data from input CSV file (Lactation Data)", data_group_format)
 
     for col in range(21, 32):
-        data_summary.write(0, col, "", stats_group_format)
-    data_summary.write(0, 23, "Calculated based on input data", stats_group_format)
+        herd_companion.write(0, col, "", stats_group_format)
+    herd_companion.write(0, 23, "Calculated based on input data", stats_group_format)
 
     row = 1
 
@@ -54,20 +54,116 @@ def create_excel_spreadsheet(cow_dict: dict, xlsx_file_path: Path, csv_file_path
                 cell_format = data_header_format
             else:
                 cell_format = stats_header_format
-            data_summary.write(row, col, field, cell_format)
+            herd_companion.write(row, col, field, cell_format)
         row += 1
 
         for line in f:
             values = [x.strip() for x in line.split(",")]
             for col, value in enumerate(values):
-                data_summary.write(row, col, value)
+                herd_companion.write(row, col, value)
             row += 1
 
-    data_summary.set_column(first_col=0, last_col=32, width=15)
+    herd_companion.set_column(first_col=0, last_col=32, width=15)
+
+    workbook = create_data_summary_worksheet(cow_dict=cow_dict, workbook=workbook)
 
     workbook = create_report_and_report_3_8_worksheets(cow_dict=cow_dict, workbook=workbook)
 
     workbook.close()
+
+
+def create_data_summary_worksheet(cow_dict: dict, workbook: Workbook) -> Workbook:
+    original_cow_order = [(x["original_order"], x["lactation_data"]["eartag"]) for x in cow_dict.values()]
+    original_cow_order.sort(key=lambda x: x[0])
+
+    field_name_to_column_name = {
+        "line_number": "Cow #",
+        "eartag": "Eartag",
+        "birth_date": "Birth Date",
+        "breed": "Breed",
+        "lact_num": "Lact No.",
+        "calving_date": "Calving Date",
+        "milk": "305 Day Milk kg",
+        "fat": "305 Day Fat kg",
+        "fat_percentage": "305 Day Fat %",
+        "protein": "305 Day Protein kg",
+        "protein_percentage": "305 Day Protein %",
+        "milk_solids": "305 Day Fat + Protein kg",
+        "lact_len": "Days In Milk",
+        "tests": "No. of Tests",
+        "ave_SCC": "Ave SCC",
+        "sire_name": "Sire Name",
+        "liveweight": "Weight",
+        "group": "Group",
+        "weight_score": "Weight Score",
+        "merit_score": "Score",
+    }
+    running_max_col_widths = {
+        key: len(val) for key, val in field_name_to_column_name.items()
+    }
+    data_fields = ("line_number", "eartag", "birth_date", "breed", "lact_num", "calving_date",
+                   "milk", "fat", "fat_percentage", "protein", "protein_percentage", "milk_solids",
+                   "lact_len", "tests", "ave_SCC", "sire_name")
+    derived_fields = ("liveweight", "group", "weight_score", "merit_score")
+
+    data_group_format = workbook.add_format()
+    data_group_format.set_bg_color("#767171")
+    data_group_format.set_font_color("white")
+
+    data_header_format = workbook.add_format()
+    data_header_format.set_align("center")
+    data_header_format.set_bold()
+    data_header_format.set_bg_color("#D0CECE")
+
+    stats_group_format = workbook.add_format()
+    stats_group_format.set_bg_color("#BF9000")
+    stats_group_format.set_font_color("white")
+
+    stats_header_format = workbook.add_format()
+    stats_header_format.set_align("center")
+    stats_header_format.set_bold()
+    stats_header_format.set_bg_color("#FFE699")
+
+    centred_data_format = workbook.add_format({"align": "center"})
+
+    data_summary = workbook.add_worksheet("Data Summary")
+
+    for col in range(len(data_fields)):
+        data_summary.write(0, col, "", data_group_format)
+    data_summary.write(0, 3, "Data from input CSV file (Lactation Data)", data_group_format)
+
+    for col in range(len(data_fields), len(data_fields) + len(derived_fields)):
+        data_summary.write(0, col, "", stats_group_format)
+    data_summary.write(0, len(data_fields) + 1, "Calculated based on input data", stats_group_format)
+
+    for idx, field in enumerate(data_fields):
+        data_summary.write(1, idx, field_name_to_column_name[field], data_header_format)
+
+    for idx, field in enumerate(derived_fields):
+        data_summary.write(1, len(data_fields) + idx, field_name_to_column_name[field], stats_header_format)
+
+    for row_num, eartag in original_cow_order:  # row_num is original order of cow, 1-indexed.
+        cow = cow_dict[eartag]
+        all_cow_data = {**cow["lactation_data"], **cow["statistics"]}
+
+        for idx, field in enumerate(data_fields + derived_fields):
+            if field in ("sire_name"):
+                format = None
+            else:
+                format = centred_data_format
+            data_value = all_cow_data[field]
+            data_summary.write(row_num + 1, idx, data_value, format)
+
+            if len(str(data_value)) > running_max_col_widths[field]:
+                running_max_col_widths[field] = len(str(data_value))
+
+    # Set column widths for easy viewing.
+    for idx, field in enumerate(data_fields + derived_fields):
+        col_width = running_max_col_widths[field] + 4
+        if col_width >= 9:  # Default column width is ~8.7 units(?)  Don't make column narrower than default.
+            data_summary.set_column(first_col=idx, last_col=idx, width=col_width)
+
+    return workbook
 
 
 def create_report_and_report_3_8_worksheets(cow_dict: dict, workbook: Workbook) -> Workbook:
