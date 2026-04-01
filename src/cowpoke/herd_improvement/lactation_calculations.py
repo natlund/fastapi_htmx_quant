@@ -190,7 +190,7 @@ def _add_estimated_weights_to_cow_dict(cow_dict: dict) -> dict:
         lactation_data = data["lactation_data"]
 
         if lactation_data.get("liveweight") is None:
-            if lactation_data["lact_num"] in (1, 2):
+            if lactation_data["lact_num"] == 1:
                 lactation_data["liveweight"] = Decimal(450)
             else:
                 lactation_data["liveweight"] = Decimal(500)
