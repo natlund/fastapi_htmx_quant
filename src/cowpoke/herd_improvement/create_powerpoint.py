@@ -38,7 +38,8 @@ def create_powerpoint(data: dict, file_path: Path, image_file_paths):
 
     title_slide = prs.slides.add_slide(slide_layout=title_slide_layout)
 
-    logo = title_slide.shapes.add_picture("Blockwise_Services_logo.png", left=Cm(3), top=Cm(0.5), height=Cm(10))
+    logo_image_path = Path(__file__).parent.joinpath("Blockwise_Services_logo.png")
+    logo = title_slide.shapes.add_picture(str(logo_image_path), left=Cm(3), top=Cm(0.5), height=Cm(10))
 
     title = title_slide.placeholders[0]
     subtitle = title_slide.placeholders[1]
