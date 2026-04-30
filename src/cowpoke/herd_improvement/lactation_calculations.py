@@ -47,7 +47,7 @@ def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: 
 
     create_graphs(cow_dict=augmented_cow_dict)
 
-    create_powerpoint(data=summary_stats, file_path=DownloadFilePaths.output_powerpoint, image_file_paths=FilePaths)
+    create_powerpoint(data=summary_stats, file_path=DownloadFilePaths.output_powerpoint, image_file_paths=ImageFilePaths)
 
     return summary_stats
 
@@ -444,11 +444,9 @@ def calculate_group_data(cow_list: list, herd_size: int, description: str) -> di
 
 
 @dataclasses.dataclass(frozen=True)
-class FilePaths:
+class ImageFilePaths:
     src_dir = Path(__file__).parent.parent.parent
     temp_dir = src_dir.joinpath("temp", "cowpoke", "herd_improvement")
-
-    output_csv = temp_dir.joinpath("lactation_calculations.csv")
 
     protein_pct_histogram = temp_dir.joinpath("protein_pct_histogram.svg")
     milk_solids_histogram = temp_dir.joinpath("milk_solids_histogram.svg")
@@ -494,74 +492,74 @@ def create_graphs(cow_dict: dict) -> dict:
     sns.set_theme(style="darkgrid")
 
     g = sns.displot(data={"Protein %": protein_percentage}, x="Protein %", binwidth=0.1, binrange=[3,5.5], kde=True)
-    g.savefig(FilePaths.protein_pct_histogram)
+    g.savefig(ImageFilePaths.protein_pct_histogram)
     plt.close()
 
     g = sns.displot(data={"Milk Solids kg": milk_solids}, x="Milk Solids kg", binwidth=20, binrange=[300,900], kde=True)
-    g.savefig(FilePaths.milk_solids_histogram)
-    g.savefig(FilePaths.milk_solids_histogram.with_suffix(".png"))
+    g.savefig(ImageFilePaths.milk_solids_histogram)
+    g.savefig(ImageFilePaths.milk_solids_histogram.with_suffix(".png"))
     plt.close()
 
     g = sns.displot(data={"Average SCC": ave_scc}, x="Average SCC", binwidth=50, stat="percent")
-    g.savefig(FilePaths.scc_histogram)
-    g.savefig(FilePaths.scc_histogram.with_suffix(".png"))
+    g.savefig(ImageFilePaths.scc_histogram)
+    g.savefig(ImageFilePaths.scc_histogram.with_suffix(".png"))
     plt.close()
 
     g = sns.displot(data={"Score": merit_score}, x="Score", binwidth=50, binrange=[0,1800], stat="percent", kde=True)
-    g.savefig(FilePaths.merit_score_histogram)
+    g.savefig(ImageFilePaths.merit_score_histogram)
     plt.close()
 
     g = sns.displot(data={"Liveweight": liveweight}, x="Liveweight", binwidth=25, binrange=[300,800],
                     stat="percent", kde=True)
-    g.savefig(FilePaths.liveweight_histogram)
-    g.savefig(FilePaths.liveweight_histogram.with_suffix(".png"))
+    g.savefig(ImageFilePaths.liveweight_histogram)
+    g.savefig(ImageFilePaths.liveweight_histogram.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Liveweight": liveweight, "Milk Solids": milk_solids },
                     x="Liveweight", y="Milk Solids", hue=liveweight_true, kind="scatter")
-    g.savefig(FilePaths.liveweight_milk_solids_chart)
-    g.savefig(FilePaths.liveweight_milk_solids_chart.with_suffix(".png"))
+    g.savefig(ImageFilePaths.liveweight_milk_solids_chart)
+    g.savefig(ImageFilePaths.liveweight_milk_solids_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Solids": milk_solids },
                     x="Cow Efficiency", y="Milk Solids", hue=liveweight_true, kind="scatter")
-    g.savefig(FilePaths.efficiency_milk_solids_chart)
-    g.savefig(FilePaths.efficiency_milk_solids_chart.with_suffix(".png"))
+    g.savefig(ImageFilePaths.efficiency_milk_solids_chart)
+    g.savefig(ImageFilePaths.efficiency_milk_solids_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Richness": protein_percentage },
                     x="Cow Efficiency", y="Milk Richness", hue=liveweight_true, kind="scatter")
-    g.savefig(FilePaths.cow_performance_chart)
+    g.savefig(ImageFilePaths.cow_performance_chart)
     plt.close()
 
     g = sns.catplot(data={"Age": age, "Milk Solids": milk_solids }, x="Age", y="Milk Solids")
-    g.savefig(FilePaths.milk_solids_by_age_chart)
-    g.savefig(FilePaths.milk_solids_by_age_chart.with_suffix(".png"))
+    g.savefig(ImageFilePaths.milk_solids_by_age_chart)
+    g.savefig(ImageFilePaths.milk_solids_by_age_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.catplot(data={"Age": age, "Milk Solids": milk_solids }, x="Age", y="Milk Solids", kind="box")
-    g.savefig(FilePaths.milk_solids_by_age_boxplot)
+    g.savefig(ImageFilePaths.milk_solids_by_age_boxplot)
     plt.close()
 
     g = sns.catplot(data={"Age": age, "Cow Efficiency": weight_score}, x="Age", y="Cow Efficiency", hue=liveweight_true)
-    g.savefig(FilePaths.efficiency_by_age_chart)
-    g.savefig(FilePaths.efficiency_by_age_chart.with_suffix(".png"))
+    g.savefig(ImageFilePaths.efficiency_by_age_chart)
+    g.savefig(ImageFilePaths.efficiency_by_age_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.catplot(data={"Age": age, "Cow Efficiency": weight_score }, x="Age", y="Cow Efficiency", kind="box")
-    g.savefig(FilePaths.efficiency_by_age_boxplot)
+    g.savefig(ImageFilePaths.efficiency_by_age_boxplot)
     plt.close()
 
     g = sns.relplot(data={"Average SCC": ave_scc, "Milk Solids": milk_solids },
                     x="Average SCC", y="Milk Solids", kind="scatter")
-    g.savefig(FilePaths.milk_solids_vs_scc_chart)
-    g.savefig(FilePaths.milk_solids_vs_scc_chart.with_suffix(".png"))
+    g.savefig(ImageFilePaths.milk_solids_vs_scc_chart)
+    g.savefig(ImageFilePaths.milk_solids_vs_scc_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Average SCC": ave_scc, "Cow Efficiency": weight_score },
                     x="Average SCC", y="Cow Efficiency", hue=liveweight_true, kind="scatter")
-    g.savefig(FilePaths.efficiency_vs_scc_chart)
-    g.savefig(FilePaths.efficiency_vs_scc_chart.with_suffix(".png"))
+    g.savefig(ImageFilePaths.efficiency_vs_scc_chart)
+    g.savefig(ImageFilePaths.efficiency_vs_scc_chart.with_suffix(".png"))
     plt.close()
 
     #################################################
@@ -585,8 +583,8 @@ def create_graphs(cow_dict: dict) -> dict:
     sns.lineplot(x=age_categories_in_order, y=industry_standard_age_pcts, ax=ax3, color="red")
     ax3.set_axis_off()
 
-    fig.savefig(FilePaths.cow_age_chart)
-    fig.savefig(FilePaths.cow_age_chart.with_suffix(".png"))
+    fig.savefig(ImageFilePaths.cow_age_chart)
+    fig.savefig(ImageFilePaths.cow_age_chart.with_suffix(".png"))
     plt.close()
 
 

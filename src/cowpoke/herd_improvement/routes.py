@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from src.cowpoke.herd_improvement.lactation_calculations import (
-    calculate_lactation_results, DownloadFilePaths, FilePaths,
+    calculate_lactation_results, DownloadFilePaths, ImageFilePaths,
 )
 
 
@@ -94,21 +94,21 @@ async def lactation_calculations_download(result_filename: str):
 @router.get("/cowpoke/herd-improvement/images/{image_file}")
 async def result_images(image_file: str):
     file_lookup = {
-        "cow-age-chart.svg": FilePaths.cow_age_chart,
-        "scc-histogram.svg": FilePaths.scc_histogram,
-        "protein-pct-histogram.svg": FilePaths.protein_pct_histogram,
-        "milk-solids-histogram.svg": FilePaths.milk_solids_histogram,
-        "merit-score-histogram.svg": FilePaths.merit_score_histogram,
-        "liveweight-histogram.svg": FilePaths.liveweight_histogram,
-        "liveweight-milk-solids-chart.svg": FilePaths.liveweight_milk_solids_chart,
-        "efficiency-milk-solids-chart.svg": FilePaths.efficiency_milk_solids_chart,
-        "cow-performance-chart.svg": FilePaths.cow_performance_chart,
-        "milk-solids-by-age-chart.svg": FilePaths.milk_solids_by_age_chart,
-        "milk-solids-by-age-boxplot.svg": FilePaths.milk_solids_by_age_boxplot,
-        "efficiency-by-age-chart.svg": FilePaths.efficiency_by_age_chart,
-        "efficiency-by-age-boxplot.svg": FilePaths.efficiency_by_age_boxplot,
-        "milk-solids-vs-scc-chart.svg": FilePaths.milk_solids_vs_scc_chart,
-        "efficiency-vs-scc-chart.svg": FilePaths.efficiency_vs_scc_chart,
+        "cow-age-chart.svg": ImageFilePaths.cow_age_chart,
+        "scc-histogram.svg": ImageFilePaths.scc_histogram,
+        "protein-pct-histogram.svg": ImageFilePaths.protein_pct_histogram,
+        "milk-solids-histogram.svg": ImageFilePaths.milk_solids_histogram,
+        "merit-score-histogram.svg": ImageFilePaths.merit_score_histogram,
+        "liveweight-histogram.svg": ImageFilePaths.liveweight_histogram,
+        "liveweight-milk-solids-chart.svg": ImageFilePaths.liveweight_milk_solids_chart,
+        "efficiency-milk-solids-chart.svg": ImageFilePaths.efficiency_milk_solids_chart,
+        "cow-performance-chart.svg": ImageFilePaths.cow_performance_chart,
+        "milk-solids-by-age-chart.svg": ImageFilePaths.milk_solids_by_age_chart,
+        "milk-solids-by-age-boxplot.svg": ImageFilePaths.milk_solids_by_age_boxplot,
+        "efficiency-by-age-chart.svg": ImageFilePaths.efficiency_by_age_chart,
+        "efficiency-by-age-boxplot.svg": ImageFilePaths.efficiency_by_age_boxplot,
+        "milk-solids-vs-scc-chart.svg": ImageFilePaths.milk_solids_vs_scc_chart,
+        "efficiency-vs-scc-chart.svg": ImageFilePaths.efficiency_vs_scc_chart,
     }
     download_filename = image_file.replace("-", "_")
     return FileResponse(path=file_lookup[image_file], filename=download_filename)
