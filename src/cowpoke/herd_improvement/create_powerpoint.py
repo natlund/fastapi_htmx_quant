@@ -573,10 +573,8 @@ def calc_text_width(text: str, font_size: int) -> int:
 
 
 if __name__ == "__main__":
-    src_file_path = Path(__file__).parent.parent.parent
-    file_path = src_file_path.joinpath("temp", "cowpoke", "herd_improvement", "blockwise_herd_report.pptx")
 
-    from lactation_calculations import ImageFilePaths
+    from lactation_calculations import DownloadFilePaths, ImageFilePaths
 
     group_data = {
         "lactation_description": "1 & 2",
@@ -599,4 +597,6 @@ if __name__ == "__main__":
         "one": group_data,
         "two": group_data,
     }
-    create_powerpoint(data=summary_stats, file_path=file_path, image_file_paths=ImageFilePaths)
+    create_powerpoint(
+        data=summary_stats, file_path=DownloadFilePaths.output_powerpoint, image_file_paths=ImageFilePaths
+    )

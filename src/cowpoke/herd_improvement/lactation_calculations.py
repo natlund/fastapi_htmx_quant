@@ -591,9 +591,9 @@ def create_graphs(cow_dict: dict) -> dict:
 if __name__ == "__main__":
     demo_file_name = "demo_data/LatestLactation_2026_02_20.csv"
     liveweight_file_name = "demo_data/Herdwatch_Liveweight_2025_10_08.csv"
-    output_file_path = "../../temp/cowpoke/herd_improvement/lactation_calculations.csv"
+
     calculate_lactation_results(
         lactation_file_path=demo_file_name,
         liveweight_file_path=liveweight_file_name,
-        output_file_path=output_file_path
+        output_file_path=DownloadFilePaths.output_csv,
     )

@@ -14,8 +14,6 @@ templates = Jinja2Templates(directory=["cowpoke/herd_improvement/templates", "te
 
 router = APIRouter()
 
-output_file_path = "temp/cowpoke/herd_improvement/lactation_calculations.csv"
-
 
 @router.get("/cowpoke/herd-improvement", response_class=HTMLResponse)
 async def herd_improvement(request: Request):
@@ -31,7 +29,7 @@ async def lactation_demo(request: Request):
     lactation_results = calculate_lactation_results(
         lactation_file_path=demo_lactation_file,
         liveweight_file_path=demo_liveweigh_file,
-        output_file_path=output_file_path
+        output_file_path=DownloadFilePaths.output_csv,
     )
     template_context = {
         "stats": lactation_results,
@@ -70,7 +68,7 @@ async def lactation_upload(request: Request):
     lactation_results = calculate_lactation_results(
         lactation_file_path=lactation_temp_file,
         liveweight_file_path=liveweight_temp_file,
-        output_file_path=output_file_path
+        output_file_path=DownloadFilePaths.output_csv,
     )
     template_context = {
         "stats": lactation_results,
@@ -85,7 +83,7 @@ async def lactation_upload(request: Request):
 @router.get("/cowpoke/herd-improvement/download/{result_filename}")
 async def lactation_calculations_download(result_filename: str):
     file_lookup = {
-        "lactation-calculations.csv": output_file_path,
+        "lactation-calculations.csv": DownloadFilePaths.output_csv,
         "report.xlsx": DownloadFilePaths.output_spreadsheet,
         "blockwise-herd-report.pptx": DownloadFilePaths.output_powerpoint,
     }
