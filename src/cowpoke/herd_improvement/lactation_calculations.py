@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from src.cowpoke.herd_improvement.create_reports import create_excel_spreadsheet
+from src.cowpoke.herd_improvement.create_powerpoint import create_powerpoint
 
 
 @dataclasses.dataclass(frozen=True)
@@ -16,6 +17,7 @@ class DownloadFilePaths:
 
     output_csv = temp_dir.joinpath("lactation_calculations.csv")
     output_spreadsheet = temp_dir.joinpath("report.xlsx")
+    output_powerpoint = temp_dir.joinpath("blockwise_herd_report.pptx")
 
 
 def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: str, output_file_path: str) -> dict:
@@ -44,6 +46,8 @@ def calculate_lactation_results(lactation_file_path: str, liveweight_file_path: 
     )
 
     create_graphs(cow_dict=augmented_cow_dict)
+
+    create_powerpoint(data=summary_stats, file_path=DownloadFilePaths.output_powerpoint, image_file_paths=FilePaths)
 
     return summary_stats
 
@@ -355,45 +359,51 @@ def calculate_summary_statistics(cow_dict: dict) -> dict:
     for eartag, data in cow_dict.items():
         if data["lactation_data"]["lact_num"] in (1, 2):
             cows.append(data)
-    summary_statistics["one_and_two"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+    summary_statistics["one_and_two"] = calculate_group_data(
+        cow_list=cows, herd_size=number_of_cows, description="one_and_two"
+    )
 
     cows = []
     for eartag, data in cow_dict.items():
         lactations = data["lactation_data"]["lact_num"]
         if 3 <= lactations <= 8:
             cows.append(data)
-    summary_statistics["three_to_eight"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+    summary_statistics["three_to_eight"] = calculate_group_data(
+        cow_list=cows, herd_size=number_of_cows, description="three_to_eight"
+    )
 
     cows = []
     for eartag, data in cow_dict.items():
         lactations = data["lactation_data"]["lact_num"]
         if 9 <= lactations:
             cows.append(data)
-    summary_statistics["nine_plus"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+    summary_statistics["nine_plus"] = calculate_group_data(
+        cow_list=cows, herd_size=number_of_cows, description="nine_plus"
+    )
 
     cows = []
     for eartag, data in cow_dict.items():
         cows.append(data)
-    summary_statistics["total"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+    summary_statistics["total"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="total")
 
     cows = []
     for eartag, data in cow_dict.items():
         lactations = data["lactation_data"]["lact_num"]
         if lactations == 1:
             cows.append(data)
-    summary_statistics["one"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+    summary_statistics["one"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="one")
 
     cows = []
     for eartag, data in cow_dict.items():
         lactations = data["lactation_data"]["lact_num"]
         if lactations == 2:
             cows.append(data)
-    summary_statistics["two"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows)
+    summary_statistics["two"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="two")
 
     return summary_statistics
 
 
-def calculate_group_data(cow_list: list, herd_size: int) -> dict:
+def calculate_group_data(cow_list: list, herd_size: int, description: str) -> dict:
     # Lactation, No of Cows, % of Herd,
     # Vol of Milk kg, Avg Vol of Milk,
     # Milk Solids kg, Ave Milk Solids,
@@ -419,6 +429,7 @@ def calculate_group_data(cow_list: list, herd_size: int) -> dict:
         protein_pct += statistics["protein_percentage"]
 
     return {
+        "lactation_description": description,
         "num_cows": num_cows,
         "pct_of_herd": round(100 * Decimal(num_cows) / herd_size),
         "milk_volume": milk_vol,

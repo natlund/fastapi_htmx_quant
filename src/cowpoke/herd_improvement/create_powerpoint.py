@@ -187,7 +187,7 @@ def create_powerpoint(data: dict, file_path: Path, image_file_paths):
     top_cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
 
     field_name_to_column_name = {
-        "lactation": "Lactation",
+        "lactation_description": "Lactation",
         "num_cows": "No of Cows",
         "pct_of_herd": "% of Herd",
         "milk_volume": "Vol of Milk kg",
@@ -202,7 +202,7 @@ def create_powerpoint(data: dict, file_path: Path, image_file_paths):
     running_max_col_widths = {
         key: calc_text_width(text=val, font_size=10) for key, val in field_name_to_column_name.items()
     }
-    field_order = ("lactation", "num_cows", "pct_of_herd", "milk_volume", "avg_milk_volume", "milk_solids",
+    field_order = ("lactation_description", "num_cows", "pct_of_herd", "milk_volume", "avg_milk_volume", "milk_solids",
                    "avg_milk_solids", "days_in_milk", "avg_weight", "avg_fat_pct", "avg_protein_pct")
 
     for idx, field in enumerate(field_order):
@@ -578,7 +578,7 @@ if __name__ == "__main__":
     from lactation_calculations import FilePaths
 
     group_data = {
-        "lactation": "1 & 2",
+        "lactation_description": "1 & 2",
         "num_cows": 300,
         "pct_of_herd": 75,
         "milk_volume": 5123456,
