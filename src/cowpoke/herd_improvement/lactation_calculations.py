@@ -488,10 +488,12 @@ def create_graphs(cow_dict: dict) -> dict:
 
     g = sns.displot(data={"Milk Solids kg": milk_solids}, x="Milk Solids kg", binwidth=20, binrange=[300,900], kde=True)
     g.savefig(FilePaths.milk_solids_histogram)
+    g.savefig(FilePaths.milk_solids_histogram.with_suffix(".png"))
     plt.close()
 
     g = sns.displot(data={"Average SCC": ave_scc}, x="Average SCC", binwidth=50, stat="percent")
     g.savefig(FilePaths.scc_histogram)
+    g.savefig(FilePaths.scc_histogram.with_suffix(".png"))
     plt.close()
 
     g = sns.displot(data={"Score": merit_score}, x="Score", binwidth=50, binrange=[0,1800], stat="percent", kde=True)
@@ -501,20 +503,19 @@ def create_graphs(cow_dict: dict) -> dict:
     g = sns.displot(data={"Liveweight": liveweight}, x="Liveweight", binwidth=25, binrange=[300,800],
                     stat="percent", kde=True)
     g.savefig(FilePaths.liveweight_histogram)
-    plt.close()
-
-    g = sns.catplot(data={"Age": age}, x="Age", kind="count", stat="percent")
-    g.savefig(FilePaths.cow_age_chart)
+    g.savefig(FilePaths.liveweight_histogram.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Liveweight": liveweight, "Milk Solids": milk_solids },
                     x="Liveweight", y="Milk Solids", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.liveweight_milk_solids_chart)
+    g.savefig(FilePaths.liveweight_milk_solids_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Solids": milk_solids },
                     x="Cow Efficiency", y="Milk Solids", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.efficiency_milk_solids_chart)
+    g.savefig(FilePaths.efficiency_milk_solids_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Cow Efficiency": weight_score, "Milk Richness": protein_percentage },
@@ -524,6 +525,7 @@ def create_graphs(cow_dict: dict) -> dict:
 
     g = sns.catplot(data={"Age": age, "Milk Solids": milk_solids }, x="Age", y="Milk Solids")
     g.savefig(FilePaths.milk_solids_by_age_chart)
+    g.savefig(FilePaths.milk_solids_by_age_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.catplot(data={"Age": age, "Milk Solids": milk_solids }, x="Age", y="Milk Solids", kind="box")
@@ -532,6 +534,7 @@ def create_graphs(cow_dict: dict) -> dict:
 
     g = sns.catplot(data={"Age": age, "Cow Efficiency": weight_score}, x="Age", y="Cow Efficiency", hue=liveweight_true)
     g.savefig(FilePaths.efficiency_by_age_chart)
+    g.savefig(FilePaths.efficiency_by_age_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.catplot(data={"Age": age, "Cow Efficiency": weight_score }, x="Age", y="Cow Efficiency", kind="box")
@@ -541,11 +544,38 @@ def create_graphs(cow_dict: dict) -> dict:
     g = sns.relplot(data={"Average SCC": ave_scc, "Milk Solids": milk_solids },
                     x="Average SCC", y="Milk Solids", kind="scatter")
     g.savefig(FilePaths.milk_solids_vs_scc_chart)
+    g.savefig(FilePaths.milk_solids_vs_scc_chart.with_suffix(".png"))
     plt.close()
 
     g = sns.relplot(data={"Average SCC": ave_scc, "Cow Efficiency": weight_score },
                     x="Average SCC", y="Cow Efficiency", hue=liveweight_true, kind="scatter")
     g.savefig(FilePaths.efficiency_vs_scc_chart)
+    g.savefig(FilePaths.efficiency_vs_scc_chart.with_suffix(".png"))
+    plt.close()
+
+    #################################################
+    # Age distribution with 9, 10, 11, etc collapsed into "9+" and Industry Standard percentages overlaid.
+
+    fig, ax1 = plt.subplots()
+
+    ages_with_9plus = [str(x) if x < 9 else "9+" for x in age]
+    age_categories_in_order = ["1", "2", "3", "4", "5", "6", "7", "8", "9+"]
+    industry_standard_age_pcts = [18, 16, 13,  12,  11,  9,   8,   7,   6]
+
+    sns.countplot(data={"Age": ages_with_9plus}, x="Age", stat="percent", order=age_categories_in_order, ax=ax1)
+
+    ax2 = ax1.twinx()
+    sns.scatterplot(x=age_categories_in_order, y=industry_standard_age_pcts, ax=ax2,
+                    color="red", marker="D", label="Industry Standard")
+    plt.legend(loc="upper right")
+    ax2.set_axis_off()
+
+    ax3 = ax2.twinx()
+    sns.lineplot(x=age_categories_in_order, y=industry_standard_age_pcts, ax=ax3, color="red")
+    ax3.set_axis_off()
+
+    fig.savefig(FilePaths.cow_age_chart)
+    fig.savefig(FilePaths.cow_age_chart.with_suffix(".png"))
     plt.close()
 
 
