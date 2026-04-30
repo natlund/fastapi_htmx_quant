@@ -360,7 +360,7 @@ def calculate_summary_statistics(cow_dict: dict) -> dict:
         if data["lactation_data"]["lact_num"] in (1, 2):
             cows.append(data)
     summary_statistics["one_and_two"] = calculate_group_data(
-        cow_list=cows, herd_size=number_of_cows, description="one_and_two"
+        cow_list=cows, herd_size=number_of_cows, description="1 & 2"
     )
 
     cows = []
@@ -369,7 +369,7 @@ def calculate_summary_statistics(cow_dict: dict) -> dict:
         if 3 <= lactations <= 8:
             cows.append(data)
     summary_statistics["three_to_eight"] = calculate_group_data(
-        cow_list=cows, herd_size=number_of_cows, description="three_to_eight"
+        cow_list=cows, herd_size=number_of_cows, description="3 to 8"
     )
 
     cows = []
@@ -378,27 +378,27 @@ def calculate_summary_statistics(cow_dict: dict) -> dict:
         if 9 <= lactations:
             cows.append(data)
     summary_statistics["nine_plus"] = calculate_group_data(
-        cow_list=cows, herd_size=number_of_cows, description="nine_plus"
+        cow_list=cows, herd_size=number_of_cows, description="9+"
     )
 
     cows = []
     for eartag, data in cow_dict.items():
         cows.append(data)
-    summary_statistics["total"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="total")
+    summary_statistics["total"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="Total")
 
     cows = []
     for eartag, data in cow_dict.items():
         lactations = data["lactation_data"]["lact_num"]
         if lactations == 1:
             cows.append(data)
-    summary_statistics["one"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="one")
+    summary_statistics["one"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="1")
 
     cows = []
     for eartag, data in cow_dict.items():
         lactations = data["lactation_data"]["lact_num"]
         if lactations == 2:
             cows.append(data)
-    summary_statistics["two"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="two")
+    summary_statistics["two"] = calculate_group_data(cow_list=cows, herd_size=number_of_cows, description="2")
 
     return summary_statistics
 
