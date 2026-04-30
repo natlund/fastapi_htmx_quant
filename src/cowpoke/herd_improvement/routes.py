@@ -87,6 +87,7 @@ async def lactation_calculations_download(result_filename: str):
     file_lookup = {
         "lactation-calculations.csv": output_file_path,
         "report.xlsx": DownloadFilePaths.output_spreadsheet,
+        "blockwise-herd-report.pptx": DownloadFilePaths.output_powerpoint,
     }
     return FileResponse(path=file_lookup[result_filename], filename=result_filename.replace("-", "_"))
 
