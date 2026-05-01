@@ -428,6 +428,21 @@ def calculate_group_data(cow_list: list, herd_size: int, description: str) -> di
         fat_pct += statistics["fat_percentage"]
         protein_pct += statistics["protein_percentage"]
 
+    if num_cows == 0:
+        return {
+        "lactation_description": description,
+        "num_cows": num_cows,
+        "pct_of_herd": round(100 * Decimal(num_cows) / herd_size),
+        "milk_volume": milk_vol,
+        "avg_milk_volume": 0,
+        "milk_solids": milk_solids,
+        "avg_milk_solids": 0,
+        "days_in_milk": 0,
+        "avg_weight": 0,
+        "avg_fat_pct": 0,
+        "avg_protein_pct": 0,
+    }
+
     return {
         "lactation_description": description,
         "num_cows": num_cows,
