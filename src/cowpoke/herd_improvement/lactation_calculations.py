@@ -588,13 +588,13 @@ def create_graphs(cow_dict: dict) -> dict:
 
     sns.countplot(data={"Age": ages_with_9plus}, x="Age", stat="percent", order=age_categories_in_order, ax=ax1)
 
-    ax2 = ax1.twinx()
+    ax2 = ax1.twiny()
     sns.scatterplot(x=age_categories_in_order, y=industry_standard_age_pcts, ax=ax2,
                     color="red", marker="D", label="Industry Standard")
     plt.legend(loc="upper right")
     ax2.set_axis_off()
 
-    ax3 = ax2.twinx()
+    ax3 = ax2.twiny()
     sns.lineplot(x=age_categories_in_order, y=industry_standard_age_pcts, ax=ax3, color="red")
     ax3.set_axis_off()
 
