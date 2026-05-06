@@ -72,6 +72,10 @@ def _parse_lactation_csv_file(lactation_file_path: str) -> dict:
                 continue
 
             eartag = row_values[field_indices["eartag"]]
+            if eartag == "":
+                eartag = row_values[field_indices["line_number"]]  # Use line_number as unique ID.
+                row_values[field_indices["eartag"]] = eartag  # Jam replacement 'eartag' back into row_values.
+
             cow_list.append(eartag)  # Keep track of the original ordering of cows in the CSV file.
             raw_lactation_data = {
                 field: row_values[field_indices[field]]
@@ -112,19 +116,41 @@ field_name_lookup = {
 
 def _convert_raw_data(raw_data: dict) -> dict:
     integer_fields = (
-        "milk_solids", "fat", "protein", "milk", "ave_SCC",
         "lact_len", "lact_num",
         # "tests", "calving_interval", "CPI", "SCC_over_limit", # Not used in calculations.  Bung formatting breaks stuff.
         # "line_number"  # Can be a string.
     )
     for field in integer_fields:
         if field in raw_data:
-            raw_data[field] = int(raw_data[field])
+            value = raw_data[field]
+            try:
+                raw_data[field] = int(value)
+            except ValueError:
+                raise ValueError(f"Could not convert '{field}' value '{value}' into integer")
 
-    decimal_fields = ("F+P_kg_per_day",)
+    decimal_fields = ( "milk_solids", "fat", "protein", "milk", "ave_SCC",)
     for field in decimal_fields:
         if field in raw_data:
-            raw_data[field] = Decimal(raw_data[field])
+            value = raw_data[field]
+            if value == "":
+                raw_data[field] = Decimal(0)
+                continue
+            try:
+                raw_data[field] = Decimal(raw_data[field])
+            except:
+                raise ValueError(f"Could not convert '{field}' value '{value}' into Decimal")
+
+    possibly_derived_decimal_fields = ("F+P_kg_per_day",)  # Fields may not be present, and need to be derived.
+    for field in possibly_derived_decimal_fields:
+        if field in raw_data:
+            value = raw_data[field]
+            if field == "F+P_kg_per_day" and value == "":
+                raw_data[field] = round(raw_data["milk_solids"] / raw_data["lact_len"], 2)
+                continue
+            try:
+                raw_data[field] = Decimal(raw_data[field])
+            except:
+                raise ValueError(f"Could not convert '{field}' value '{value}' into Decimal")
 
     # date_fields = ("birth_date", "calving_date")
     date_fields = ()  # Disabled.  Not needed for calculations, and date formatting irregularities break it.
@@ -173,8 +199,18 @@ def _parse_liveweight_csv_file(liveweight_file_path: str) -> dict:
                 continue
 
             eartag = row_values[field_indices["eartag"]]
+            if eartag == "":  # If blank 'eartag', must be using Herd Companion format with 'Line No.' field.
+                eartag = row_values[field_indices["line_number"]]
+
             liveweight = row_values[field_indices["liveweight"]]
-            liveweight_dict[eartag] = Decimal(liveweight)
+            if liveweight == "":
+                continue
+            try:
+                liveweight_dict[eartag] = Decimal(liveweight)
+            except:
+                raise ValueError(f"Could not convert 'liveweight' value '{liveweight}' into Decimal")
+
+        print(liveweight_dict)
 
         return liveweight_dict
 
