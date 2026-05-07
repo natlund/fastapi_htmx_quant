@@ -1,4 +1,5 @@
 import datetime
+import logging
 import shutil
 
 from fastapi import APIRouter, Request
@@ -9,6 +10,8 @@ from src.cowpoke.herd_improvement.lactation_calculations import (
     calculate_lactation_results, DownloadFilePaths, ImageFilePaths,
 )
 
+
+logger = logging.getLogger(__name__)
 
 templates = Jinja2Templates(directory=["cowpoke/herd_improvement/templates", "templates"])
 
@@ -65,11 +68,19 @@ async def lactation_upload(request: Request):
         else:
             liveweight_temp_file = None
 
-    lactation_results = calculate_lactation_results(
-        lactation_file_path=lactation_temp_file,
-        liveweight_file_path=liveweight_temp_file,
-        output_file_path=DownloadFilePaths.output_csv,
-    )
+    try:
+        lactation_results = calculate_lactation_results(
+            lactation_file_path=lactation_temp_file,
+            liveweight_file_path=liveweight_temp_file,
+            output_file_path=DownloadFilePaths.output_csv,
+        )
+    except ValueError as err:
+        logger.error(err)
+        template_resp = templates.TemplateResponse(
+            request={}, name="lactation_results_error.html", context={"error_message": err}
+        )
+        return template_resp
+
     template_context = {
         "stats": lactation_results,
         "farm_name": farm_name,

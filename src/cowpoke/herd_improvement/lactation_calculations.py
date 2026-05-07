@@ -113,6 +113,12 @@ field_name_lookup = {
     "Liveweight": "liveweight",
 }
 
+reverse_field_lookup = {
+    val: key for key, val in field_name_lookup.items()
+}
+# Re-set "Liveweight" here, because "liveweight" maps to either "Liveweight" or "Weight"
+reverse_field_lookup["liveweight"] = "Liveweight"
+
 
 def _convert_raw_data(raw_data: dict) -> dict:
     integer_fields = (
@@ -126,7 +132,8 @@ def _convert_raw_data(raw_data: dict) -> dict:
             try:
                 raw_data[field] = int(value)
             except ValueError:
-                raise ValueError(f"Could not convert '{field}' value '{value}' into integer")
+                field_name = reverse_field_lookup[field]
+                raise ValueError(f"Could not convert '{field_name}' value '{value}' into integer")
 
     decimal_fields = ( "milk_solids", "fat", "protein", "milk", "ave_SCC",)
     for field in decimal_fields:
@@ -138,7 +145,8 @@ def _convert_raw_data(raw_data: dict) -> dict:
             try:
                 raw_data[field] = Decimal(raw_data[field])
             except:
-                raise ValueError(f"Could not convert '{field}' value '{value}' into Decimal")
+                field_name = reverse_field_lookup[field]
+                raise ValueError(f"Could not convert '{field_name}' value '{value}' into Decimal")
 
     possibly_derived_decimal_fields = ("F+P_kg_per_day",)  # Fields may not be present, and need to be derived.
     for field in possibly_derived_decimal_fields:
@@ -150,7 +158,8 @@ def _convert_raw_data(raw_data: dict) -> dict:
             try:
                 raw_data[field] = Decimal(raw_data[field])
             except:
-                raise ValueError(f"Could not convert '{field}' value '{value}' into Decimal")
+                field_name = reverse_field_lookup[field]
+                raise ValueError(f"Could not convert '{field_name}' value '{value}' into Decimal")
 
     # date_fields = ("birth_date", "calving_date")
     date_fields = ()  # Disabled.  Not needed for calculations, and date formatting irregularities break it.
@@ -209,8 +218,6 @@ def _parse_liveweight_csv_file(liveweight_file_path: str) -> dict:
                 liveweight_dict[eartag] = Decimal(liveweight)
             except:
                 raise ValueError(f"Could not convert 'liveweight' value '{liveweight}' into Decimal")
-
-        print(liveweight_dict)
 
         return liveweight_dict
 
