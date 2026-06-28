@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 
 class ReturnType(Enum):
     FIRST_INSEMINATION = "First Insemination"
+    SAME_DAY = "Same Day Return"
     ONE_DAY = "1-Day Return"
     TWO_17_DAY = "2-17 Day Return"
     NORMAL = "Normal Return"
@@ -63,6 +64,8 @@ def calculate_non_return_rate_results(
         previous_insem = first_insem
         for insem in remaining_insems:
             days_elapsed = (insem[0] - previous_insem[0]).days
+            if days_elapsed == 0:
+                print("Cow has same day return!")
             return_status = calculate_return_status(days_elapsed=days_elapsed)
             new_insem = Insemination(
                 insemination_date=insem[0],
@@ -74,8 +77,10 @@ def calculate_non_return_rate_results(
             previous_insem = insem  # Bugfix!  This line was missing, causing ALL returns to compare to First Insem.
 
         return_statuses = [x.return_type for x in new_insems]
+        has_same_day_return = True if ReturnType.SAME_DAY in return_statuses else False
         has_one_day_return = True if ReturnType.ONE_DAY in return_statuses else False
         has_two_17_day_return = True if ReturnType.TWO_17_DAY in return_statuses else False
+        has_normal_return = True if ReturnType.NORMAL in return_statuses else False
         has_long_return = True if ReturnType.LONG in return_statuses else False
         no_returns = True if len(new_insems) == 1 else False
 
@@ -86,8 +91,10 @@ def calculate_non_return_rate_results(
             "bulls": bulls,
             "first_insemination_date": first_insemination_date,
             "no_returns": no_returns,
+            "has_same_day_return": has_same_day_return,
             "has_one_day_return": has_one_day_return,
             "has_two_17_day_return": has_two_17_day_return,
+            "has_normal_return": has_normal_return,
             "has_long_return": has_long_return,
         }
 
@@ -167,6 +174,7 @@ def calculate_non_return_rate(cow_dict: dict, start_date: datetime.date, cut_off
         excluded_from_analysis = 0
         eligible_cows = 0
         non_return_cows = 0
+        same_day_return_cows = 0
         one_day_return_cows = 0
         returned_cows = 0
 
@@ -182,13 +190,20 @@ def calculate_non_return_rate(cow_dict: dict, start_date: datetime.date, cut_off
                 eligible_cows += 1
                 if data["no_returns"]:
                     non_return_cows += 1
+                elif data["has_same_day_return"]:
+                    same_day_return_cows += 1
                 elif data["has_one_day_return"]:
                     one_day_return_cows += 1
-                else:
+                elif data["has_normal_return"]:
                     returned_cows += 1
 
         if eligible_cows > 0:
-            non_return_rate = 100 * Decimal(non_return_cows + one_day_return_cows)/Decimal(eligible_cows)
+            # This is not quite correct, because a cow could have a one-day return AND a normal return.
+            # non_return_rate = (100 * Decimal(non_return_cows + same_day_return_cows + one_day_return_cows)/
+            #                    Decimal(eligible_cows))
+
+            eligible_minus_returned_cows = eligible_cows - returned_cows
+            non_return_rate = 100 * Decimal(eligible_cows - returned_cows) / Decimal(eligible_cows)
             non_return_rate_string = f"{non_return_rate:.1f}"
         else:
             non_return_rate_string = "N/A"
@@ -200,8 +215,10 @@ def calculate_non_return_rate(cow_dict: dict, start_date: datetime.date, cut_off
             "excluded_from_analysis": excluded_from_analysis,
             "eligible_cows": eligible_cows,
             "non_return_cows": non_return_cows,
+            "same_day_return_cows": same_day_return_cows,
             "one_day_return_cows": one_day_return_cows,
             "returned_cows": returned_cows,
+            "eligible_minus_returned_cows": eligible_minus_returned_cows,
             "non_return_rate": non_return_rate_string,
         }
 
@@ -234,6 +251,7 @@ def calculate_nrr_by_bull(
 def calculate_return_status_statistics(cow_dict: dict) -> dict:
     total_inseminations = 0
     first_inseminations = 0
+    same_day_returns = 0
     one_day_returns = 0
     two_17_day_returns = 0
     normal_returns = 0
@@ -244,6 +262,8 @@ def calculate_return_status_statistics(cow_dict: dict) -> dict:
             total_inseminations += 1
             if insem.return_type == ReturnType.FIRST_INSEMINATION:
                 first_inseminations += 1
+            elif insem.return_type == ReturnType.SAME_DAY:
+                same_day_returns += 1
             elif insem.return_type == ReturnType.ONE_DAY:
                 one_day_returns += 1
             elif insem.return_type == ReturnType.TWO_17_DAY:
@@ -253,11 +273,13 @@ def calculate_return_status_statistics(cow_dict: dict) -> dict:
             elif insem.return_type == ReturnType.LONG:
                 long_returns += 1
 
-    total_returns = one_day_returns + two_17_day_returns + normal_returns + long_returns
+    total_returns = same_day_returns + one_day_returns + two_17_day_returns + normal_returns + long_returns
 
     first_insemination_rate = 100 * Decimal(first_inseminations)/Decimal(total_inseminations)
     total_return_rate = 100 * Decimal(total_returns)/Decimal(total_inseminations)
 
+    same_day_returns_pct_tot = 100 * Decimal(same_day_returns)/Decimal(total_inseminations)
+    same_day_returns_pct_ret = 100 * Decimal(same_day_returns)/Decimal(total_returns)
     one_day_returns_pct_tot = 100 * Decimal(one_day_returns)/Decimal(total_inseminations)
     one_day_returns_pct_ret = 100 * Decimal(one_day_returns)/Decimal(total_returns)
     two_17_day_returns_pct_tot = 100 * Decimal(two_17_day_returns)/Decimal(total_inseminations)
@@ -273,6 +295,9 @@ def calculate_return_status_statistics(cow_dict: dict) -> dict:
         "first_insemination_rate": f"{first_insemination_rate:.1f}",
         "total_returns": total_returns,
         "total_return_rate": f"{total_return_rate:.1f}",
+        "same_day_returns": same_day_returns,
+        "same_day_returns_pct_total": f"{same_day_returns_pct_tot:.1f}",
+        "same_day_returns_pct_returns": f"{same_day_returns_pct_ret:.1f}",
         "one_day_returns": one_day_returns,
         "one_day_returns_pct_total": f"{one_day_returns_pct_tot:.1f}",
         "one_day_returns_pct_returns": f"{one_day_returns_pct_ret:.1f}",
@@ -459,7 +484,7 @@ def create_cow_submission_graph(cow_dict: dict, graph_filename: str):
 
 def calculate_return_status(days_elapsed: int) -> ReturnType:
     if days_elapsed < 1:
-        return ReturnType.FIRST_INSEMINATION
+        return ReturnType.SAME_DAY
     elif days_elapsed == 1:
         return ReturnType.ONE_DAY
     elif 1 < days_elapsed < 18:
@@ -537,6 +562,7 @@ def generate_augmented_insemination_file(cow_dict: dict, output_file_path: str):
 
     return_type_map = {
         ReturnType.FIRST_INSEMINATION: "",
+        ReturnType.SAME_DAY: "Short",
         ReturnType.ONE_DAY: "Short",
         ReturnType.TWO_17_DAY: "Short",
         ReturnType.NORMAL: "Normal",

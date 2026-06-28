@@ -81,37 +81,49 @@
                         <td>{{ nrr.full_season_unconfirmed.total_cows }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">Excluded From Analysis</td>
+                        <td style="text-align: left;">&nbsp;&nbsp;Excluded From Analysis</td>
                         <td>{{ nrr.six_weeks_confirmed.excluded_from_analysis }}</td>
                         <td>{{ nrr.full_season_confirmed.excluded_from_analysis }}</td>
                         <td>{{ nrr.full_season_unconfirmed.excluded_from_analysis }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">Eligible Cows</td>
+                        <td style="text-align: left;">&nbsp;&nbsp;Eligible Cows</td>
                         <td><b>{{ nrr.six_weeks_confirmed.eligible_cows }}</b></td>
                         <td>{{ nrr.full_season_confirmed.eligible_cows }}</td>
                         <td>{{ nrr.full_season_unconfirmed.eligible_cows }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">Non-Returned Cows</td>
+                        <td style="text-align: left; color: dimgrey">&nbsp;&nbsp;&nbsp;&nbsp;Non-Returned Cows</td>
                         <td>{{ nrr.six_weeks_confirmed.non_return_cows }}</td>
                         <td>{{ nrr.full_season_confirmed.non_return_cows }}</td>
                         <td>{{ nrr.full_season_unconfirmed.non_return_cows }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">One-Day Returned Cows</td>
+                        <td style="text-align: left; color: dimgrey">&nbsp;&nbsp;&nbsp;&nbsp;Same-Day Returned Cows</td>
+                        <td>{{ nrr.six_weeks_confirmed.same_day_return_cows }}</td>
+                        <td>{{ nrr.full_season_confirmed.same_day_return_cows }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.same_day_return_cows }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left; color: dimgrey">&nbsp;&nbsp;&nbsp;&nbsp;One-Day Returned Cows</td>
                         <td>{{ nrr.six_weeks_confirmed.one_day_return_cows }}</td>
                         <td>{{ nrr.full_season_confirmed.one_day_return_cows }}</td>
                         <td>{{ nrr.full_season_unconfirmed.one_day_return_cows }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">Returned Cows</td>
+                        <td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;Returned Cows</td>
                         <td><b>{{ nrr.six_weeks_confirmed.returned_cows }}</b></td>
                         <td>{{ nrr.full_season_confirmed.returned_cows }}</td>
                         <td>{{ nrr.full_season_unconfirmed.returned_cows }}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left;">Non Return Rate</td>
+                        <td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;Eligible - Returned Cows</td>
+                        <td><b>{{ nrr.six_weeks_confirmed.eligible_minus_returned_cows }}</b></td>
+                        <td>{{ nrr.full_season_confirmed.eligible_minus_returned_cows }}</td>
+                        <td>{{ nrr.full_season_unconfirmed.eligible_minus_returned_cows }}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">&nbsp;&nbsp;Non Return Rate</td>
                         <td><b>{{ nrr.six_weeks_confirmed.non_return_rate }}%</b></td>
                         <td>{{ nrr.full_season_confirmed.non_return_rate }}%</td>
                         <td>{{ nrr.full_season_unconfirmed.non_return_rate }}%</td>
@@ -120,6 +132,7 @@
             </table>
         </p>
         <hr>
+        <h3 style="break-before: page;">Inseminations</h3>
         <p>Total Returns: {{ rss.total_returns }}</p>
         <p>
             <table>
@@ -151,7 +164,11 @@
             </thead>
             <tbody>
                 <tr>
-                    <td style="text-align: left;">1 Day Returns</td><td>{{ rss.one_day_returns }}</td>
+                    <td style="text-align: left;">Same-Day Returns</td><td>{{ rss.same_day_returns }}</td>
+                    <td>{{ rss.same_day_returns_pct_total }}%</td><td>{{ rss.same_day_returns_pct_returns }}%</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">One-Day Returns</td><td>{{ rss.one_day_returns }}</td>
                     <td>{{ rss.one_day_returns_pct_total }}%</td><td>{{ rss.one_day_returns_pct_returns }}%</td>
                 </tr>
                 <tr>
@@ -195,7 +212,7 @@
             <thead>
                 <tr>
                     <th>Bull</th><th>NRR</th><th>Total<br>Cows</th>
-                    <th>Eligible</th><th>Non-<br>Return</th><th>1-Day<br>Return</th>
+                    <th>Eligible</th><th>Returned</th><th>Eligible -<br>Returned</th>
                 </tr>
             </thead>
             <tbody>
@@ -205,8 +222,8 @@
                     <td>{{ bull.nrr.non_return_rate }}%</td>
                     <td>{{ bull.nrr.total_cows }}</td>
                     <td>{{ bull.nrr.eligible_cows }}</td>
-                    <td>{{ bull.nrr.non_return_cows }}</td>
-                    <td>{{ bull.nrr.one_day_return_cows }}</td>
+                    <td>{{ bull.nrr.returned_cows }}</td>
+                    <td>{{ bull.nrr.eligible_minus_returned_cows }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
