@@ -202,7 +202,6 @@ def calculate_non_return_rate(cow_dict: dict, start_date: datetime.date, cut_off
             # non_return_rate = (100 * Decimal(non_return_cows + same_day_return_cows + one_day_return_cows)/
             #                    Decimal(eligible_cows))
 
-            eligible_minus_returned_cows = eligible_cows - returned_cows
             non_return_rate = 100 * Decimal(eligible_cows - returned_cows) / Decimal(eligible_cows)
             non_return_rate_string = f"{non_return_rate:.1f}"
         else:
@@ -218,7 +217,7 @@ def calculate_non_return_rate(cow_dict: dict, start_date: datetime.date, cut_off
             "same_day_return_cows": same_day_return_cows,
             "one_day_return_cows": one_day_return_cows,
             "returned_cows": returned_cows,
-            "eligible_minus_returned_cows": eligible_minus_returned_cows,
+            "eligible_minus_returned_cows": eligible_cows - returned_cows,
             "non_return_rate": non_return_rate_string,
         }
 
